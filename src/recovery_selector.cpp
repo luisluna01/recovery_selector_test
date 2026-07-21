@@ -45,3 +45,14 @@ BT::PortsList RecoverySelector<NUM_CASES>::providedPorts()
 
   return ports;
 }
+
+
+template <size_t NUM_CASES>
+void RecoverySelector<NUM_CASES>::halt()
+{
+  // Clear index for which child was running
+  running_child_ = -1;
+
+  // Force all children's status back to IDLE and this node's status back to IDLE
+  BT::ControlNode::halt();
+}

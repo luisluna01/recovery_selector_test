@@ -21,7 +21,7 @@ class RecoverySelector : public BT::ControlNode
 public:
   RecoverySelector(const std::string& name, const BT::NodeConfig& config);
 
-  ~RecoverySelector() override = default;
+  virtual ~RecoverySelector() override = default;
 
   // Make RecoverySelector non-copyable
   RecoverySelector(const RecoverySelector&) = delete;
@@ -29,11 +29,12 @@ public:
   RecoverySelector(RecoverySelector&&) = delete;
   RecoverySelector& operator=(RecoverySelector&&) = delete;
 
-  void halt() override;
+  virtual void halt() override;
 
   static BT::PortsList providedPorts();
 
 
 private:
+  int running_child_ = -1;
   std::vector<std::string> case_keys_; // Strings indicating cases for potential failure states
 };
