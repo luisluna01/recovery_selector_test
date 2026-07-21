@@ -14,6 +14,7 @@
 
 #include "behaviortree_cpp/control_node.h"
 
+
 template <size_t NUM_FAILURE_CASES>
 class RecoverySelector : public BT::ControlNode
 {
@@ -31,4 +32,8 @@ public:
   void halt() override;
 
   static BT::PortsList providedPorts();
+
+
+private:
+  std::vector<std::string> case_keys_; // Strings indicating cases for potential failure states
 };

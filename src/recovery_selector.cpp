@@ -12,15 +12,17 @@
 
 #include "recovery_selector.hpp"
 
-template <size_t NUM_FAILURE_CASES>
-RecoverySelector<NUM_FAILURE_CASES>::RecoverySelector(
+
+template <size_t NUM_CASES>
+RecoverySelector<NUM_CASES>::RecoverySelector(
   const std::string& name, const BT::NodeConfig& config
 ):
   BT::ControlNode(name, config)
 {
   setRegistrationID("RecoverySelector")
-  for(int i = 1; i <= NUM_FAILURE_CASES; i++)
+  for(size_t i = 1; i <= NUM_CASES; i++)
   {
-
+    // Create keys for cases of potential failure states
+    case_keys_.push_back(std::string("case_") + std::to_string(i));
   }
 }
