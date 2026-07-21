@@ -26,3 +26,22 @@ RecoverySelector<NUM_CASES>::RecoverySelector(
     case_keys_.push_back(std::string("case_") + std::to_string(i));
   }
 }
+
+
+template <size_t NUM_CASES>
+BT::PortsList RecoverySelector<NUM_CASES>::providedPorts()
+{
+  BT::PortsAList ports;
+
+  // Create port failure state to recover from
+  ports.insert(BT::InputPort<std::string>("failure_state"));
+
+  // Create port for cases of potential failure states
+  for(unsigned i = 1; i <= NUM_CASES; i++)
+  {
+    std::string key = std::string("case_") + std::to_string(i);
+    ports.insert(BT::InputPort<std::string>(key));
+  }
+
+  return ports;
+}
