@@ -37,4 +37,6 @@ public:
 private:
   int running_child_ = -1;
   std::vector<std::string> case_keys_; // Strings indicating cases for potential failure states
+
+  virtual BT::NodeStatus tick() override;
 };
