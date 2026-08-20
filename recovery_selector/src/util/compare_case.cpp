@@ -1,7 +1,7 @@
 #include "util/compare_case.hpp"
 
 
-namespace RS
+namespace recovery_selector::util
 {
 
 bool CompareCase(const std::string& failure_state, const std::string& failure_case)
@@ -9,4 +9,4 @@ bool CompareCase(const std::string& failure_state, const std::string& failure_ca
   return failure_state == failure_case;
 }
 
-} // namespace RS
+} // namespace recovery_selector::util
