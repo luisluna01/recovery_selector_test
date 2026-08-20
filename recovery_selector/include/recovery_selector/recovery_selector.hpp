@@ -15,6 +15,9 @@
 #include "behaviortree_cpp/control_node.h"
 
 
+namespace recovery_selector
+{
+
 template <size_t NUM_FAILURE_CASES>
 class RecoverySelector : public BT::ControlNode
 {
@@ -40,3 +43,5 @@ private:
 
   virtual BT::NodeStatus tick() override;
 };
+
+} // namespace recovery_selector

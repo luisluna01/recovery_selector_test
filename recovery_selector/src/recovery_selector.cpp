@@ -14,6 +14,9 @@
 #include "util/compare_case.hpp"
 
 
+namespace recovery_selector
+{
+
 template <size_t NUM_CASES>
 RecoverySelector<NUM_CASES>::RecoverySelector(
   const std::string& name, const BT::NodeConfig& config
@@ -129,3 +132,5 @@ void RecoverySelector<NUM_CASES>::halt()
   // Force all children's status back to IDLE and this node's status back to IDLE
   BT::ControlNode::halt();
 }
+
+} // namespace recovery_selector
