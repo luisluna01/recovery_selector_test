@@ -17,7 +17,7 @@ find_package(nrg_behaviors REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 
 # Create executables
-add_executable(test_recovery_selector_bt src/test_recovery_selector_node.cpp)
+add_executable(test_recovery_selector_bt src/test_recovery_selector_bt.cpp)
 
 # Add include directories
 target_include_directories(test_recovery_selector_bt PUBLIC
