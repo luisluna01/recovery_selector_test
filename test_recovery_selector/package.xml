@@ -15,7 +15,7 @@
 
   <!-- Packages -->
   <depend>ament_index_cpp</depend>
-  <!-- <depend>recovery_selector</depend> -->
+  <depend>recovery_selector</depend>
   <depend>nrg_behaviors</depend>
   
   <test_depend>ament_lint_auto</test_depend>

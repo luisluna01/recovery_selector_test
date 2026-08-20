@@ -12,7 +12,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
-# find_package(recovery_selector REQUIRED)
+find_package(recovery_selector REQUIRED)
 find_package(nrg_behaviors REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 
@@ -28,7 +28,7 @@ target_include_directories(test_recovery_selector_bt PUBLIC
 ament_target_dependencies(test_recovery_selector_bt
   rclcpp
   behaviortree_cpp
-  # recovery_selector
+  recovery_selector
   nrg_behaviors
 )
 
@@ -40,6 +40,12 @@ install(DIRECTORY behavior_trees
 # Install test_recovery_selector_bt
 install(TARGETS test_recovery_selector_bt
   DESTINATION lib/${PROJECT_NAME}
+)
+
+# Install headers
+install(
+  DIRECTORY include/
+  DESTINATION include
 )
 
 if(BUILD_TESTING)

@@ -5,10 +5,49 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# find dependencies
+# Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(behaivortree_cpp REQUIRED)
+find_package(behaviortree_cpp REQUIRED)
+
+# Create library
+add_library(${PROJECT_NAME}
+  src/recovery_selector.cpp
+  src/util/compare_case.cpp
+)
+
+# Add include directories
+target_include_directories(${PROJECT_NAME} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+# Link dependencies to library
+ament_target_dependencies(${PROJECT_NAME}
+  rclcpp
+  behaviortree_cpp
+)
+
+# Install headers
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
+
+# Install the library and export it
+install(
+  TARGETS ${PROJECT_NAME}
+  EXPORT export_${PROJECT_NAME}
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION lib
+)
+
+# Export dependencies for downstream packages
+ament_export_dependencies(rclcpp behaviortree_cpp)
+
+# Export the library target for other ROS packages to find
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

@@ -12,7 +12,9 @@
 
 #pragma once
 
-#include "behaviortree_cpp/control_node.h"
+#include <behaviortree_cpp/control_node.h>
+
+#include "recovery_selector/util/compare_case.hpp"
 
 
 namespace recovery_selector

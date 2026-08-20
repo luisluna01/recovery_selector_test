@@ -5,17 +5,24 @@
 
             <!-- TODO: Replace GetMessageFromTopic with CauseFailure -->
             <!-- <CauseFailure failure_state="{failure_state}" failure_topic="/test_recovery_selector/failure_source"/> -->
-            <GetMessageFromTopic topic="/failure_source" type="std::string" timeout="3.0" value="{failure_state}"/>
+            <ForceSuccess>
+                <GetMessageFromTopic topic="/failure_source" type="std_msgs::msg::String" timeout="0.0" value="{failure_state}"/>
+            </ForceSuccess>
             
             <!-- TODO: Replace Print with PerformTask -->
             <!-- <PerformTask/> -->
             <Print message="Agent behaving as expected..."/>
             
-            <!-- <RecoverySelector failure_state="{failure_state}" case_1="{case_a}" case_2="{case_b}" case_3="{case_c}">
-                <RecoveryA failure_state="{failure_state}"/>
-                <RecoveryB failure_state="{failure_state}"/>
-                <RecoveryC failure_state="{failure_state}"/>
-            </RecoverySelector> -->
+            <RecoverySelector failure_state="{failure_state}" case_1="a" case_2="b" case_3="c">
+                <!-- <RecoveryA failure_state="{failure_state}"/> -->
+                <Print message="Case A resolving..."/>
+
+                <!-- <RecoveryB failure_state="{failure_state}"/> -->
+                <Print message="Case B resolving..."/>
+
+                <!-- <RecoveryC failure_state="{failure_state}"/> -->
+                <Print message="Case C resolving..."/>
+            </RecoverySelector>
         
         </ReactiveSequence>
     </BehaviorTree>
