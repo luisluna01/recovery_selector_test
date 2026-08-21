@@ -22,7 +22,7 @@ RecoverySelector<NUM_CASES>::RecoverySelector(
 ):
   BT::ControlNode(name, config)
 {
-  setRegistrationID("RecoverySelector")
+  setRegistrationID("RecoverySelector");
   
   for(size_t i = 1; i <= NUM_CASES; i++)
   {
@@ -57,11 +57,11 @@ BT::NodeStatus RecoverySelector<NUM_CASES>::tick()
   // Ensure node has appropriate number of children
   if(childrenCount() != NUM_CASES + 1)
   {
-    throw LogicError(
+    throw BT::LogicError(
       "Wrong number of children in RecoverySelector: must be (num_cases + default)");
   }
 
-  str::string failure_state; // Current failure state to resolve from
+  std::string failure_state; // Current failure state to resolve from
   std::string case_value;
   int child_index = int(NUM_CASES);
 
@@ -76,7 +76,7 @@ BT::NodeStatus RecoverySelector<NUM_CASES>::tick()
 
       if(getInput(case_key, case_value))
       {
-        if(RS::CompareCase(failure_state, case_value))
+        if(recovery_selector::util::CompareCase(failure_state, case_value))
         {
           child_index = index;
           
@@ -94,7 +94,8 @@ BT::NodeStatus RecoverySelector<NUM_CASES>::tick()
   }
 
   // Store the selected child
-  auto& selected_child = BT::children_nodes_[child_index];
+  // this-> needed: children_nodes_ is inherited from ControlNode class in this templated class
+  auto& selected_child = this->children_nodes_[child_index];
 
   // Emit a tick signal to the selected child and store the return status
   BT::NodeStatus selected_child_status = selected_child->executeTick();

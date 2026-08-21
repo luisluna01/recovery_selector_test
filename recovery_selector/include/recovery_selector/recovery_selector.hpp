@@ -20,7 +20,7 @@
 namespace recovery_selector
 {
 
-template <size_t NUM_FAILURE_CASES>
+template <size_t NUM_CASES>
 class RecoverySelector : public BT::ControlNode
 {
 public:
