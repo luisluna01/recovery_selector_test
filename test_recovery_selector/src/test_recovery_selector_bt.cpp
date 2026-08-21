@@ -4,6 +4,7 @@
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
 #include "nrg_behaviors/nrg_behaviors.hpp"
+#include "test_recovery_selector/behaviors/create_dummy_failure.hpp"
 
 
 int main(int argc, char* argv[])

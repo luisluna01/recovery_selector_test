@@ -15,9 +15,12 @@ find_package(behaviortree_cpp REQUIRED)
 find_package(recovery_selector REQUIRED)
 find_package(nrg_behaviors REQUIRED)
 find_package(ament_index_cpp REQUIRED)
+find_package(std_msgs REQUIRED)
 
 # Create executables
-add_executable(test_recovery_selector_bt src/test_recovery_selector_bt.cpp)
+add_executable(test_recovery_selector_bt src/test_recovery_selector_bt.cpp
+  src/behaviors/create_dummy_failure.cpp
+)
 
 # Add include directories
 target_include_directories(test_recovery_selector_bt PUBLIC
@@ -30,6 +33,7 @@ ament_target_dependencies(test_recovery_selector_bt
   behaviortree_cpp
   recovery_selector
   nrg_behaviors
+  std_msgs
 )
 
 # Install behavior_trees directory

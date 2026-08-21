@@ -2,28 +2,42 @@
 <root BTCPP_format="4">
     <BehaviorTree ID="TestRecoverySelector">
         <ReactiveSequence>
+            <CreateDummyFailure failure_state="{failure_state}"/>
 
-            <!-- TODO: Replace GetMessageFromTopic with CauseFailure -->
-            <!-- <CauseFailure failure_state="{failure_state}" failure_topic="/test_recovery_selector/failure_source"/> -->
-            <ForceSuccess>
-                <GetMessageFromTopic topic="/failure_source" type="std_msgs::msg::String" timeout="0.0" value="{failure_state}"/>
-            </ForceSuccess>
-            
-            <!-- TODO: Replace Print with PerformTask -->
-            <!-- <PerformTask/> -->
-            <Print message="Agent behaving as expected..."/>
-            
-            <RecoverySelector failure_state="{failure_state}" case_1="a" case_2="b" case_3="c">
-                <!-- <RecoveryA failure_state="{failure_state}"/> -->
+            <KeepRunningUntilFailure>
+                <Print message="Agent behaving as expected..."/>
+            </KeepRunningUntilFailure>
+
+            <Switch3 variable="{failure_state}" case_1="a" case_2="b" case_3="c">
+                <!-- Case 1 -->
                 <Print message="Case A resolving..."/>
 
-                <!-- <RecoveryB failure_state="{failure_state}"/> -->
+                <!-- Case 2 -->
                 <Print message="Case B resolving..."/>
 
-                <!-- <RecoveryC failure_state="{failure_state}"/> -->
+                <!-- Case 3 -->
                 <Print message="Case C resolving..."/>
-            </RecoverySelector>
-        
+
+                <!-- Default -->
+                <Print message="No failures..."/>
+            </Switch3>
+            
         </ReactiveSequence>
     </BehaviorTree>
 </root>
+
+<!-- Template for RecoverySelectorTest -->
+<!-- <CauseFailure failure_state="{failure_state}" failure_topic="/test_recovery_selector/failure_source"/>
+
+<PerformTask/>
+
+<RecoverySelector failure_state="{failure_state}" case_1="a" case_2="b" case_3="c">
+    <RecoveryA failure_state="{failure_state}"/>
+    <Print message="Case A resolving..."/>
+
+    <RecoveryB failure_state="{failure_state}"/>
+    <Print message="Case B resolving..."/>
+
+    <RecoveryC failure_state="{failure_state}"/>
+    <Print message="Case C resolving..."/>
+</RecoverySelector> -->
