@@ -36,11 +36,6 @@ ament_target_dependencies(test_recovery_selector_bt
   std_msgs
 )
 
-# Install behavior_trees directory
-install(DIRECTORY behavior_trees
-  DESTINATION share/${PROJECT_NAME}
-)
-
 # Install test_recovery_selector_bt
 install(TARGETS test_recovery_selector_bt
   DESTINATION lib/${PROJECT_NAME}
@@ -50,6 +45,14 @@ install(TARGETS test_recovery_selector_bt
 install(
   DIRECTORY include/
   DESTINATION include
+)
+
+# Install behavior_trees and launch directory
+install(
+  DIRECTORY
+    behavior_trees
+    launch
+  DESTINATION share/${PROJECT_NAME}
 )
 
 if(BUILD_TESTING)
