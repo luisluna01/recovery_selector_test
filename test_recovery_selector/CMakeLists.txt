@@ -17,27 +17,37 @@ find_package(nrg_behaviors REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(std_msgs REQUIRED)
 
-# Create executables
+# Create behavior tree node executable
 add_executable(test_recovery_selector_bt src/test_recovery_selector_bt.cpp
   src/behaviors/create_dummy_failure.cpp
 )
 
+# Create dummy_failure_publisher node
+add_executable(dummy_failure_publisher src/dummy_failure_publisher.cpp)
+
 # Add include directories
-target_include_directories(test_recovery_selector_bt PUBLIC
+target_include_directories(test_recovery_selector_bt PRIVATE
   include
 )
 
-# Link dependencies to test_recovery_selector
+# Link dependencies to test_recovery_selector_bt
 ament_target_dependencies(test_recovery_selector_bt
   rclcpp
   behaviortree_cpp
+  ament_index_cpp
   recovery_selector
   nrg_behaviors
   std_msgs
 )
 
-# Install test_recovery_selector_bt
-install(TARGETS test_recovery_selector_bt
+# Link dependencies to dummy_failure_publisher node
+ament_target_dependencies(dummy_failure_publisher
+  rclcpp
+  std_msgs
+)
+
+# Install executables
+install(TARGETS test_recovery_selector_bt dummy_failure_publisher
   DESTINATION lib/${PROJECT_NAME}
 )
 
