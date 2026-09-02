@@ -7,20 +7,32 @@ namespace test_recovery_selector
 CreateDummyFailure::CreateDummyFailure(
   const std::string& name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr node
 ):
-  BT::SyncActionNode(name, config), node_(node)
+  BT::StatefulActionNode(name, config), node_(node)
 {
-  // Create subscriber_callback
-  auto subscriber_callback = [this](const std_msgs::msg::String& message)
+  // Validate [topic] port
+  BT::Expected<std::string> maybe_topic = getInput<std::string>("topic");
+  if(!maybe_topic)
   {
-    std::lock_guard<std::mutex> lock(data_mutex_);
+    throw BT::RuntimeError(
+      "[CreateDummyFailure] invalid input port [topic]: ", maybe_topic.error());
+  }
+  std::string topic = maybe_topic.value();
 
-    last_message_ = message; // Record the last message
-    last_subscription_time_ = node_->now(); // Record the time
-  };
-
-  // Create subscriber with '/failure_source' topic
+  // Create callback group for subscriber. It will be used in a separate thread from the default ros
+  // node executor's to avoid having to gaurd against concurrency
+  callback_group_ = 
+    node_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive, false);
+  
+  rclcpp::SubscriptionOptions subscriber_options;
+  subscriber_options.callback_group = callback_group_;
+  
+  executor_.add_callback_group(callback_group_, node_->get_node_base_interface());
+  
   subscriber_ = node_->create_subscription<std_msgs::msg::String>(
-    "/failure_source", 10, subscriber_callback
+    topic,
+    rclcpp::QoS(10),
+    [this](const std_msgs::msg::String& message) { last_message_ = message; },
+    subscriber_options
   );
 }
 
@@ -28,50 +40,62 @@ CreateDummyFailure::CreateDummyFailure(
 BT::PortsList CreateDummyFailure::providedPorts()
 {
   return {
-    BT::InputPort<double>("timeout", 5.0, "time to wait for subsriber to recieve message from topic"),
-    BT::OutputPort<std::string>("failure_state", "failure state outputted as a string")
+    BT::InputPort<std::string>("topic", "/failure_source", "topic to subscribe to"),
+    BT::InputPort<double>("timeout", 5.0, "time to wait for subscriber to recieve message from topic in seconds"),
+    BT::OutputPort<std::string>("failure_state", "string data to represent failure state")
   };
 }
 
 
-BT::NodeStatus CreateDummyFailure::tick()
+BT::NodeStatus CreateDummyFailure::onStart()
 {
-  
-  // Validate timeout port
+  // Verify [timeout] port
   BT::Expected<double> maybe_timeout = getInput<double>("timeout");
-  if (!maybe_timeout)
+  if(!maybe_timeout)
   {
-    throw BT::RuntimeError("missing required input port [timeout]: ",
-      maybe_timeout.error());
+    throw BT::RuntimeError(
+      "[CreateDummyFailure] invalid input port [timeout]: ", maybe_timeout.error());
+  }
+  double timeout = maybe_timeout.value();
+
+  // Drain the messages from the qeue and clear last_message_
+  // Note: max_duration = 0ms means no limit to how long node executer can spin
+  executor_.spin_some(std::chrono::milliseconds(0));
+  last_message_.reset(); // Clear any messages recieved after spin_some()
+  
+  // Create timeout
+  timeout_set_ =  timeout > 0.0;
+  if (timeout_set_)
+  {
+    timeout_end_ = node_->now() + rclcpp::Duration::from_seconds(timeout);
   }
 
-  // Initialize timeout port
-  rclcpp::Duration timeout = rclcpp::Duration::from_seconds(maybe_timeout.value());
+  return BT::NodeStatus::RUNNING;
+}
 
-  // Protect last message and its time stamp from race condition
-  std_msgs::msg::String last_message_copy;
-  rclcpp::Time last_subscription_time_copy;
+
+BT::NodeStatus CreateDummyFailure::onRunning()
+{
+  executor_.spin_some(std::chrono::milliseconds(0));
+
+  if (last_message_)
   {
-    std::lock_guard<std::mutex> lock(data_mutex_);
-
-    last_message_copy = last_message_;
-    last_subscription_time_copy = last_subscription_time_;
-  }
-
-  // Output message std::string data if last subscription was within desired time
-  rclcpp::Duration elapsed_time = node_->now() - last_subscription_time_copy;
-  if (elapsed_time < timeout)
-  {
-    // Output string message to blackboard
-    setOutput("failure_state", last_message_copy.data);
+    setOutput("failure_state", last_message_->data);
 
     return BT::NodeStatus::SUCCESS;
   }
-  
-  RCLCPP_ERROR_STREAM(node_->get_logger(),
-    "[CreateDummyFailure] has not received a new message within " << timeout.seconds() << "s...");
 
-  return BT::NodeStatus::FAILURE;
+  if (timeout_set_ && node_->now() >= timeout_end_)
+  {
+    RCLCPP_ERROR(node_->get_logger(), "[CreateDummyFailure]: timed out waiting for message");
+
+    return BT::NodeStatus::FAILURE;
+  }
+
+  return BT::NodeStatus::RUNNING;
 }
+
+
+void CreateDummyFailure::onHalted() {}
 
 } // namespace test_recovery_selector

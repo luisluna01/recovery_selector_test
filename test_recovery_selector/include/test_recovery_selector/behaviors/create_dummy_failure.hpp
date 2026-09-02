@@ -1,6 +1,5 @@
 #pragma once
 
-#include <mutex>
 #include <chrono>
 
 #include <behaviortree_cpp/action_node.h>
@@ -12,30 +11,35 @@
 namespace test_recovery_selector
 {
 
-// This node creates a fake failure state that is written on the blackboard. It reads the failure
-// state as a string message provided by a topic in ROS2 and writes the failure state onto a string
-// on the blackboard
-class CreateDummyFailure : public BT::SyncActionNode
+// This behavior subscribes a fake failure state as a String provided by a topic and writes it onto
+// the blackboard
+class CreateDummyFailure : public BT::StatefulActionNode
 {
 
 public:
   CreateDummyFailure(
-    const std::string& name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr
+    const std::string& name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr node
   );
 
   static BT::PortsList providedPorts();
 
-  virtual BT::NodeStatus tick() override;
+  virtual BT::NodeStatus onStart() override;
+
+  virtual BT::NodeStatus onRunning() override;
+
+  virtual void onHalted() override;
 
 
 private:
   rclcpp::Node::SharedPtr node_;
+  rclcpp::CallbackGroup::SharedPtr callback_group_;
+  rclcpp::executors::SingleThreadedExecutor executor_; // Create SingleThreadedExecutor
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscriber_;
 
-  std_msgs::msg::String last_message_;
-  rclcpp::Time last_subscription_time_;
+  std::optional<std_msgs::msg::String> last_message_;
+  rclcpp::Time timeout_end_;
 
-  std::mutex data_mutex_;
+  bool timeout_set_ = false;
 };
 
 } // namespace test_recovery_selector
