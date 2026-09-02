@@ -8,7 +8,7 @@
 #include <std_msgs/msg/string.hpp>
 
 
-namespace test_recovery_selector
+namespace test_recovery_selector::behaviors
 {
 
 // This behavior subscribes a fake failure state as a String provided by a topic and writes it onto

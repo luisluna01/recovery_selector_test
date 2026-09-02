@@ -1,7 +1,7 @@
 #include "test_recovery_selector/behaviors/create_dummy_failure.hpp"
 
 
-namespace test_recovery_selector
+namespace test_recovery_selector::behaviors
 {
 
 CreateDummyFailure::CreateDummyFailure(
@@ -98,4 +98,4 @@ BT::NodeStatus CreateDummyFailure::onRunning()
 
 void CreateDummyFailure::onHalted() {}
 
-} // namespace test_recovery_selector
+} // namespace test_recovery_selector::behaviors
