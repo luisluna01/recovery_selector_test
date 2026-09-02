@@ -1,28 +1,24 @@
 <!-- Templated Tree -->
 <root BTCPP_format="4">
     <BehaviorTree ID="TestRecoverySelector">
-        <ReactiveSequence>
-            <CreateDummyFailure failure_state="{failure_state}"/>
 
-            <KeepRunningUntilFailure>
-                <Print message="Agent behaving as expected..."/>
-            </KeepRunningUntilFailure>
+        <Repeat num_cycles="-1">
+            <Sequence>
+                <CreateDummyFailure topic="/failure_source" timeout="5.0" failure_state="{failure_state}"/>
+                
+                <Switch3 variable="{failure_state}" case_1="a" case_2="b" case_3="c">
+                    <Print message="Case A resolving..."/>
 
-            <Switch3 variable="{failure_state}" case_1="a" case_2="b" case_3="c">
-                <!-- Case 1 -->
-                <Print message="Case A resolving..."/>
+                    <Print message="Case B resolving..."/>
 
-                <!-- Case 2 -->
-                <Print message="Case B resolving..."/>
+                    <Print message="Case C resolving..."/>
 
-                <!-- Case 3 -->
-                <Print message="Case C resolving..."/>
+                    <Print message="Default: No failures..."/>
+                </Switch3>
 
-                <!-- Default -->
-                <Print message="No failures..."/>
-            </Switch3>
-            
-        </ReactiveSequence>
+            </Sequence>
+        </Repeat>
+    
     </BehaviorTree>
 </root>
 

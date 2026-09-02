@@ -20,6 +20,10 @@ int main(int argc, char* argv[])
   config.ros_node = ros_node; // Share ROS2 node with utility tree nodes
   nrg_utility_behaviors::registerBehaviors(factory, config);
 
+  // Register test_recovery_selector behaviors
+  factory.registerNodeType<test_recovery_selector::behaviors::CreateDummyFailure>(
+    "CreateDummyFailure", ros_node);
+
   // Create tree
   std::string share_path = ament_index_cpp::get_package_share_directory("test_recovery_selector");
   BT::Tree tree = factory.createTreeFromFile(
