@@ -29,6 +29,9 @@ add_executable(dummy_failure_publisher src/dummy_failure_publisher.cpp)
 target_include_directories(test_recovery_selector_bt PRIVATE
   include
 )
+target_include_directories(dummy_failure_publisher PRIVATE
+  include
+)
 
 # Link dependencies to test_recovery_selector_bt
 ament_target_dependencies(test_recovery_selector_bt
