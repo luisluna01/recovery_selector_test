@@ -20,6 +20,7 @@
 namespace recovery_selector
 {
 
+// -- Template Class Definition -- //
 template <size_t NUM_CASES>
 class RecoverySelector : public BT::ControlNode
 {
@@ -45,5 +46,126 @@ private:
 
   virtual BT::NodeStatus tick() override;
 };
+// -- Template Class Definition -- //
+
+
+// -- Template Member Function Definitions -- //
+template <size_t NUM_CASES>
+inline RecoverySelector<NUM_CASES>::RecoverySelector(
+  const std::string& name, const BT::NodeConfig& config
+):
+  BT::ControlNode(name, config)
+{
+  setRegistrationID("RecoverySelector");
+  
+  for(size_t i = 1; i <= NUM_CASES; i++)
+  {
+    // Create keys for cases of potential failure states
+    case_keys_.push_back(std::string("case_") + std::to_string(i));
+  }
+}
+
+
+template <size_t NUM_CASES>
+inline BT::PortsList RecoverySelector<NUM_CASES>::providedPorts()
+{
+  BT::PortsList ports;
+
+  // Create port failure state to recover from
+  ports.insert(BT::InputPort<std::string>("failure_state"));
+
+  // Create port for cases of potential failure states
+  for(unsigned i = 1; i <= NUM_CASES; i++)
+  {
+    std::string case_key = std::string("case_") + std::to_string(i);
+    ports.insert(BT::InputPort<std::string>(case_key));
+  }
+
+  return ports;
+}
+
+
+template <size_t NUM_CASES>
+inline BT::NodeStatus RecoverySelector<NUM_CASES>::tick()
+{
+  // Ensure node has appropriate number of children
+  if(childrenCount() != NUM_CASES + 1)
+  {
+    throw BT::LogicError(
+      "Wrong number of children in RecoverySelector: must be (num_cases + default)");
+  }
+
+  std::string failure_state; // Current failure state to resolve from
+  std::string case_value;
+  int child_index = int(NUM_CASES);
+
+  // If failure state is present create index to identify child that should be ticked
+  // - If no failure state is choose default child
+  if(getInput("failure_state", failure_state))
+  {
+    // Check each case until the first match
+    for(int index = 0; index < int(NUM_CASES); ++index)
+    {
+      const std::string& case_key = case_keys_[index];
+
+      if(getInput(case_key, case_value))
+      {
+        if(recovery_selector::util::CompareCase(failure_state, case_value))
+        {
+          child_index = index;
+          
+          break;
+        }
+      }
+
+    }
+  }
+
+  // Unless default child, halt currently running child if different from appropriate case
+  if(running_child_ != -1 && running_child_ != child_index)
+  {
+    haltChild(running_child_);
+  }
+
+  // Store the selected child
+  // this-> needed: children_nodes_ is inherited from ControlNode class in this templated class
+  auto& selected_child = this->children_nodes_[child_index];
+
+  // Emit a tick signal to the selected child and store the return status
+  BT::NodeStatus selected_child_status = selected_child->executeTick();
+
+  if(selected_child_status == BT::NodeStatus::SKIPPED)
+  {
+    // Clear index so default child ticked next
+    running_child_ = -1;
+
+    return BT::NodeStatus::SKIPPED;
+  }
+  else if (selected_child_status == BT::NodeStatus::RUNNING)
+  {
+    running_child_ = child_index;
+  }
+  else // If RecoverySelector returns SUCCESS or FAILURE
+  {
+    // Set status of all children to IDLE and send halt() signal to all RUNNING children
+    resetChildren();
+
+    // Clear index so default child ticked next
+    running_child_ = -1;
+  }
+
+  return selected_child_status;
+}
+
+
+template <size_t NUM_CASES>
+inline void RecoverySelector<NUM_CASES>::halt()
+{
+  running_child_ = -1;
+
+  // Force all children's status back to IDLE and this node's status back to IDLE
+  BT::ControlNode::halt();
+}
+// -- Template Member Function Definition -- //
 
 } // namespace recovery_selector

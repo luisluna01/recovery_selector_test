@@ -12,7 +12,6 @@ find_package(behaviortree_cpp REQUIRED)
 
 # Create library
 add_library(${PROJECT_NAME}
-  src/recovery_selector.cpp
   src/util/compare_case.cpp
 )
 
