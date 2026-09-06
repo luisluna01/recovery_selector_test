@@ -6,7 +6,7 @@
             <Sequence>
                 <CreateDummyFailure topic="/failure_source" timeout="5.0" failure_state="{failure_state}"/>
                 
-                <Switch3 variable="{failure_state}" case_1="a" case_2="b" case_3="c">
+                <!-- <Switch3 variable="{failure_state}" case_1="a" case_2="b" case_3="c">
                     <Print message="Case A resolving..."/>
 
                     <Print message="Case B resolving..."/>
@@ -14,7 +14,17 @@
                     <Print message="Case C resolving..."/>
 
                     <Print message="Default: No failures..."/>
-                </Switch3>
+                </Switch3> -->
+
+                <RecoverySelector failure_state="{failure_state}" case_1="a" case_2="b" case_3="c">
+                    <Print message="Case A resolving..."/>
+
+                    <Print message="Case B resolving..."/>
+
+                    <Print message="Case C resolving..."/>
+
+                    <Print message="Default: No failures..."/>
+                </RecoverySelector>
 
             </Sequence>
         </Repeat>

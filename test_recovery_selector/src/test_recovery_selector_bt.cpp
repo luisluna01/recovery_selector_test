@@ -3,6 +3,8 @@
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
+// Behaviors
+#include "recovery_selector/recovery_selector.hpp"
 #include "nrg_behaviors/nrg_behaviors.hpp"
 #include "test_recovery_selector/behaviors/create_dummy_failure.hpp"
 
@@ -14,6 +16,9 @@ int main(int argc, char* argv[])
   rclcpp::Node::SharedPtr ros_node = std::make_shared<rclcpp::Node>("test_recovery_selector_bt");
 
   BT::BehaviorTreeFactory factory; // Initialize BT factory which registers the tree and tree nodes
+
+  // Register RecoverySelector with 3 failure_cases
+  factory.registerNodeType<recovery_selector::RecoverySelector<3>>("RecoverySelector");
 
   // Register nrg_utility_behaviors
   nrg_utility_behaviors::Config config;
