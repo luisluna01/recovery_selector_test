@@ -62,7 +62,6 @@ BT::NodeStatus DummyRecoveryStrategy::onRunning()
   if(node_->now() >= completion_time_ros_)
   {
     failure_state_.clear(); // Remove failue case from failure_state
-    RCLCPP_WARN(node_->get_logger(), "TESTING:%s", failure_state_.c_str());
 
     setOutput("failure_state", failure_state_); // Output updated failure state
 
