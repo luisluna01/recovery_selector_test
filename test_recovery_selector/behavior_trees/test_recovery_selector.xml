@@ -1,11 +1,10 @@
 <!-- Templated Tree -->
 <root BTCPP_format="4">
     <BehaviorTree ID="TestRecoverySelector">
+        <Parallel success_count="1" failure_count="1">
+            <CreateDummyFailure topic="/failure_source" failure_state="{failure_state}"/>
 
-        <Repeat num_cycles="-1">
-            <Sequence>
-                <CreateDummyFailure topic="/failure_source" timeout="5.0" failure_state="{failure_state}"/>
-                
+            <ReactiveSequence>
                 <!-- <Switch3 variable="{failure_state}" case_1="a" case_2="b" case_3="c">
                     <Print message="Case A resolving..."/>
 
@@ -15,35 +14,34 @@
 
                     <Print message="Default: No failures..."/>
                 </Switch3> -->
-
                 <RecoverySelector failure_state="{failure_state}" case_1="a" case_2="b" case_3="c">
-                    <Print message="Case A resolving..."/>
+                
+                    <Sequence>
+                        <Print message="Case A resolving..."/>
+                        <Delay delay_msec="10000">
+                            <Print message="Case A Resolved"/>
+                        </Delay>
+                    </Sequence>
 
-                    <Print message="Case B resolving..."/>
+                    <Sequence>
+                        <Print message="Case B resolving..."/>
+                        <Delay delay_msec="1000">
+                            <Print message="Case A Resolved"/>
+                        </Delay>
+                    </Sequence>
 
-                    <Print message="Case C resolving..."/>
+                    <Sequence>
+                        <Print message="Case C resolving..."/>
+                        <Delay delay_msec="1000">
+                            <Print message="Case A Resolved"/>
+                        </Delay>
+                    </Sequence>
 
-                    <Print message="Default: No failures..."/>
+                    <AlwaysSuccess/>
                 </RecoverySelector>
 
-            </Sequence>
-        </Repeat>
-    
+                <DummyTask completion_time="60"/>
+            </ReactiveSequence>
+        </Parallel>
     </BehaviorTree>
 </root>
-
-<!-- Template for RecoverySelectorTest -->
-<!-- <CauseFailure failure_state="{failure_state}" failure_topic="/test_recovery_selector/failure_source"/>
-
-<PerformTask/>
-
-<RecoverySelector failure_state="{failure_state}" case_1="a" case_2="b" case_3="c">
-    <RecoveryA failure_state="{failure_state}"/>
-    <Print message="Case A resolving..."/>
-
-    <RecoveryB failure_state="{failure_state}"/>
-    <Print message="Case B resolving..."/>
-
-    <RecoveryC failure_state="{failure_state}"/>
-    <Print message="Case C resolving..."/>
-</RecoverySelector> -->
