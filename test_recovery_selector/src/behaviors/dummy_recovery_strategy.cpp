@@ -29,16 +29,17 @@ BT::NodeStatus DummyRecoveryStrategy::onStart()
   BT::Expected<std::string> maybe_failure_state = getInput<std::string>("failure_state");
   if(!maybe_failure_state)
   {
-    throw BT::RuntimeError("[%s] invalid input port [failure_state]:", name_);
+    throw BT::RuntimeError(
+      "[", name_, "] invalid input port [failure_state]: ", maybe_failure_state.error());
   }
-  std::string failure_state_ = maybe_failure_state.value();
+  failure_state_ = maybe_failure_state.value();
 
   // Verify [completion_time] port is valid
   BT::Expected<double> maybe_completion_time = getInput<double>("completion_time");
   if(!maybe_completion_time)
   {
     throw BT::RuntimeError(
-      "[DummyTask] invalid input port [completion_time]: ", maybe_completion_time.error());
+      "[", name_, "] invalid input port [completion_time]: ", maybe_completion_time.error());
   }
   double completion_time = maybe_completion_time.value();
   // ---------- Verify input and bidirectional ports are valid ---------- //
