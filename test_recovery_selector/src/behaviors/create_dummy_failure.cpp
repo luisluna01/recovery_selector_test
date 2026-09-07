@@ -5,7 +5,7 @@ namespace test_recovery_selector::behaviors
 {
 
 CreateDummyFailure::CreateDummyFailure(
-  const std::string& name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr node
+  const std::string& name, const BT::NodeConfig& config, const rclcpp::Node::SharedPtr& node
 ):
   BT::StatefulActionNode(name, config), node_(node)
 {
@@ -96,6 +96,9 @@ BT::NodeStatus CreateDummyFailure::onRunning()
 }
 
 
-void CreateDummyFailure::onHalted() {}
+void CreateDummyFailure::onHalted()
+{
+  RCLCPP_WARN(node_->get_logger(), "[CreateDummyFailure] halted");
+}
 
 } // namespace test_recovery_selector::behaviors

@@ -11,14 +11,14 @@
 namespace test_recovery_selector::behaviors
 {
 
-// This behavior subscribes a fake failure state as a String provided by a topic and writes it onto
-// the blackboard
+// CreateDummyFailure subscribes a fake failure state as a String provided by a topic and writes it
+// onto the blackboard
 class CreateDummyFailure : public BT::StatefulActionNode
 {
 
 public:
   CreateDummyFailure(
-    const std::string& name, const BT::NodeConfig& config, rclcpp::Node::SharedPtr node
+    const std::string& name, const BT::NodeConfig& config, const rclcpp::Node::SharedPtr& node
   );
 
   static BT::PortsList providedPorts();
