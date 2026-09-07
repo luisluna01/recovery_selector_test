@@ -68,6 +68,8 @@ BT::NodeStatus CreateDummyFailure::onRunning()
     RCLCPP_DEBUG_THROTTLE(
       node_->get_logger(), *node_->get_clock(), 1000,
       "[CreateDummyFailure] outputted %s to [failure_state] port", last_message_->data.c_str());
+
+    last_message_.reset(); // Clear message remaining
   }
 
   return BT::NodeStatus::RUNNING;

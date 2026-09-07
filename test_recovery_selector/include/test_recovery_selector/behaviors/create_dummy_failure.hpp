@@ -38,9 +38,6 @@ private:
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscriber_;
 
   std::optional<std_msgs::msg::String> last_message_;
-  rclcpp::Time timeout_end_;
-
-  bool timeout_set_ = false;
 };
 
 } // namespace test_recovery_selector
