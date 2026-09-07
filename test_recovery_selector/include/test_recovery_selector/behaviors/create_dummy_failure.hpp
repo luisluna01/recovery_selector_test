@@ -12,7 +12,8 @@ namespace test_recovery_selector::behaviors
 {
 
 // CreateDummyFailure subscribes a fake failure state as a String provided by a topic and writes it
-// onto the blackboard
+// onto the blackboard.
+// Note: This behavior is meant to run forever
 class CreateDummyFailure : public BT::StatefulActionNode
 {
 

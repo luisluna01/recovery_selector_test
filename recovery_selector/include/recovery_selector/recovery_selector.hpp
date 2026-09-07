@@ -169,3 +169,4 @@ inline void RecoverySelector<NUM_CASES>::halt()
 // ---------- Template Member Function Definitions ---------- //
 
 } // namespace recovery_selector
+ 

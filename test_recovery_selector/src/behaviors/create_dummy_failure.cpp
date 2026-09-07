@@ -41,7 +41,6 @@ BT::PortsList CreateDummyFailure::providedPorts()
 {
   return {
     BT::InputPort<std::string>("topic", "/failure_source", "topic to subscribe to"),
-    BT::InputPort<double>("timeout", 5.0, "time to wait for subscriber to recieve message from topic in seconds"),
     BT::OutputPort<std::string>("failure_state", "string data to represent failure state")
   };
 }
@@ -49,27 +48,11 @@ BT::PortsList CreateDummyFailure::providedPorts()
 
 BT::NodeStatus CreateDummyFailure::onStart()
 {
-  // Verify [timeout] port
-  BT::Expected<double> maybe_timeout = getInput<double>("timeout");
-  if(!maybe_timeout)
-  {
-    throw BT::RuntimeError(
-      "[CreateDummyFailure] invalid input port [timeout]: ", maybe_timeout.error());
-  }
-  double timeout = maybe_timeout.value();
-
   // Drain the messages from the qeue and clear last_message_
   // Note: max_duration = 0ms means no limit to how long node executer can spin
   executor_.spin_some(std::chrono::milliseconds(0));
   last_message_.reset(); // Clear any messages recieved after spin_some()
   
-  // Create timeout
-  timeout_set_ =  timeout > 0.0;
-  if (timeout_set_)
-  {
-    timeout_end_ = node_->now() + rclcpp::Duration::from_seconds(timeout);
-  }
-
   return BT::NodeStatus::RUNNING;
 }
 
@@ -82,14 +65,9 @@ BT::NodeStatus CreateDummyFailure::onRunning()
   {
     setOutput("failure_state", last_message_->data);
 
-    return BT::NodeStatus::SUCCESS;
-  }
-
-  if (timeout_set_ && node_->now() >= timeout_end_)
-  {
-    RCLCPP_ERROR(node_->get_logger(), "[CreateDummyFailure]: timed out waiting for message");
-
-    return BT::NodeStatus::FAILURE;
+    RCLCPP_DEBUG_THROTTLE(
+      node_->get_logger(), *node_->get_clock(), 1000,
+      "[CreateDummyFailure] outputted %s to [failure_state] port", last_message_->data.c_str());
   }
 
   return BT::NodeStatus::RUNNING;
