@@ -5,6 +5,10 @@
             <CreateDummyFailure topic="/failure_source" failure_state="{failure_state}"/>
 
             <ReactiveSequence>
+                <!-- <ForceSuccess>
+                    <Print message="{failure_state}"/>
+                </ForceSuccess> -->
+
                 <!-- <Switch3 variable="{failure_state}" case_1="a" case_2="b" case_3="c">
                     <Print message="Case A resolving..."/>
 
@@ -15,32 +19,17 @@
                     <Print message="Default: No failures..."/>
                 </Switch3> -->
                 <RecoverySelector failure_state="{failure_state}" case_1="a" case_2="b" case_3="c">
-                
-                    <Sequence>
-                        <Print message="Case A resolving..."/>
-                        <Delay delay_msec="10000">
-                            <Print message="Case A Resolved"/>
-                        </Delay>
-                    </Sequence>
 
-                    <Sequence>
-                        <Print message="Case B resolving..."/>
-                        <Delay delay_msec="1000">
-                            <Print message="Case A Resolved"/>
-                        </Delay>
-                    </Sequence>
+                    <DummyRecoveryStrategyA failure_state="{failure_state}" completion_time="5"/>
 
-                    <Sequence>
-                        <Print message="Case C resolving..."/>
-                        <Delay delay_msec="1000">
-                            <Print message="Case A Resolved"/>
-                        </Delay>
-                    </Sequence>
+                    <DummyRecoveryStrategyB failure_state="{failure_state}" completion_time="5"/>
+
+                    <DummyRecoveryStrategyC failure_state="{failure_state}" completion_time="5"/>
 
                     <AlwaysSuccess/>
                 </RecoverySelector>
 
-                <DummyTask completion_time="60"/>
+                <DummyTask completion_time="10"/>
             </ReactiveSequence>
         </Parallel>
     </BehaviorTree>
