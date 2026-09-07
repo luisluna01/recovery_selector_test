@@ -45,7 +45,12 @@ int main(int argc, char* argv[])
   BT::Tree tree = factory.createTreeFromFile(
     share_path + "/behavior_trees/test_recovery_selector.xml");
   
-  tree.tickWhileRunning(std::chrono::milliseconds(100));
+  BT::NodeStatus status = BT::NodeStatus::RUNNING;
+  while (rclcpp::ok() && status == BT::NodeStatus::RUNNING)
+  {
+    status = tree.tickOnce();
+    tree.sleep(std::chrono::milliseconds(100));
+  }
 
   rclcpp::shutdown();
 
