@@ -20,7 +20,7 @@
 namespace recovery_selector
 {
 
-// -- Template Class Definition -- //
+// ---------- Template Class Definition ---------- //
 template <size_t NUM_CASES>
 class RecoverySelector : public BT::ControlNode
 {
@@ -46,10 +46,10 @@ private:
 
   virtual BT::NodeStatus tick() override;
 };
-// -- Template Class Definition -- //
+// ---------- Template Class Definition ---------- //
 
 
-// -- Template Member Function Definitions -- //
+// ---------- Template Member Function Definitions ---------- //
 template <size_t NUM_CASES>
 inline RecoverySelector<NUM_CASES>::RecoverySelector(
   const std::string& name, const BT::NodeConfig& config
@@ -166,6 +166,6 @@ inline void RecoverySelector<NUM_CASES>::halt()
   // Force all children's status back to IDLE and this node's status back to IDLE
   BT::ControlNode::halt();
 }
-// -- Template Member Function Definition -- //
+// ---------- Template Member Function Definitions ---------- //
 
 } // namespace recovery_selector
