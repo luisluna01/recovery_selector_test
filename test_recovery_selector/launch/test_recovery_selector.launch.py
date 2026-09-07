@@ -8,6 +8,7 @@ def generate_launch_description():
         # Launch behavior tree executer node
         Node(
             package='test_recovery_selector',
-            executable='test_recovery_selector_bt'
+            executable='test_recovery_selector_bt',
+            emulate_tty=True
         )
     ])
