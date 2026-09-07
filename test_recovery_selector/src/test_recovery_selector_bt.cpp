@@ -5,8 +5,9 @@
 
 // Behaviors
 #include "recovery_selector/recovery_selector.hpp"
-#include "nrg_behaviors/nrg_behaviors.hpp"
 #include "test_recovery_selector/behaviors/create_dummy_failure.hpp"
+#include "test_recovery_selector/behaviors/dummy_task.hpp"
+#include "nrg_behaviors/nrg_behaviors.hpp"
 
 
 int main(int argc, char* argv[])
@@ -20,14 +21,15 @@ int main(int argc, char* argv[])
   // Register RecoverySelector with 3 failure_cases
   factory.registerNodeType<recovery_selector::RecoverySelector<3>>("RecoverySelector");
 
+  // Register test_recovery_selector behaviors
+  factory.registerNodeType<test_recovery_selector::behaviors::CreateDummyFailure>(
+    "CreateDummyFailure", ros_node);
+  factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>("DummyTask", ros_node);
+
   // Register nrg_utility_behaviors
   nrg_utility_behaviors::Config config;
   config.ros_node = ros_node; // Share ROS2 node with utility tree nodes
   nrg_utility_behaviors::registerBehaviors(factory, config);
-
-  // Register test_recovery_selector behaviors
-  factory.registerNodeType<test_recovery_selector::behaviors::CreateDummyFailure>(
-    "CreateDummyFailure", ros_node);
 
   // Create tree
   std::string share_path = ament_index_cpp::get_package_share_directory("test_recovery_selector");
