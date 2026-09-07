@@ -21,6 +21,7 @@ find_package(std_msgs REQUIRED)
 add_executable(test_recovery_selector_bt src/test_recovery_selector_bt.cpp
   src/behaviors/create_dummy_failure.cpp
   src/behaviors/dummy_task.cpp
+  src/behaviors/dummy_recovery_strategy.cpp
 )
 
 # Create dummy_failure_publisher node

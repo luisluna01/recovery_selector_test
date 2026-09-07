@@ -3,12 +3,19 @@
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
-// Behaviors
+// RecoverySelector behavior
 #include "recovery_selector/recovery_selector.hpp"
+
+// test_recovery_selector behaviors
 #include "test_recovery_selector/behaviors/create_dummy_failure.hpp"
 #include "test_recovery_selector/behaviors/dummy_task.hpp"
+#include "test_recovery_selector/behaviors/dummy_recovery_strategy.hpp"
+
+// nrg_behaviors
 #include "nrg_behaviors/nrg_behaviors.hpp"
 
+
+namespace test_rs = test_recovery_selector::behaviors;
 
 int main(int argc, char* argv[])
 {
@@ -22,9 +29,11 @@ int main(int argc, char* argv[])
   factory.registerNodeType<recovery_selector::RecoverySelector<3>>("RecoverySelector");
 
   // Register test_recovery_selector behaviors
-  factory.registerNodeType<test_recovery_selector::behaviors::CreateDummyFailure>(
-    "CreateDummyFailure", ros_node);
-  factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>("DummyTask", ros_node);
+  factory.registerNodeType<test_rs::CreateDummyFailure>("CreateDummyFailure", ros_node);
+  factory.registerNodeType<test_rs::DummyTask>("DummyTask", ros_node);
+  factory.registerNodeType<test_rs::DummyRecoveryStrategy>("DummyRecoveryStrategyA", ros_node, "a");
+  factory.registerNodeType<test_rs::DummyRecoveryStrategy>("DummyRecoveryStrategyB", ros_node, "b");
+  factory.registerNodeType<test_rs::DummyRecoveryStrategy>("DummyRecoveryStrategyC", ros_node, "c");
 
   // Register nrg_utility_behaviors
   nrg_utility_behaviors::Config config;

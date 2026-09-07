@@ -8,7 +8,8 @@
 namespace test_recovery_selector::behaviors
 {
 
-// DummyTask pretends to perform a task by running for a desired amount of time before completion
+// This behavior pretends to perform a task by running for a desired amount of time before
+// completion
 // Note: Prints message every second
 class DummyTask : public BT::StatefulActionNode
 {

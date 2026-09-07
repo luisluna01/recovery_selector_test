@@ -14,7 +14,7 @@ DummyTask::DummyTask(
 BT::PortsList DummyTask::providedPorts()
 {
   return{
-    BT::InputPort<double>("completion_time", "60", "Time for this behavior to run in seconds")
+    BT::InputPort<double>("completion_time", "60", "time for this behavior to run in seconds")
   };
 }
 
