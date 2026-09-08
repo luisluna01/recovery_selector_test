@@ -8,33 +8,7 @@ CreateDummyFailure::CreateDummyFailure(
   const std::string& name, const BT::NodeConfig& config, const rclcpp::Node::SharedPtr& node
 ):
   BT::StatefulActionNode(name, config), node_(node)
-{
-  // Validate [topic] port
-  BT::Expected<std::string> maybe_topic = getInput<std::string>("topic");
-  if(!maybe_topic)
-  {
-    throw BT::RuntimeError(
-      "[CreateDummyFailure] invalid input port [topic]: ", maybe_topic.error());
-  }
-  std::string topic = maybe_topic.value();
-
-  // Create callback group for subscriber. It will be used in a separate thread from the default ros
-  // node executor's to avoid having to gaurd against concurrency
-  callback_group_ = 
-    node_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive, false);
-  
-  rclcpp::SubscriptionOptions subscriber_options;
-  subscriber_options.callback_group = callback_group_;
-  
-  executor_.add_callback_group(callback_group_, node_->get_node_base_interface());
-  
-  subscriber_ = node_->create_subscription<std_msgs::msg::String>(
-    topic,
-    rclcpp::QoS(10),
-    [this](const std_msgs::msg::String& message) { last_message_ = message; },
-    subscriber_options
-  );
-}
+{}
 
 
 BT::PortsList CreateDummyFailure::providedPorts()
@@ -48,6 +22,12 @@ BT::PortsList CreateDummyFailure::providedPorts()
 
 BT::NodeStatus CreateDummyFailure::onStart()
 {
+  // Create the subscriber on first tick only
+  if (!subscriber_)
+  {
+    createSubscriber();
+  }
+
   // Drain the messages from the qeue and clear last_message_
   // Note: max_duration = 0ms means no limit to how long node executer can spin
   executor_.spin_some(std::chrono::milliseconds(0));
@@ -79,6 +59,40 @@ BT::NodeStatus CreateDummyFailure::onRunning()
 void CreateDummyFailure::onHalted()
 {
   RCLCPP_WARN(node_->get_logger(), "[CreateDummyFailure] halted");
+}
+
+
+// ------------------------------------------------------------
+// ------------------------------------------------------------
+
+
+void CreateDummyFailure::createSubscriber()
+{
+  // Validate [topic] port
+  BT::Expected<std::string> maybe_topic = getInput<std::string>("topic");
+  if(!maybe_topic)
+  {
+    throw BT::RuntimeError(
+      "[CreateDummyFailure] invalid input port [topic]: ", maybe_topic.error());
+  }
+  std::string topic = maybe_topic.value();
+
+  // Create callback group for subscriber. It will be used in a separate thread from the default ros
+  // node executor's to avoid having to gaurd against concurrency
+  callback_group_ =
+    node_->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive, false);
+
+  rclcpp::SubscriptionOptions subscriber_options;
+  subscriber_options.callback_group = callback_group_;
+
+  executor_.add_callback_group(callback_group_, node_->get_node_base_interface());
+
+  subscriber_ = node_->create_subscription<std_msgs::msg::String>(
+    topic,
+    rclcpp::QoS(10),
+    [this](const std_msgs::msg::String& message) { last_message_ = message; },
+    subscriber_options
+  );
 }
 
 } // namespace test_recovery_selector::behaviors

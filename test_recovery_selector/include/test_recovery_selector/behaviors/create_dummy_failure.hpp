@@ -32,6 +32,10 @@ public:
 
 
 private:
+  // Reads [topic] port and creates subscriber. Meant to be called on the first tick only, so
+  // a halt/re-tick cycle does not create duplicate subscriber
+  void createSubscriber();
+
   rclcpp::Node::SharedPtr node_;
   rclcpp::CallbackGroup::SharedPtr callback_group_;
   rclcpp::executors::SingleThreadedExecutor executor_; // Create SingleThreadedExecutor
