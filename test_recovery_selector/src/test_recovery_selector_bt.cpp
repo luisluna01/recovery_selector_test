@@ -1,5 +1,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include <behaviortree_cpp/bt_factory.h>
+#include <behaviortree_cpp/loggers/groot2_publisher.h>
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
@@ -31,20 +32,24 @@ int main(int argc, char* argv[])
   // Register test_recovery_selector behaviors
   factory.registerNodeType<test_rs::CreateDummyFailure>("CreateDummyFailure", ros_node);
   factory.registerNodeType<test_rs::DummyTask>("DummyTask", ros_node);
-  factory.registerNodeType<test_rs::DummyRecoveryStrategy>("DummyRecoveryStrategyA", ros_node, "a");
-  factory.registerNodeType<test_rs::DummyRecoveryStrategy>("DummyRecoveryStrategyB", ros_node, "b");
-  factory.registerNodeType<test_rs::DummyRecoveryStrategy>("DummyRecoveryStrategyC", ros_node, "c");
+  factory.registerNodeType<test_rs::DummyRecoveryStrategy>("DummyRecoveryStrategyA", ros_node, "A");
+  factory.registerNodeType<test_rs::DummyRecoveryStrategy>("DummyRecoveryStrategyB", ros_node, "B");
+  factory.registerNodeType<test_rs::DummyRecoveryStrategy>("DummyRecoveryStrategyC", ros_node, "C");
 
   // Register nrg_utility_behaviors
   nrg_utility_behaviors::Config config;
   config.ros_node = ros_node; // Share ROS2 node with utility tree nodes
   nrg_utility_behaviors::registerBehaviors(factory, config);
 
-  // Create tree
+  // Create behavior tree
   std::string share_path = ament_index_cpp::get_package_share_directory("test_recovery_selector");
   BT::Tree tree = factory.createTreeFromFile(
     share_path + "/behavior_trees/test_recovery_selector.xml");
   
+  // Connect to Groot2Publisher
+  BT::Groot2Publisher publisher(tree);
+
+  // Tick tree every 100ms and ensure SIGINT kills the tree
   BT::NodeStatus status = BT::NodeStatus::RUNNING;
   while (rclcpp::ok() && status == BT::NodeStatus::RUNNING)
   {

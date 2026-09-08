@@ -18,18 +18,18 @@
 
                     <Print message="Default: No failures..."/>
                 </Switch3> -->
-                <RecoverySelector failure_state="{failure_state}" case_1="a" case_2="b" case_3="c">
+                <RecoverySelector failure_state="{failure_state}" case_1="A" case_2="B" case_3="C">
 
-                    <DummyRecoveryStrategyA failure_state="{failure_state}" completion_time="5"/>
+                    <DummyRecoveryStrategyA failure_state="{failure_state}" completion_time="10"/>
 
-                    <DummyRecoveryStrategyB failure_state="{failure_state}" completion_time="5"/>
+                    <DummyRecoveryStrategyB failure_state="{failure_state}" completion_time="10"/>
 
-                    <DummyRecoveryStrategyC failure_state="{failure_state}" completion_time="5"/>
+                    <DummyRecoveryStrategyC failure_state="{failure_state}" completion_time="10"/>
 
                     <AlwaysSuccess/>
                 </RecoverySelector>
 
-                <DummyTask completion_time="10"/>
+                <DummyTask completion_time="20"/>
             </ReactiveSequence>
         </Parallel>
     </BehaviorTree>
