@@ -4,6 +4,9 @@
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
+// test_recovery_selector failure case type
+#include "test_recovery_selector/types/failure_case_type.hpp"
+
 // RecoverySelector behavior
 #include "recovery_selector/recovery_selector.hpp"
 
