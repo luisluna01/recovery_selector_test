@@ -21,7 +21,7 @@ namespace recovery_selector
 {
 
 // ---------- Template Class Definition ---------- //
-template <size_t NUM_CASES>
+template <typename EnumType, size_t NUM_CASES>
 class RecoverySelector : public BT::ControlNode
 {
 public:
@@ -50,8 +50,8 @@ private:
 
 
 // ---------- Template Member Function Definitions ---------- //
-template <size_t NUM_CASES>
-inline RecoverySelector<NUM_CASES>::RecoverySelector(
+template <typename EnumType, size_t NUM_CASES>
+inline RecoverySelector<EnumType, NUM_CASES>::RecoverySelector(
   const std::string& name, const BT::NodeConfig& config
 ):
   BT::ControlNode(name, config)
@@ -66,27 +66,27 @@ inline RecoverySelector<NUM_CASES>::RecoverySelector(
 }
 
 
-template <size_t NUM_CASES>
-inline BT::PortsList RecoverySelector<NUM_CASES>::providedPorts()
+template <typename EnumType, size_t NUM_CASES>
+inline BT::PortsList RecoverySelector<EnumType, NUM_CASES>::providedPorts()
 {
   BT::PortsList ports;
 
   // Create port failure state to recover from
-  ports.insert(BT::InputPort<std::string>("failure_state"));
+  ports.insert(BT::InputPort<EnumType>("failure_state"));
 
   // Create port for cases of potential failure states
   for(unsigned i = 1; i <= NUM_CASES; i++)
   {
     std::string case_key = std::string("case_") + std::to_string(i);
-    ports.insert(BT::InputPort<std::string>(case_key));
+    ports.insert(BT::InputPort<EnumType>(case_key));
   }
 
   return ports;
 }
 
 
-template <size_t NUM_CASES>
-inline BT::NodeStatus RecoverySelector<NUM_CASES>::tick()
+template <typename EnumType, size_t NUM_CASES>
+inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
 {
   // Ensure node has appropriate number of children
   if(childrenCount() != NUM_CASES + 1)
@@ -95,8 +95,8 @@ inline BT::NodeStatus RecoverySelector<NUM_CASES>::tick()
       "Wrong number of children in RecoverySelector: must be (num_cases + default)");
   }
 
-  std::string failure_state; // Current failure state to resolve from
-  std::string case_value;
+  EnumType failure_state; // Current failure state to resolve from
+  EnumType case_value;
   int child_index = int(NUM_CASES);
 
   // If failure state is present create index to identify child that should be ticked
@@ -110,7 +110,7 @@ inline BT::NodeStatus RecoverySelector<NUM_CASES>::tick()
 
       if(getInput(case_key, case_value))
       {
-        if(recovery_selector::util::CompareCase(failure_state, case_value))
+        if(recovery_selector::util::CompareCase<EnumType>(failure_state, case_value))
         {
           child_index = index;
           
@@ -158,8 +158,8 @@ inline BT::NodeStatus RecoverySelector<NUM_CASES>::tick()
 }
 
 
-template <size_t NUM_CASES>
-inline void RecoverySelector<NUM_CASES>::halt()
+template <typename EnumType, size_t NUM_CASES>
+inline void RecoverySelector<EnumType, NUM_CASES>::halt()
 {
   running_child_ = -1;
 

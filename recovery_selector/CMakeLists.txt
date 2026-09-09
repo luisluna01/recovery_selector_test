@@ -11,20 +11,18 @@ find_package(rclcpp REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
 
 # Create library
-add_library(${PROJECT_NAME}
-  src/util/compare_case.cpp
-)
+add_library(${PROJECT_NAME} INTERFACE)
 
 # Add include directories
-target_include_directories(${PROJECT_NAME} PUBLIC
+target_include_directories(${PROJECT_NAME} INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
 
 # Link dependencies to library
-ament_target_dependencies(${PROJECT_NAME}
-  rclcpp
-  behaviortree_cpp
+target_link_libraries(${PROJECT_NAME} INTERFACE
+  rclcpp::rclcpp
+  behaviortree_cpp::behaviortree_cpp
 )
 
 # Install headers
