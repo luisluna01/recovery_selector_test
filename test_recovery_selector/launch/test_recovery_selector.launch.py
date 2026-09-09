@@ -9,6 +9,7 @@ def generate_launch_description():
         Node(
             package='test_recovery_selector',
             executable='test_recovery_selector_bt',
+            output='screen',
             emulate_tty=True
         )
     ])
