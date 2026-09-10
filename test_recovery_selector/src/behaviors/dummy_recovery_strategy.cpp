@@ -1,5 +1,6 @@
 #include "test_recovery_selector/behaviors/dummy_recovery_strategy.hpp"
 
+
 namespace test_recovery_selector::behaviors
 {
 
@@ -44,13 +45,15 @@ BT::NodeStatus DummyRecoveryStrategy::onStart()
   double completion_time = maybe_completion_time.value();
   // ---------- Verify input and bidirectional ports are valid ---------- //
 
+  failure_case_string_ = failureCaseToString(failure_case_);
+
   // Record time behavior should complete using ROS time
   completion_time_ros_ = node_->now() + rclcpp::Duration::from_seconds(completion_time);
 
   last_print_time_ = node_->now();
   RCLCPP_INFO(
     node_->get_logger(),
-    "[%s] recovering from failure: LOW_BATTERY", name_.c_str());
+    "[%s] recovering from failure: %s", name_.c_str(), failure_case_string_.c_str());
 
   return BT::NodeStatus::RUNNING;
 }
@@ -65,7 +68,9 @@ BT::NodeStatus DummyRecoveryStrategy::onRunning()
 
     setOutput("failure_state", failure_state_); // Output updated failure state
 
-    RCLCPP_INFO(node_->get_logger(), "[%s] successfully recovered!", name_.c_str());
+    RCLCPP_INFO(
+      node_->get_logger(),
+      "[%s] successfully recovered from failure: %s!", name_.c_str(), failure_case_string_.c_str());
 
     return BT::NodeStatus::SUCCESS;
   }
@@ -76,7 +81,7 @@ BT::NodeStatus DummyRecoveryStrategy::onRunning()
     last_print_time_ = node_->now();
     RCLCPP_INFO(
       node_->get_logger(),
-      "[%s] recovering from failure: LOW_BATTERY", name_.c_str());
+      "[%s] recovering from failure: %s", name_.c_str(), failure_case_string_.c_str());
   }
   
   return BT::NodeStatus::RUNNING;

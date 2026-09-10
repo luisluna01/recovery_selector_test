@@ -43,6 +43,8 @@ private:
   std::string name_; // Name of behavior
   FailureCase failure_state_; // Failure state set from input port
   FailureCase failure_case_; // Failure case dedicated to behavior instance
+
+  std::string failure_case_string_;
 };
 
 } // namespace test_recovery_selector::behaviors
