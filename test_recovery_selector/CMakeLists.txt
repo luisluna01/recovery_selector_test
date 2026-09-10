@@ -19,9 +19,13 @@ find_package(std_msgs REQUIRED)
 
 # Create behavior tree node executable
 add_executable(test_recovery_selector_bt src/test_recovery_selector_bt.cpp
+  # Behaviors
   src/behaviors/create_dummy_failure.cpp
   src/behaviors/dummy_task.cpp
   src/behaviors/dummy_recovery_strategy.cpp
+
+  # Utility functions
+  src/types/failure_case.cpp
 )
 
 # Create dummy_failure_publisher node

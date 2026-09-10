@@ -7,7 +7,7 @@ DummyRecoveryStrategy::DummyRecoveryStrategy(
   const std::string& name,
   const BT::NodeConfig& config,
   const rclcpp::Node::SharedPtr& node,
-  const FailureCase& failure_case
+  FailureCase failure_case
 ):
   BT::StatefulActionNode(name, config), node_(node), name_(name), failure_case_(failure_case)
 {}
