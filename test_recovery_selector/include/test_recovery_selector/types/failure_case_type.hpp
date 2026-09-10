@@ -1,11 +1,14 @@
 // This file hosts an enum representing possible failure cases as a type
 
+#pragma once
+
 
 namespace test_recovery_selector
 {
 
 enum class FailureCase
 {
+  NO_FAILURE,
   LOW_BATTERY,
   MOTOR_FAILURE,
   FAILED_GRASP,
