@@ -25,6 +25,9 @@ template <typename EnumType, size_t NUM_CASES>
 class RecoverySelector : public BT::ControlNode
 {
 public:
+  static_assert(std::is_enum<EnumType>::value,
+    "RecoverySelector: Template parameter must be an enum type");
+
   RecoverySelector(const std::string& name, const BT::NodeConfig& config);
 
   virtual ~RecoverySelector() override = default;
