@@ -26,7 +26,7 @@ BT::NodeStatus DummyTask::onStart()
   if(!maybe_completion_time)
   {
     throw BT::RuntimeError(
-      "[DummyTask] invalid input port [completion_time]: ", maybe_completion_time.error());
+      "invalid input port [completion_time]: ", maybe_completion_time.error());
   }
   double completion_time = maybe_completion_time.value();
 
@@ -34,7 +34,7 @@ BT::NodeStatus DummyTask::onStart()
   completion_time_ros_ = node_->now() + rclcpp::Duration::from_seconds(completion_time);
 
   last_print_time_ = node_->now();
-  RCLCPP_INFO(node_->get_logger(), "[DummyTask] performing task...");
+  RCLCPP_INFO(node_->get_logger(), "[%s] performing task...", this->name().c_str());
 
   return BT::NodeStatus::RUNNING;
 }
@@ -45,7 +45,7 @@ BT::NodeStatus DummyTask::onRunning()
   // Return SUCCESS if completion time reached
   if(node_->now() >= completion_time_ros_)
   {
-    RCLCPP_INFO(node_->get_logger(), "[DummyTask] task complete!");
+    RCLCPP_INFO(node_->get_logger(), "[%s] task complete!", this->name().c_str());
     return BT::NodeStatus::SUCCESS;
   }
 
@@ -53,7 +53,7 @@ BT::NodeStatus DummyTask::onRunning()
   if((node_->now() - last_print_time_) >= print_period_)
   {
     last_print_time_ = node_->now();
-    RCLCPP_INFO(node_->get_logger(), "[DummyTask] performing task...");
+    RCLCPP_INFO(node_->get_logger(), "[%s] performing task...", this->name().c_str());
   }
 
   return BT::NodeStatus::RUNNING;
@@ -62,7 +62,7 @@ BT::NodeStatus DummyTask::onRunning()
 
 void DummyTask::onHalted()
 {
-  RCLCPP_WARN(node_->get_logger(), "[DummyTask] halted"); 
+  RCLCPP_WARN(node_->get_logger(), "[%s] halted", this->name().c_str()); 
 }
 
 } // namespace test_recovery_selector::behaviors

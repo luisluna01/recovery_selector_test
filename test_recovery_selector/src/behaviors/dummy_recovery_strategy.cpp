@@ -10,7 +10,7 @@ DummyRecoveryStrategy::DummyRecoveryStrategy(
   const rclcpp::Node::SharedPtr& node,
   FailureCase failure_case
 ):
-  BT::StatefulActionNode(name, config), node_(node), name_(name), failure_case_(failure_case)
+  BT::StatefulActionNode(name, config), node_(node), failure_case_(failure_case)
 {}
 
 
@@ -31,7 +31,7 @@ BT::NodeStatus DummyRecoveryStrategy::onStart()
   if(!maybe_failure_state)
   {
     throw BT::RuntimeError(
-      "[", name_, "] invalid input port [failure_state]: ", maybe_failure_state.error());
+      "invalid input port [failure_state]: ", maybe_failure_state.error());
   }
   failure_state_ = maybe_failure_state.value();
 
@@ -40,7 +40,7 @@ BT::NodeStatus DummyRecoveryStrategy::onStart()
   if(!maybe_completion_time)
   {
     throw BT::RuntimeError(
-      "[", name_, "] invalid input port [completion_time]: ", maybe_completion_time.error());
+      "invalid input port [completion_time]: ", maybe_completion_time.error());
   }
   double completion_time = maybe_completion_time.value();
   // ---------- Verify input and bidirectional ports are valid ---------- //
@@ -53,7 +53,7 @@ BT::NodeStatus DummyRecoveryStrategy::onStart()
   last_print_time_ = node_->now();
   RCLCPP_INFO(
     node_->get_logger(),
-    "[%s] recovering from failure: %s", name_.c_str(), failure_case_string_.c_str());
+    "[%s] recovering from failure: %s", this->name().c_str(), failure_case_string_.c_str());
 
   return BT::NodeStatus::RUNNING;
 }
@@ -70,7 +70,7 @@ BT::NodeStatus DummyRecoveryStrategy::onRunning()
 
     RCLCPP_INFO(
       node_->get_logger(),
-      "[%s] successfully recovered from failure: %s!", name_.c_str(), failure_case_string_.c_str());
+      "[%s] successfully recovered from failure: %s!", this->name().c_str(), failure_case_string_.c_str());
 
     return BT::NodeStatus::SUCCESS;
   }
@@ -81,7 +81,7 @@ BT::NodeStatus DummyRecoveryStrategy::onRunning()
     last_print_time_ = node_->now();
     RCLCPP_INFO(
       node_->get_logger(),
-      "[%s] recovering from failure: %s", name_.c_str(), failure_case_string_.c_str());
+      "[%s] recovering from failure: %s", this->name().c_str(), failure_case_string_.c_str());
   }
   
   return BT::NodeStatus::RUNNING;
@@ -90,7 +90,7 @@ BT::NodeStatus DummyRecoveryStrategy::onRunning()
 
 void DummyRecoveryStrategy:: onHalted()
 {
-  RCLCPP_WARN(node_->get_logger(), "[%s] halted", name_.c_str());
+  RCLCPP_WARN(node_->get_logger(), "[%s] halted", this->name().c_str());
 }
 
 } // namespace test_recovery_selector::behaviors
