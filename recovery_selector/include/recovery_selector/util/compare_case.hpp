@@ -8,7 +8,7 @@ namespace recovery_selector::util
 
 // Helper function for RecoverySelector to compare a failure state with a potential failure case
 template <typename EnumType>
-bool CompareCase(const EnumType& failure_state, const EnumType& failure_case)
+bool compareCase(EnumType failure_state, EnumType failure_case)
 {
   return failure_state == failure_case;
 }

@@ -113,7 +113,7 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
 
       if(getInput(case_key, case_value))
       {
-        if(recovery_selector::util::CompareCase<EnumType>(failure_state, case_value))
+        if(recovery_selector::util::compareCase<EnumType>(failure_state, case_value))
         {
           child_index = index;
           
