@@ -4,7 +4,7 @@
 #include <behaviortree_cpp/action_node.h>
 
 // Import the FAILURE_CASE type
-#include "test_recovery_selector/types/failure_case.hpp"
+#include "test_recovery_selector/failure_case.hpp"
 
 
 namespace test_recovery_selector::behaviors
