@@ -7,7 +7,7 @@ DummyRecoveryStrategy::DummyRecoveryStrategy(
   const std::string& name,
   const BT::NodeConfig& config,
   const rclcpp::Node::SharedPtr& node,
-  const std::string& failure_case
+  const FailureCase& failure_case
 ):
   BT::StatefulActionNode(name, config), node_(node), name_(name), failure_case_(failure_case)
 {}
@@ -16,7 +16,7 @@ DummyRecoveryStrategy::DummyRecoveryStrategy(
 BT::PortsList DummyRecoveryStrategy::providedPorts()
 {
   return {
-    BT::BidirectionalPort<std::string>("failure_state", "string representing failure state"),
+    BT::BidirectionalPort<FailureCase>("failure_state", "string representing failure state"),
     BT::InputPort<double>("completion_time", "time for this behavior to run in seconds")
   };
 }
@@ -26,7 +26,7 @@ BT::NodeStatus DummyRecoveryStrategy::onStart()
 {
   // ---------- Verify input and bidirectional ports are valid ---------- //
   // Verify [failure_state] port is valid
-  BT::Expected<std::string> maybe_failure_state = getInput<std::string>("failure_state");
+  BT::Expected<FailureCase> maybe_failure_state = getInput<FailureCase>("failure_state");
   if(!maybe_failure_state)
   {
     throw BT::RuntimeError(
@@ -50,7 +50,7 @@ BT::NodeStatus DummyRecoveryStrategy::onStart()
   last_print_time_ = node_->now();
   RCLCPP_INFO(
     node_->get_logger(),
-    "[%s] recovering from failure: \"%s\"", name_.c_str(), failure_case_.c_str());
+    "[%s] recovering from failure: LOW_BATTERY", name_.c_str());
 
   return BT::NodeStatus::RUNNING;
 }
@@ -61,7 +61,7 @@ BT::NodeStatus DummyRecoveryStrategy::onRunning()
   // Return SUCCESS if completion time reached
   if(node_->now() >= completion_time_ros_)
   {
-    failure_state_.clear(); // Remove failue case from failure_state
+    failure_state_ = FailureCase::NO_FAILURE; // Remove failue case from failure_state
 
     setOutput("failure_state", failure_state_); // Output updated failure state
 
@@ -76,7 +76,7 @@ BT::NodeStatus DummyRecoveryStrategy::onRunning()
     last_print_time_ = node_->now();
     RCLCPP_INFO(
       node_->get_logger(),
-      "[%s] recovering from failure: \"%s\"", name_.c_str(), failure_case_.c_str());
+      "[%s] recovering from failure: LOW_BATTERY", name_.c_str());
   }
   
   return BT::NodeStatus::RUNNING;

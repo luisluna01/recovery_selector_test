@@ -3,6 +3,9 @@
 #include <rclcpp/rclcpp.hpp>
 #include <behaviortree_cpp/action_node.h>
 
+// Import the FAILURE_CASE typ
+#include "test_recovery_selector/types/failure_case_type.hpp"
+
 
 namespace test_recovery_selector::behaviors
 {
@@ -18,7 +21,7 @@ public:
     const std::string& name,
     const BT::NodeConfig& config,
     const rclcpp::Node::SharedPtr& node,
-    const std::string& failure_case
+    const FailureCase& failure_case
   );
 
   static BT::PortsList providedPorts();
@@ -38,8 +41,8 @@ private:
   rclcpp::Duration print_period_ = rclcpp::Duration::from_seconds(1.0);
 
   std::string name_; // Name of behavior
-  std::string failure_state_; // Failure state set from input port
-  std::string failure_case_; // Failure case dedicated to behavior instance
+  FailureCase failure_state_; // Failure state set from input port
+  FailureCase failure_case_; // Failure case dedicated to behavior instance
 };
 
 } // namespace test_recovery_selector::behaviors

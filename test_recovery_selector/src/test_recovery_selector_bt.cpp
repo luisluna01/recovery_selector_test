@@ -4,7 +4,7 @@
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
-// test_recovery_selector failure case type
+// test_recovery_selector FailureCase type
 #include "test_recovery_selector/types/failure_case_type.hpp"
 
 // RecoverySelector behavior
@@ -18,8 +18,7 @@
 // nrg_behaviors
 #include "nrg_behaviors/nrg_behaviors.hpp"
 
-
-namespace test_rs = test_recovery_selector::behaviors;
+using FailureCase = test_recovery_selector::FailureCase;
 
 int main(int argc, char* argv[])
 {
@@ -29,20 +28,32 @@ int main(int argc, char* argv[])
 
   BT::BehaviorTreeFactory factory; // Initialize BT factory which registers the tree and tree nodes
 
-  // Register RecoverySelector with 3 failure_cases
-  factory.registerNodeType<recovery_selector::RecoverySelector<3>>("RecoverySelector");
+  // Register RecoverySelector to read 3 failure cases from the FailureCase type
+  factory.registerNodeType<recovery_selector::RecoverySelector<FailureCase, 3>>("RecoverySelector");
+  
+  // ---------- Register test_recovery_selector behaviors ---------- //
+  factory.registerNodeType<test_recovery_selector::behaviors::CreateDummyFailure>(
+    "CreateDummyFailure", ros_node);
+  
+  factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>("DummyTask", ros_node);
 
-  // Register test_recovery_selector behaviors
-  factory.registerNodeType<test_rs::CreateDummyFailure>("CreateDummyFailure", ros_node);
-  factory.registerNodeType<test_rs::DummyTask>("DummyTask", ros_node);
-  factory.registerNodeType<test_rs::DummyRecoveryStrategy>("DummyRecoveryStrategyA", ros_node, "A");
-  factory.registerNodeType<test_rs::DummyRecoveryStrategy>("DummyRecoveryStrategyB", ros_node, "B");
-  factory.registerNodeType<test_rs::DummyRecoveryStrategy>("DummyRecoveryStrategyC", ros_node, "C");
+  factory.registerNodeType<test_recovery_selector::behaviors::DummyRecoveryStrategy>(
+    "DummyRecoveryStrategyA", ros_node, FailureCase::LOW_BATTERY);
+  
+  factory.registerNodeType<test_recovery_selector::behaviors::DummyRecoveryStrategy>(
+    "DummyRecoveryStrategyB", ros_node, FailureCase::MOTOR_FAILURE);
+
+  factory.registerNodeType<test_recovery_selector::behaviors::DummyRecoveryStrategy>(
+    "DummyRecoveryStrategyC", ros_node, FailureCase::FAILED_GRASP);
+  // ---------- Register test_recovery_selector behaviors ---------- //
 
   // Register nrg_utility_behaviors
   nrg_utility_behaviors::Config config;
   config.ros_node = ros_node; // Share ROS2 node with utility tree nodes
   nrg_utility_behaviors::registerBehaviors(factory, config);
+
+  // Register test_recovery_selector FailureCase type
+  factory.registerScriptingEnums<FailureCase>();
 
   // Create behavior tree
   std::string share_path = ament_index_cpp::get_package_share_directory("test_recovery_selector");
