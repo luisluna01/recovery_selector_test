@@ -62,16 +62,27 @@ int main(int argc, char* argv[])
   
   // Connect to Groot2Publisher
   BT::Groot2Publisher publisher(tree);
-
-  // Tick tree every 100ms and ensure SIGINT kills the tree
-  BT::NodeStatus status = BT::NodeStatus::RUNNING;
-  while (rclcpp::ok() && status == BT::NodeStatus::RUNNING)
+  
+  try
   {
-    status = tree.tickOnce();
-    tree.sleep(std::chrono::milliseconds(100));
-  }
+    // Tick tree every 100ms and ensure SIGINT kills the tree
+    BT::NodeStatus status = BT::NodeStatus::RUNNING;
 
-  rclcpp::shutdown();
+    while (rclcpp::ok() && status == BT::NodeStatus::RUNNING)
+    {
+      status = tree.tickOnce();
+      tree.sleep(std::chrono::milliseconds(100));
+    }
+  }
+  catch (const std::exception& e)
+  {
+    // Output error through node logger
+    RCLCPP_ERROR(ros_node->get_logger(), "%s", e.what());
+
+    rclcpp::shutdown();
+    
+    return 1;
+  }
 
   return 0;
 }
