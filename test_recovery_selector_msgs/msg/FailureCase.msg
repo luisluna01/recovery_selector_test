@@ -1,0 +1,11 @@
+# Constants for failure cases available in test_recovery_selector::FailureCase
+uint8 NO_FAILURE=0
+uint8 LOW_BATTERY=1
+uint8 MOTOR_FAILURE=2
+uint8 FAILED_GRASP=3
+uint8 NAVIGATION_COLLISION=4
+uint8 MANIPULATION_COLLISION=5
+uint8 NAVIGATION_OBSTACLE_AVOIDANCE_BLOCK=6
+uint8 MANIPULATION_OBSTACLE_AVOIDANCE_BLOCK=7
+
+uint8 failure_case
