@@ -13,6 +13,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/FailureCase.msg"
 )
 
+# Export message runtime dependency
+ament_export_dependencies(rosidl_default_runtime)
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
 # uncomment the following section in order to fill in
