@@ -12,6 +12,7 @@
   <!-- Libraries -->
   <depend>rclcpp</depend>
   <depend>behaviortree_cpp</depend>
+  <depend>magic_enum</depend>
 
   <!-- Packages -->
   <depend>ament_index_cpp</depend>
@@ -20,6 +21,7 @@
 
   <!-- Interfaces -->
   <depend>std_msgs</depend>
+  <depend>test_recovery_selector_msgs</depend>
   
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

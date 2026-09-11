@@ -8,7 +8,9 @@ namespace test_recovery_selector::nodes
 DummyFailurePublisher::DummyFailurePublisher()
 : rclcpp::Node("dummy_failure_publisher")
 {
-  publisher = this->create_publisher<std_msgs::msg::String>("/failure_source", rclcpp::QoS(10));
+  publisher = this->create_publisher<test_recovery_selector_msgs::msg::FailureCase>(
+    "/failure_source",
+    rclcpp::QoS(10));
 
   if (!isatty(STDIN_FILENO))
   {
@@ -44,10 +46,13 @@ DummyFailurePublisher::DummyFailurePublisher()
   timer = this->create_wall_timer(
     std::chrono::milliseconds(20),
     std::bind(&DummyFailurePublisher::timer_callback, this));
-
+  
+  failure_case_count_ = magic_enum::enum_count<FailureCase>();
   RCLCPP_INFO(
     this->get_logger(),
-    "Reading keys. Each keypress is published on /failure_source. Ctrl-C to quit."
+    "Reading keys. Can only use keys from '0' to '%zu'.\n"
+    "Each keypress is published on /failure_source. Ctrl-C to quit.",
+    failure_case_count_-1
   );
 }
 
@@ -69,12 +74,33 @@ void DummyFailurePublisher::timer_callback()
     return;  // nothing typed this tick
   }
 
-  std_msgs::msg::String message;
-  message.data = std::string(1, c);
+  // Ensure only keys pressed from '0' to the last index number of the enumerator are allowed
+  // Note: Code block will need to be modified if enum class has greater than 10 enumerators
+  if (c < '0' || c >= '0' + static_cast<char>(failure_case_count_))
+  {
+    RCLCPP_WARN(
+      this->get_logger(),
+      "Ignoring key '%c': must be a digit 0-%zu", c, failure_case_count_ - 1);
+    return;
+  }
 
-  publisher->publish(message);
+  uint8_t case_id = static_cast<uint8_t>(c - '0'); // Convert from key pressed to integer
 
-  RCLCPP_INFO(this->get_logger(), "Publishing dummy failure as \"%s\"", message.data.c_str());
+  // Create and populate FailureCase message
+  auto msg = test_recovery_selector_msgs::msg::FailureCase();  
+  msg.case_id = case_id;
+
+  FailureCase failure_case = static_cast<FailureCase>(case_id);
+  std::string failure_case_string = failureCaseToString(failure_case);
+
+  publisher->publish(msg);
+
+  RCLCPP_INFO(
+    this->get_logger(),
+    "Published int '%d' which should map to failure case: %s",
+    msg.case_id, failure_case_string.c_str());
+
+  return;
 }
 
 
