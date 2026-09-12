@@ -2,51 +2,48 @@
 <root BTCPP_format="4">
     <BehaviorTree ID="TestRecoverySelector">
         <Parallel success_count="1" failure_count="1">
-            <!-- <CreateDummyFailure topic="/failure_source" failure_state="{failure_state}"/> -->
+            <CreateDummyFailure topic="/failure_source" failure_state="{failure_state}"/>
 
-            <Sequence>
-                <Script code="failure_state:=LOW_BATTERY"/>
-                <ReactiveSequence>
-                    <!-- <ForceSuccess>
-                        <Print message="{failure_state}"/>
-                    </ForceSuccess> -->
+            <ReactiveSequence>
+                <!-- <ForceSuccess>
+                    <Print message="{failure_state}"/>
+                </ForceSuccess> -->
 
-                    <!-- <Switch3 variable="{failure_state}" case_1="a" case_2="b" case_3="c">
-                        <Print message="Case A resolving..."/>
+                <!-- <Switch3 variable="{failure_state}" case_1="a" case_2="b" case_3="c">
+                    <Print message="Case A resolving..."/>
 
-                        <Print message="Case B resolving..."/>
+                    <Print message="Case B resolving..."/>
 
-                        <Print message="Case C resolving..."/>
+                    <Print message="Case C resolving..."/>
 
-                        <Print message="Default: No failures..."/>
-                    </Switch3> -->
-                    <!-- <RecoverySelector failure_state="{failure_state}" case_1="A" case_2="B" case_3="C">
+                    <Print message="Default: No failures..."/>
+                </Switch3> -->
+                <!-- <RecoverySelector failure_state="{failure_state}" case_1="A" case_2="B" case_3="C">
 
-                        <DummyRecoveryStrategyA failure_state="{failure_state}" completion_time="10"/>
+                    <DummyRecoveryStrategyA failure_state="{failure_state}" completion_time="10"/>
 
-                        <DummyRecoveryStrategyB failure_state="{failure_state}" completion_time="10"/>
+                    <DummyRecoveryStrategyB failure_state="{failure_state}" completion_time="10"/>
 
-                        <DummyRecoveryStrategyC failure_state="{failure_state}" completion_time="10"/>
+                    <DummyRecoveryStrategyC failure_state="{failure_state}" completion_time="10"/>
 
-                        <AlwaysSuccess/>
-                    </RecoverySelector> -->
-                    <RecoverySelector failure_state="{failure_state}" case_1="LOW_BATTERY" case_2="MOTOR_FAILURE" case_3="FAILED_GRASP">
+                    <AlwaysSuccess/>
+                </RecoverySelector> -->
+                <RecoverySelector failure_state="{failure_state}" case_1="LOW_BATTERY" case_2="MOTOR_FAILURE" case_3="FAILED_GRASP">
 
-                        <!-- Low Battery -->
-                        <DummyRecoveryStrategyA failure_state="{failure_state}" completion_time="10"/>
+                    <!-- Low Battery -->
+                    <DummyRecoveryStrategyA failure_state="{failure_state}" completion_time="10"/>
 
-                        <!-- Motor Failure -->
-                        <DummyRecoveryStrategyB failure_state="{failure_state}" completion_time="10"/>
+                    <!-- Motor Failure -->
+                    <DummyRecoveryStrategyB failure_state="{failure_state}" completion_time="10"/>
 
-                        <!-- Failed Grasp -->
-                        <DummyRecoveryStrategyC failure_state="{failure_state}" completion_time="10"/>
+                    <!-- Failed Grasp -->
+                    <DummyRecoveryStrategyC failure_state="{failure_state}" completion_time="10"/>
 
-                        <AlwaysSuccess/>
-                    </RecoverySelector>
+                    <AlwaysSuccess/>
+                </RecoverySelector>
 
-                    <DummyTask completion_time="20"/>
-                </ReactiveSequence>
-            </Sequence>
+                <DummyTask completion_time="20"/>
+            </ReactiveSequence>
         </Parallel>
     </BehaviorTree>
 </root>
