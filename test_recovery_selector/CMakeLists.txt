@@ -15,7 +15,6 @@ find_package(behaviortree_cpp REQUIRED)
 find_package(recovery_selector REQUIRED)
 find_package(nrg_behaviors REQUIRED)
 find_package(ament_index_cpp REQUIRED)
-find_package(std_msgs REQUIRED)
 find_package(test_recovery_selector_msgs REQUIRED)
 find_package(magic_enum REQUIRED)
 find_package(test_recovery_selector_msgs)
@@ -46,13 +45,12 @@ ament_target_dependencies(test_recovery_selector_bt
   ament_index_cpp
   recovery_selector
   nrg_behaviors
-  std_msgs
+  test_recovery_selector_msgs
 )
 
 # Link dependencies to dummy_failure_publisher node
 ament_target_dependencies(dummy_failure_publisher
   rclcpp
-  std_msgs
   test_recovery_selector_msgs
 )
 target_link_libraries(dummy_failure_publisher

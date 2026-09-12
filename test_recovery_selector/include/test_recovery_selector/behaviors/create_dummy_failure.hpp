@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <functional>
 
 #include <behaviortree_cpp/action_node.h>
 #include <rclcpp/rclcpp.hpp>
@@ -40,12 +41,15 @@ private:
   // a halt/re-tick cycle does not create duplicate subscriber
   void createSubscriber();
 
+  // Subscriber callback which reads and copies the FailureCase message
+  void timerCallback(const test_recovery_selector_msgs::msg::FailureCase& msg);
+
   rclcpp::Node::SharedPtr node_;
   rclcpp::CallbackGroup::SharedPtr callback_group_;
   rclcpp::executors::SingleThreadedExecutor executor_; // Create SingleThreadedExecutor
-  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscriber_;
+  rclcpp::Subscription<test_recovery_selector_msgs::msg::FailureCase>::SharedPtr subscriber_;
 
-  std::optional<std_msgs::msg::String> last_message_;
+  std::optional<FailureCase> last_failure_case_;
 };
 
 } // namespace test_recovery_selector
