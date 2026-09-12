@@ -12,7 +12,7 @@
 #include <std_msgs/msg/string.hpp>
 #include "test_recovery_selector_msgs/msg/failure_case.hpp" // FailureCase message
 
-#include "test_recovery_selector/failure_case.hpp" // FailureCase type
+#include "test_recovery_selector/failure_case_type.hpp" // FailureCase type
 
 
 namespace test_recovery_selector::nodes

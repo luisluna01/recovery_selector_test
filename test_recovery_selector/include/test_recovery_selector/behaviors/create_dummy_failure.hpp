@@ -5,7 +5,11 @@
 #include <behaviortree_cpp/action_node.h>
 #include <rclcpp/rclcpp.hpp>
 
-#include <std_msgs/msg/string.hpp>
+// FailureCase type
+#include "test_recovery_selector/failure_case_type.hpp"
+
+// FailureCase message
+#include "test_recovery_selector_msgs/msg/failure_case.hpp"
 
 
 namespace test_recovery_selector::behaviors
