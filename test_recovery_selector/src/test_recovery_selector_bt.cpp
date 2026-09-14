@@ -14,6 +14,7 @@
 #include "test_recovery_selector/behaviors/create_dummy_failure.hpp"
 #include "test_recovery_selector/behaviors/dummy_task.hpp"
 #include "test_recovery_selector/behaviors/dummy_recovery_strategy.hpp"
+#include "test_recovery_selector/behaviors/dummy_condition.hpp"
 
 // nrg_behaviors
 #include "nrg_behaviors/nrg_behaviors.hpp"
@@ -45,6 +46,9 @@ int main(int argc, char* argv[])
 
   factory.registerNodeType<test_recovery_selector::behaviors::DummyRecoveryStrategy>(
     "DummyRecoveryStrategyC", ros_node, FailureCase::FAILED_GRASP);
+
+  factory.registerNodeType<test_recovery_selector::behaviors::DummyCondition>(
+    "DummyCondition", ros_node);
   // ---------- Register test_recovery_selector behaviors ---------- //
 
   // Register nrg_utility_behaviors
@@ -59,6 +63,9 @@ int main(int argc, char* argv[])
   std::string share_path = ament_index_cpp::get_package_share_directory("test_recovery_selector");
   BT::Tree tree = factory.createTreeFromFile(
     share_path + "/behavior_trees/test_recovery_selector.xml");
+
+  // Initialize blackboard variables that are not intialized by the tree
+  tree.rootBlackboard()->set<bool>("task_complete", false);
   
   // Connect to Groot2Publisher
   BT::Groot2Publisher publisher(tree);

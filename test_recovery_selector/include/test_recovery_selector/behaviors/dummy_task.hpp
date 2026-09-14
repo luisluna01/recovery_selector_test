@@ -32,6 +32,8 @@ private:
   rclcpp::Time completion_time_ros_;
   rclcpp::Time last_print_time_;
   rclcpp::Duration print_period_ = rclcpp::Duration::from_seconds(1.0);
+
+  bool use_completion_flag_;
 };
 
 } // namespace test_recovery_selector::behaviors

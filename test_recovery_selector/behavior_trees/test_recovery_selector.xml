@@ -5,10 +5,6 @@
             <CreateDummyFailure topic="/failure_source" failure_state="{failure_state}"/>
 
             <ReactiveSequence>
-                <!-- <ForceSuccess>
-                    <Print message="{failure_state}"/>
-                </ForceSuccess> -->
-
                 <!-- <Switch3 variable="{failure_state}" case_1="a" case_2="b" case_3="c">
                     <Print message="Case A resolving..."/>
 
@@ -18,16 +14,6 @@
 
                     <Print message="Default: No failures..."/>
                 </Switch3> -->
-                <!-- <RecoverySelector failure_state="{failure_state}" case_1="A" case_2="B" case_3="C">
-
-                    <DummyRecoveryStrategyA failure_state="{failure_state}" completion_time="10"/>
-
-                    <DummyRecoveryStrategyB failure_state="{failure_state}" completion_time="10"/>
-
-                    <DummyRecoveryStrategyC failure_state="{failure_state}" completion_time="10"/>
-
-                    <AlwaysSuccess/>
-                </RecoverySelector> -->
                 <RecoverySelector failure_state="{failure_state}" case_1="LOW_BATTERY" case_2="MOTOR_FAILURE" case_3="FAILED_GRASP">
 
                     <!-- Low Battery -->
@@ -41,8 +27,11 @@
 
                     <AlwaysSuccess/>
                 </RecoverySelector>
-
-                <DummyTask completion_time="20"/>
+                
+                <ReactiveFallback>
+                    <DummyCondition condition_bool="{task_complete}"/>
+                    <DummyTask completion_time="20" use_completion_flag="true" completion_flag="{task_complete}"/>
+                </ReactiveFallback>
             </ReactiveSequence>
         </Parallel>
     </BehaviorTree>
