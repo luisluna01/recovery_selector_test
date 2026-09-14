@@ -66,7 +66,7 @@ BT::NodeStatus DummyTask::onRunning()
 
     if(use_completion_flag_)
     {
-      setOutput("completion_flag", false);
+      setOutput("completion_flag", true);
     }
     return BT::NodeStatus::SUCCESS;
   }
