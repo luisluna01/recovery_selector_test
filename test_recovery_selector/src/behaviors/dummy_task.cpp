@@ -5,17 +5,21 @@ namespace test_recovery_selector::behaviors
 {
 
 DummyTask::DummyTask(
-  const std::string& name, const BT::NodeConfig& config, const rclcpp::Node::SharedPtr& node
+  const std::string& name,
+  const BT::NodeConfig& config, 
+  const rclcpp::Node::SharedPtr& node,
+  double completion_time,
+  bool use_result_flag
 ):
-  StatefulActionNode(name, config), node_(node)
+  StatefulActionNode(name, config), node_(node),
+  completion_time_(completion_time),
+  use_result_flag_(use_result_flag)
 {}
 
 
 BT::PortsList DummyTask::providedPorts()
 {
   return{
-    BT::InputPort<double>("completion_time", "10", "time for this behavior to run in seconds"),
-    BT::InputPort<bool>("use_result_flag", "false", "Whether or not to use result port"),
     BT::OutputPort<bool>("result", "Whether or not the task completed successfully")
   };
 }
@@ -23,28 +27,8 @@ BT::PortsList DummyTask::providedPorts()
 
 BT::NodeStatus DummyTask::onStart()
 {
-  // ---------- Verify Input Ports ---------- //
-  // Verify input port [completion_time]
-  BT::Expected<double> maybe_completion_time = getInput<double>("completion_time");
-  if(!maybe_completion_time)
-  {
-    throw BT::RuntimeError(
-      "invalid input port [completion_time]: ", maybe_completion_time.error());
-  }
-  double completion_time = maybe_completion_time.value();
-
-  // Verify input port [use_result_flag]
-  BT::Expected<bool> maybe_use_result_flag = getInput<bool>("use_result_flag");
-  if(!maybe_use_result_flag)
-  {
-    throw BT::RuntimeError(
-      "invalid input port [use_result_flag]: ", maybe_use_result_flag.error());
-  }
-  use_result_flag_ = maybe_use_result_flag.value();
-  // ---------- Verify Input Ports ---------- //
-
   // Record time behavior should complete using ROS time
-  completion_time_ros_ = node_->now() + rclcpp::Duration::from_seconds(completion_time);
+  completion_time_ros_ = node_->now() + rclcpp::Duration::from_seconds(completion_time_);
 
   last_print_time_ = node_->now();
   RCLCPP_INFO(node_->get_logger(), "[%s] performing task...", this->name().c_str());

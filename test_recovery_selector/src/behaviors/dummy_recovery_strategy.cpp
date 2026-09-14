@@ -8,17 +8,20 @@ DummyRecoveryStrategy::DummyRecoveryStrategy(
   const std::string& name,
   const BT::NodeConfig& config,
   const rclcpp::Node::SharedPtr& node,
-  FailureCase failure_case
+  FailureCase failure_case,
+  double completion_time
 ):
-  BT::StatefulActionNode(name, config), node_(node), failure_case_(failure_case)
+  BT::StatefulActionNode(name, config),
+  node_(node),
+  failure_case_(failure_case),
+  completion_time_(completion_time)
 {}
 
 
 BT::PortsList DummyRecoveryStrategy::providedPorts()
 {
   return {
-    BT::BidirectionalPort<FailureCase>("failure_state", "string representing failure state"),
-    BT::InputPort<double>("completion_time", "10", "time for this behavior to run in seconds")
+    BT::BidirectionalPort<FailureCase>("failure_state", "string representing failure state")
   };
 }
 
@@ -34,21 +37,12 @@ BT::NodeStatus DummyRecoveryStrategy::onStart()
       "invalid input port [failure_state]: ", maybe_failure_state.error());
   }
   failure_state_ = maybe_failure_state.value();
-
-  // Verify [completion_time] port is valid
-  BT::Expected<double> maybe_completion_time = getInput<double>("completion_time");
-  if(!maybe_completion_time)
-  {
-    throw BT::RuntimeError(
-      "invalid input port [completion_time]: ", maybe_completion_time.error());
-  }
-  double completion_time = maybe_completion_time.value();
   // ---------- Verify input and bidirectional ports are valid ---------- //
 
   failure_case_string_ = failureCaseToString(failure_case_);
 
   // Record time behavior should complete using ROS time
-  completion_time_ros_ = node_->now() + rclcpp::Duration::from_seconds(completion_time);
+  completion_time_ros_ = node_->now() + rclcpp::Duration::from_seconds(completion_time_);
 
   last_print_time_ = node_->now();
   RCLCPP_INFO(

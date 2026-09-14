@@ -21,7 +21,8 @@ public:
     const std::string& name,
     const BT::NodeConfig& config,
     const rclcpp::Node::SharedPtr& node,
-    FailureCase failure_case
+    FailureCase failure_case,
+    double completion_time = 10.0
   );
 
   static BT::PortsList providedPorts();
@@ -43,6 +44,7 @@ private:
   std::string name_; // Name of behavior
   FailureCase failure_state_; // Failure state set from input port
   FailureCase failure_case_; // Failure case dedicated to behavior instance
+  double completion_time_; // Time for this behavior to run in seconds, set in constructor
 
   std::string failure_case_string_;
 };

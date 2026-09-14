@@ -33,7 +33,7 @@
                 
                 <!-- ~~~~~ Main Task ~~~~~ -->
                 <ReactiveFallback>
-                    <ReconstructionComplete condition_bool="{reconstruction_complete}"/>
+                    <ReconstructObject condition_bool="{reconstruction_complete}"/>
                     <PerformReconstruction result="{reconstruction_complete}"/>
                 </ReactiveFallback>
 

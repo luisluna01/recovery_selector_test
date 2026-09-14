@@ -36,6 +36,7 @@ int main(int argc, char* argv[])
   factory.registerNodeType<test_recovery_selector::behaviors::CreateDummyFailure>(
     "CreateDummyFailure", ros_node);
   
+  // Create different DummyRecoveryStrategy behaviors
   factory.registerNodeType<test_recovery_selector::behaviors::DummyRecoveryStrategy>(
     "RecoverFromLowBattery", ros_node, FailureCase::LOW_BATTERY);
   factory.registerNodeType<test_recovery_selector::behaviors::DummyRecoveryStrategy>(
@@ -43,19 +44,21 @@ int main(int argc, char* argv[])
   factory.registerNodeType<test_recovery_selector::behaviors::DummyRecoveryStrategy>(
     "RecoverFromFailedGrasp", ros_node, FailureCase::FAILED_GRASP);
 
+  // Create different DummyCondition behaviors
   factory.registerNodeType<test_recovery_selector::behaviors::DummyCondition>(
-    "ReconstructionComplete", ros_node);
+    "ReconstructObject", ros_node);
   factory.registerNodeType<test_recovery_selector::behaviors::DummyCondition>(
     "GraspsDetected", ros_node);
   factory.registerNodeType<test_recovery_selector::behaviors::DummyCondition>(
     "PipeGrasped", ros_node);
 
+  // Create different DummyTask behaviors
   factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>(
-    "PerformReconstruction", ros_node);
+    "PerformReconstruction", ros_node, 10.0, true);
   factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>(
-    "GeneratePredictedGrasps", ros_node);
+    "GeneratePredictedGrasps", ros_node, 10.0, true);
   factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>(
-    "GraspPipe", ros_node);
+    "GraspPipe", ros_node, 10.0, true);
   // ---------- Register test_recovery_selector behaviors ---------- //
 
   // Register nrg_utility_behaviors
@@ -75,7 +78,7 @@ int main(int argc, char* argv[])
   tree.rootBlackboard()->set<bool>("reconstruction_complete", false);
   tree.rootBlackboard()->set<bool>("grasps_detected", false);
   tree.rootBlackboard()->set<bool>("pipe_grasped", false);
-  
+
   // Connect to Groot2Publisher
   BT::Groot2Publisher publisher(tree);
   

@@ -15,7 +15,12 @@ class DummyTask : public BT::StatefulActionNode
 {
 public:
   DummyTask(
-    const std::string& name, const BT::NodeConfig& config, const rclcpp::Node::SharedPtr& node);
+    const std::string& name,
+    const BT::NodeConfig& config,
+    const rclcpp::Node::SharedPtr& node,
+    double completion_time = 10.0,
+    bool use_result_flag = false
+  );
 
   static BT::PortsList providedPorts();
 
@@ -33,7 +38,8 @@ private:
   rclcpp::Time last_print_time_;
   rclcpp::Duration print_period_ = rclcpp::Duration::from_seconds(1.0);
 
-  bool use_result_flag_;
+  double completion_time_; // Time for this behavior to run in seconds, set in constructor
+  bool use_result_flag_; // Whether or not result port will be used
 };
 
 } // namespace test_recovery_selector::behaviors
