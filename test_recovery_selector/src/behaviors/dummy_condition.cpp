@@ -29,12 +29,13 @@ BT::NodeStatus DummyCondition::tick()
 
   if(condition_bool)
   {
-    RCLCPP_INFO_THROTTLE(
+    RCLCPP_DEBUG_THROTTLE(
       node_->get_logger(), *node_->get_clock(), 1000,
       "[%s] condition is true", this->name().c_str());
     return BT::NodeStatus::SUCCESS;
   }
-  RCLCPP_ERROR_THROTTLE(
+
+  RCLCPP_DEBUG_THROTTLE(
     node_->get_logger(), *node_->get_clock(), 1000,
     "[%s] condition is false", this->name().c_str());
   return BT::NodeStatus::FAILURE;

@@ -36,19 +36,23 @@ int main(int argc, char* argv[])
   factory.registerNodeType<test_recovery_selector::behaviors::CreateDummyFailure>(
     "CreateDummyFailure", ros_node);
   
-  factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>("DummyTask", ros_node);
-
   factory.registerNodeType<test_recovery_selector::behaviors::DummyRecoveryStrategy>(
-    "DummyRecoveryStrategyA", ros_node, FailureCase::LOW_BATTERY);
-  
+    "RecoveryStrategyA", ros_node, FailureCase::LOW_BATTERY);
   factory.registerNodeType<test_recovery_selector::behaviors::DummyRecoveryStrategy>(
-    "DummyRecoveryStrategyB", ros_node, FailureCase::MOTOR_FAILURE);
-
+    "RecoveryStrategyB", ros_node, FailureCase::MOTOR_FAILURE);
   factory.registerNodeType<test_recovery_selector::behaviors::DummyRecoveryStrategy>(
-    "DummyRecoveryStrategyC", ros_node, FailureCase::FAILED_GRASP);
+    "RecoveryStrategyC", ros_node, FailureCase::FAILED_GRASP);
 
   factory.registerNodeType<test_recovery_selector::behaviors::DummyCondition>(
-    "DummyCondition", ros_node);
+    "ConditionA", ros_node);
+  factory.registerNodeType<test_recovery_selector::behaviors::DummyCondition>(
+    "ConditionB", ros_node);
+  factory.registerNodeType<test_recovery_selector::behaviors::DummyCondition>(
+    "ConditionC", ros_node);
+
+  factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>("TaskA", ros_node);
+  factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>("TaskB", ros_node);
+  factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>("TaskC", ros_node);
   // ---------- Register test_recovery_selector behaviors ---------- //
 
   // Register nrg_utility_behaviors
@@ -65,7 +69,9 @@ int main(int argc, char* argv[])
     share_path + "/behavior_trees/test_recovery_selector.xml");
 
   // Initialize blackboard variables that are not intialized by the tree
-  tree.rootBlackboard()->set<bool>("task_complete", false);
+  tree.rootBlackboard()->set<bool>("task_a_complete", false);
+  tree.rootBlackboard()->set<bool>("task_b_complete", false);
+  tree.rootBlackboard()->set<bool>("task_c_complete", false);
   
   // Connect to Groot2Publisher
   BT::Groot2Publisher publisher(tree);
