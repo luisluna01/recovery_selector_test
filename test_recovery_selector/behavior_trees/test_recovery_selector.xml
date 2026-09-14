@@ -20,31 +20,31 @@
                 <RecoverySelector failure_state="{failure_state}" case_1="LOW_BATTERY" case_2="MOTOR_FAILURE" case_3="FAILED_GRASP">
 
                     <!-- Low Battery -->
-                    <RecoveryStrategyA failure_state="{failure_state}" completion_time="10"/>
+                    <RecoverFromLowBattery failure_state="{failure_state}"/>
 
                     <!-- Motor Failure -->
-                    <RecoveryStrategyB failure_state="{failure_state}" completion_time="10"/>
+                    <RecoverFromMotorFailure failure_state="{failure_state}"/>
 
                     <!-- Failed Grasp -->
-                    <RecoveryStrategyC failure_state="{failure_state}" completion_time="10"/>
+                    <RecoverFromFailedGrasp failure_state="{failure_state}"/>
 
                     <AlwaysSuccess/>
                 </RecoverySelector>
                 
                 <!-- ~~~~~ Main Task ~~~~~ -->
                 <ReactiveFallback>
-                    <ConditionA condition_bool="{task_a_complete}"/>
-                    <TaskA completion_time="10" use_completion_flag="true" completion_flag="{task_a_complete}"/>
+                    <ReconstructionComplete condition_bool="{reconstruction_complete}"/>
+                    <PerformReconstruction result="{reconstruction_complete}"/>
                 </ReactiveFallback>
 
                 <ReactiveFallback>
-                    <ConditionB condition_bool="{task_b_complete}"/>
-                    <TaskB completion_time="10" use_completion_flag="true" completion_flag="{task_b_complete}"/>
+                    <GraspsDetected condition_bool="{grasps_detected}"/>
+                    <GeneratePredictedGrasps result="{grasps_detected}"/>
                 </ReactiveFallback>
                 
                 <ReactiveFallback>
-                    <ConditionC condition_bool="{task_c_complete}"/>
-                    <TaskC completion_time="10" use_completion_flag="true" completion_flag="{task_c_complete}"/>
+                    <PipeGrasped condition_bool="{pipe_grasped}"/>
+                    <GraspPipe result="{pipe_grasped}"/>
                 </ReactiveFallback>
                 <!-- ~~~~~ Main Task ~~~~~ -->
             </ReactiveSequence>

@@ -18,7 +18,7 @@ BT::PortsList DummyRecoveryStrategy::providedPorts()
 {
   return {
     BT::BidirectionalPort<FailureCase>("failure_state", "string representing failure state"),
-    BT::InputPort<double>("completion_time", "time for this behavior to run in seconds")
+    BT::InputPort<double>("completion_time", "10", "time for this behavior to run in seconds")
   };
 }
 

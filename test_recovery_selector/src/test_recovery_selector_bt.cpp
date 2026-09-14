@@ -37,22 +37,25 @@ int main(int argc, char* argv[])
     "CreateDummyFailure", ros_node);
   
   factory.registerNodeType<test_recovery_selector::behaviors::DummyRecoveryStrategy>(
-    "RecoveryStrategyA", ros_node, FailureCase::LOW_BATTERY);
+    "RecoverFromLowBattery", ros_node, FailureCase::LOW_BATTERY);
   factory.registerNodeType<test_recovery_selector::behaviors::DummyRecoveryStrategy>(
-    "RecoveryStrategyB", ros_node, FailureCase::MOTOR_FAILURE);
+    "RecoverFromMotorFailure", ros_node, FailureCase::MOTOR_FAILURE);
   factory.registerNodeType<test_recovery_selector::behaviors::DummyRecoveryStrategy>(
-    "RecoveryStrategyC", ros_node, FailureCase::FAILED_GRASP);
+    "RecoverFromFailedGrasp", ros_node, FailureCase::FAILED_GRASP);
 
   factory.registerNodeType<test_recovery_selector::behaviors::DummyCondition>(
-    "ConditionA", ros_node);
+    "ReconstructionComplete", ros_node);
   factory.registerNodeType<test_recovery_selector::behaviors::DummyCondition>(
-    "ConditionB", ros_node);
+    "GraspsDetected", ros_node);
   factory.registerNodeType<test_recovery_selector::behaviors::DummyCondition>(
-    "ConditionC", ros_node);
+    "PipeGrasped", ros_node);
 
-  factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>("TaskA", ros_node);
-  factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>("TaskB", ros_node);
-  factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>("TaskC", ros_node);
+  factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>(
+    "PerformReconstruction", ros_node);
+  factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>(
+    "GeneratePredictedGrasps", ros_node);
+  factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>(
+    "GraspPipe", ros_node);
   // ---------- Register test_recovery_selector behaviors ---------- //
 
   // Register nrg_utility_behaviors
@@ -69,9 +72,9 @@ int main(int argc, char* argv[])
     share_path + "/behavior_trees/test_recovery_selector.xml");
 
   // Initialize blackboard variables that are not intialized by the tree
-  tree.rootBlackboard()->set<bool>("task_a_complete", false);
-  tree.rootBlackboard()->set<bool>("task_b_complete", false);
-  tree.rootBlackboard()->set<bool>("task_c_complete", false);
+  tree.rootBlackboard()->set<bool>("reconstruction_complete", false);
+  tree.rootBlackboard()->set<bool>("grasps_detected", false);
+  tree.rootBlackboard()->set<bool>("pipe_grasped", false);
   
   // Connect to Groot2Publisher
   BT::Groot2Publisher publisher(tree);
@@ -84,7 +87,7 @@ int main(int argc, char* argv[])
     while (rclcpp::ok() && status == BT::NodeStatus::RUNNING)
     {
       status = tree.tickOnce();
-      tree.sleep(std::chrono::milliseconds(100));
+      tree.sleep(std::chrono::milliseconds(1000));
     }
   }
   catch (const std::exception& e)

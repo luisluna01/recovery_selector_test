@@ -14,9 +14,9 @@ DummyTask::DummyTask(
 BT::PortsList DummyTask::providedPorts()
 {
   return{
-    BT::InputPort<double>("completion_time", "60", "time for this behavior to run in seconds"),
-    BT::InputPort<bool>("use_completion_flag", "false", "Whether or not to use completion_flag port"),
-    BT::OutputPort<bool>("completion_flag", "Whether or not the task completed successfully")
+    BT::InputPort<double>("completion_time", "10", "time for this behavior to run in seconds"),
+    BT::InputPort<bool>("use_result_flag", "false", "Whether or not to use result port"),
+    BT::OutputPort<bool>("result", "Whether or not the task completed successfully")
   };
 }
 
@@ -33,14 +33,14 @@ BT::NodeStatus DummyTask::onStart()
   }
   double completion_time = maybe_completion_time.value();
 
-  // Verify input port [use_completion_flag]
-  BT::Expected<bool> maybe_use_completion_flag = getInput<bool>("use_completion_flag");
-  if(!maybe_use_completion_flag)
+  // Verify input port [use_result_flag]
+  BT::Expected<bool> maybe_use_result_flag = getInput<bool>("use_result_flag");
+  if(!maybe_use_result_flag)
   {
     throw BT::RuntimeError(
-      "invalid input port [use_completion_flag]: ", maybe_use_completion_flag.error());
+      "invalid input port [use_result_flag]: ", maybe_use_result_flag.error());
   }
-  use_completion_flag_ = maybe_use_completion_flag.value();
+  use_result_flag_ = maybe_use_result_flag.value();
   // ---------- Verify Input Ports ---------- //
 
   // Record time behavior should complete using ROS time
@@ -49,9 +49,9 @@ BT::NodeStatus DummyTask::onStart()
   last_print_time_ = node_->now();
   RCLCPP_INFO(node_->get_logger(), "[%s] performing task...", this->name().c_str());
 
-  if(use_completion_flag_)
+  if(use_result_flag_)
   {
-    setOutput("completion_flag", false);
+    setOutput("result", false);
   }
   return BT::NodeStatus::RUNNING;
 }
@@ -64,9 +64,9 @@ BT::NodeStatus DummyTask::onRunning()
   {
     RCLCPP_INFO(node_->get_logger(), "[%s] task complete!", this->name().c_str());
 
-    if(use_completion_flag_)
+    if(use_result_flag_)
     {
-      setOutput("completion_flag", true);
+      setOutput("result", true);
     }
     return BT::NodeStatus::SUCCESS;
   }

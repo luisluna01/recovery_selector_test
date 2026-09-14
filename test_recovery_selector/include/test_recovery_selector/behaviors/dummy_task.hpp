@@ -33,7 +33,7 @@ private:
   rclcpp::Time last_print_time_;
   rclcpp::Duration print_period_ = rclcpp::Duration::from_seconds(1.0);
 
-  bool use_completion_flag_;
+  bool use_result_flag_;
 };
 
 } // namespace test_recovery_selector::behaviors
