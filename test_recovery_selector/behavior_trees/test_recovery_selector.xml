@@ -18,7 +18,6 @@
                     <Print message="Default: No failures..."/>
                 </Switch3> -->
                 <RecoverySelector failure_state="{failure_state}" case_1="LOW_BATTERY" case_2="MOTOR_FAILURE" case_3="FAILED_GRASP">
-
                     <!-- Low Battery -->
                     <RecoverFromLowBattery failure_state="{failure_state}"/>
 
@@ -28,6 +27,7 @@
                     <!-- Failed Grasp -->
                     <RecoverFromFailedGrasp failure_state="{failure_state}"/>
 
+                    <!-- Default -->
                     <AlwaysSuccess/>
                 </RecoverySelector>
                 

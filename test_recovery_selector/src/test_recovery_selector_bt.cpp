@@ -1,6 +1,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <behaviortree_cpp/bt_factory.h>
 #include <behaviortree_cpp/loggers/groot2_publisher.h>
+#include <behaviortree_cpp/loggers/bt_cout_logger.h>
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
@@ -79,8 +80,9 @@ int main(int argc, char* argv[])
   tree.rootBlackboard()->set<bool>("grasps_detected", false);
   tree.rootBlackboard()->set<bool>("pipe_grasped", false);
 
-  // Connect to Groot2Publisher
-  BT::Groot2Publisher publisher(tree);
+  BT::Groot2Publisher publisher(tree); // Connect to Groot2Publisher
+
+  // BT::StdCoutLogger logger(tree); // Log status of tree during each tick
   
   try
   {
