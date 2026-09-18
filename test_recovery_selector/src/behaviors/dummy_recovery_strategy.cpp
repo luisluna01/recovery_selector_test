@@ -58,9 +58,15 @@ BT::NodeStatus DummyRecoveryStrategy::onRunning()
   // Return SUCCESS if completion time reached
   if(node_->now() >= completion_time_ros_)
   {
-    failure_state_ = FailureCase::NO_FAILURE; // Remove failue case from failure_state
+    failure_state_ = FailureCase::NO_FAILURE; // Remove failure case from failure_state
 
-    setOutput("failure_state", failure_state_); // Output updated failure state
+    // TEMPORARY: Clear the value stored at the "failure_state" blackboard entry without removing
+    // the entry (and its type info) from the blackboard, so the port keeps its type
+    // for the next write
+    if(auto any_locked = getLockedPortContent("failure_state"))
+    {
+      any_locked.assign(BT::Any());
+    }
 
     RCLCPP_INFO(
       node_->get_logger(),

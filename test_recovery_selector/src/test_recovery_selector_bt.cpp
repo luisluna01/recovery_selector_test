@@ -91,8 +91,10 @@ int main(int argc, char* argv[])
 
     while (rclcpp::ok() && status == BT::NodeStatus::RUNNING)
     {
+      RCLCPP_INFO(ros_node->get_logger(), "ticking----");
       status = tree.tickOnce();
       tree.sleep(std::chrono::milliseconds(1000));
+      RCLCPP_INFO(ros_node->get_logger(), "finished tick----\n");
     }
   }
   catch (const std::exception& e)

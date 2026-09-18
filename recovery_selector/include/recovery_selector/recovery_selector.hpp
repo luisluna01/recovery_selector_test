@@ -100,6 +100,7 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
 
   EnumType failure_state; // Current failure state to resolve from
   EnumType case_value;
+  bool unregistered_failure_case = true; // Is there an unregistered failure case
   int child_index = int(NUM_CASES);
 
   // If failure state is present create index to identify child that should be ticked
@@ -116,11 +117,17 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
         if(recovery_selector::util::compareCase<EnumType>(failure_state, case_value))
         {
           child_index = index;
+          unregistered_failure_case=false; // The failure case matches a key
           
           break;
         }
       }
+    }
 
+    // return FAILURE if an unregistered failure case is present
+    if(unregistered_failure_case)
+    {
+      return BT::NodeStatus::FAILURE;
     }
   }
 
