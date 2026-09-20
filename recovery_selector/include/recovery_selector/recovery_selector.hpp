@@ -20,7 +20,9 @@
 namespace recovery_selector
 {
 
-// ---------- Template Class Definition ---------- //
+// ----------------------------------------------------------------------------
+// Class definition
+// ----------------------------------------------------------------------------
 template <typename EnumType, size_t NUM_CASES>
 class RecoverySelector : public BT::ControlNode
 {
@@ -49,10 +51,10 @@ private:
 
   virtual BT::NodeStatus tick() override;
 };
-// ---------- Template Class Definition ---------- //
 
-
-// ---------- Template Member Function Definitions ---------- //
+// ----------------------------------------------------------------------------
+// Member function definitions
+// ----------------------------------------------------------------------------
 template <typename EnumType, size_t NUM_CASES>
 inline RecoverySelector<EnumType, NUM_CASES>::RecoverySelector(
   const std::string& name, const BT::NodeConfig& config
@@ -98,6 +100,24 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
       "Wrong number of children in RecoverySelector: must be (num_cases + default)");
   }
 
+  // Throw an error if [failure_state] port is invalid
+  BT::Expected<EnumType> maybe_failure_state = getInput<EnumType>("failure_state");
+  if(!maybe_failure_state)
+  {
+    // Record if [failure_state] input port is empty 
+    const bool is_empty = [&]{
+      auto content = getLockedPortContent("failure_state");
+      return content && content->empty();
+    }();
+    
+    // Throw every reason for invalid input port [failure_state] except for being empty
+    if(!is_empty)
+    {
+      throw BT::RuntimeError(
+        "invalid input port [failure_state]: ", maybe_failure_state.error());
+    }
+  }
+
   EnumType failure_state; // Current failure state to resolve from
   EnumType case_value;
   bool unregistered_failure_case = true; // Is there an unregistered failure case
@@ -105,8 +125,10 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
 
   // If failure state is present create index to identify child that should be ticked
   // - If no failure state is choose default child
-  if(getInput("failure_state", failure_state))
+  if(maybe_failure_state.has_value())
   {
+    failure_state = maybe_failure_state.value();
+
     // Check each case until the first match
     for(int index = 0; index < int(NUM_CASES); ++index)
     {
@@ -176,7 +198,6 @@ inline void RecoverySelector<EnumType, NUM_CASES>::halt()
   // Force all children's status back to IDLE and this node's status back to IDLE
   BT::ControlNode::halt();
 }
-// ---------- Template Member Function Definitions ---------- //
 
 } // namespace recovery_selector
  
