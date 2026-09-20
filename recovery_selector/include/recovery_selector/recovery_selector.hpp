@@ -93,7 +93,7 @@ inline BT::PortsList RecoverySelector<EnumType, NUM_CASES>::providedPorts()
 template <typename EnumType, size_t NUM_CASES>
 inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
 {
-  // Ensure node has appropriate number of children
+  // Throw error if RecoverySelector has invalid number of children
   if(childrenCount() != NUM_CASES + 1)
   {
     throw BT::LogicError(
@@ -115,6 +115,27 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
     {
       throw BT::RuntimeError(
         "invalid input port [failure_state]: ", maybe_failure_state.error());
+    }
+  }
+
+  // Throw an error if any [case_n] input port is invalid
+  for(const std::string& case_key : case_keys_)
+  {
+    BT::Expected<EnumType> maybe_case = getInput<EnumType>(case_key);
+    if(!maybe_case)
+    {
+      // Record if [case_n] input port is empty
+      const bool is_empty = [&]{
+        auto content = getLockedPortContent(case_key);
+        return content && content->empty();
+      }();
+
+      // Throw every reason for invalid input port [case_n] except for being empty
+      if(!is_empty)
+      {
+        throw BT::RuntimeError(
+          "invalid input port [", case_key, "]: ", maybe_case.error());
+      }
     }
   }
 
