@@ -67,7 +67,7 @@ inline test_recovery_selector::FailureCase convertFromString(StringView failure_
   using test_recovery_selector::failureCaseToString;
 
   const auto last_failure_case = static_cast<uint8_t>(FailureCase::UNDEFINED_FAILURE);
-  for (auto i = 0; i <= last_failure_case; ++i)
+  for (int i = 0; i <= last_failure_case; ++i)
   {
     const auto failure_case = static_cast<FailureCase>(i);
     if (failure_case_string == failureCaseToString(failure_case))

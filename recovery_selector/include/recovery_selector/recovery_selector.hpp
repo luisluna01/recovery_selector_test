@@ -77,7 +77,7 @@ inline BT::PortsList RecoverySelector<EnumType, NUM_CASES>::providedPorts()
   BT::PortsList ports;
 
   // Create port failure state to recover from
-  ports.insert(BT::InputPort<EnumType>("failure_state"));
+  ports.insert(BT::InputPort<std::vector<EnumType>>("failure_state"));
 
   // Create port for cases of potential failure states
   for(unsigned i = 1; i <= NUM_CASES; i++)
@@ -101,7 +101,7 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
   }
 
   // Throw an error if [failure_state] port is invalid
-  BT::Expected<EnumType> maybe_failure_state = getInput<EnumType>("failure_state");
+  BT::Expected<std::vector<EnumType>> maybe_failure_state = getInput<std::vector<EnumType>>("failure_state");
   if(!maybe_failure_state)
   {
     // Record if [failure_state] input port is empty 
@@ -139,10 +139,11 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
     }
   }
 
-  EnumType failure_state; // Current failure state to resolve from
+  std::vector<EnumType> failure_state; // Current failure state to resolve from
   EnumType case_value;
   bool unregistered_failure_case = true; // Is there an unregistered failure case
   int child_index = int(NUM_CASES);
+  bool found_case = false;
 
   // If failure state is present create index to identify child that should be ticked
   // - If no failure state is choose default child
@@ -157,11 +158,21 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
 
       if(getInput(case_key, case_value))
       {
-        if(recovery_selector::util::compareCase<EnumType>(failure_state, case_value))
+        for(auto failure_state_case : failure_state)
         {
-          child_index = index;
-          unregistered_failure_case=false; // The failure case matches a key
-          
+          if(recovery_selector::util::compareCase<EnumType>(failure_state_case, case_value))
+          {
+            child_index = index;
+
+            unregistered_failure_case=false; // The failure case matches a key
+            found_case = true;
+            break;
+          }
+        }
+        
+        // Ensure outer loop breaks if matching case found
+        if(found_case)
+        {
           break;
         }
       }
@@ -175,6 +186,7 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
   }
 
   // Unless default child, halt currently running child if different from appropriate case
+  // TODO: Test if RecoverySelector halts default child when a case matches
   if(running_child_ != -1 && running_child_ != child_index)
   {
     haltChild(running_child_);
