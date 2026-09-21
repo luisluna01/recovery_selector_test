@@ -16,8 +16,8 @@
 namespace test_recovery_selector::behaviors
 {
 
-// This behavior subscribes a fake failure state as a String provided by a topic and writes it
-// onto the blackboard.
+// This behavior subscribes a fake failure state as a FailureCase enum class type provided by a
+// topic and writes it onto the blackboard
 // Note: This behavior is meant to run forever
 class CreateDummyFailure : public BT::StatefulActionNode
 {
@@ -42,14 +42,14 @@ private:
   void createSubscriber();
 
   // Subscriber callback which reads and copies the FailureCase message
-  void timerCallback(const test_recovery_selector_msgs::msg::FailureCase& msg);
+  void listenerCallback(const test_recovery_selector_msgs::msg::FailureCase& msg);
 
   rclcpp::Node::SharedPtr node_;
   rclcpp::CallbackGroup::SharedPtr callback_group_;
   rclcpp::executors::SingleThreadedExecutor executor_; // Create SingleThreadedExecutor
   rclcpp::Subscription<test_recovery_selector_msgs::msg::FailureCase>::SharedPtr subscriber_;
 
-  std::optional<FailureCase> last_failure_case_;
+  std::vector<FailureCase> failure_case_queue_;
 };
 
 } // namespace test_recovery_selector

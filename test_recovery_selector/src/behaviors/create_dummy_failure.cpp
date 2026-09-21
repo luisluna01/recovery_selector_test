@@ -15,7 +15,7 @@ BT::PortsList CreateDummyFailure::providedPorts()
 {
   return {
     BT::InputPort<std::string>("topic", "/failure_source", "topic to subscribe to"),
-    BT::OutputPort<FailureCase>("failure_state", "string data to represent failure state")
+    BT::BidirectionalPort<std::vector<FailureCase>>("failure_state", "failures present in the blackboard")
   };
 }
 
@@ -31,7 +31,7 @@ BT::NodeStatus CreateDummyFailure::onStart()
   // Drain the messages from the qeue and clear last_message_
   // Note: max_duration = 0ms means no limit to how long node executer can spin
   executor_.spin_some(std::chrono::milliseconds(0));
-  last_failure_case_.reset(); // Clear any messages recieved after spin_some()
+  failure_case_queue_.clear(); // Clear any messages recieved after spin_some()
   
   return BT::NodeStatus::RUNNING;
 }
@@ -39,21 +39,41 @@ BT::NodeStatus CreateDummyFailure::onStart()
 
 BT::NodeStatus CreateDummyFailure::onRunning()
 {
-  executor_.spin_some(std::chrono::milliseconds(0));
-
-  if (last_failure_case_)
+  // Add failure case to failure state and write to blackboard
+  // Note: Guarantees thread safety by getting the data in the failure_state key in the blackboard
+  // and protecting it with a mutex
+  if(auto failure_state_locked = getLockedPortContent("failure_state"))
   {
-    setOutput("failure_state", last_failure_case_.value());
-    
-    // Only for debugging
-    std::string last_failure_case_str_ = failureCaseToString(last_failure_case_.value());
-    RCLCPP_DEBUG_THROTTLE(
-      node_->get_logger(), *node_->get_clock(), 1000,
-      "[%s] outputted %s to [failure_state] port",
-      this->name().c_str(), last_failure_case_str_.c_str());
+    // If "failure_state" key has not been initialized, assign empty vector
+    if(failure_state_locked->empty()) 
+    {
+      failure_state_locked.assign(std::vector<FailureCase>({})); // Assign empty vector
+    }
+    // Note: castPtr() access the value by pointer
+    else if(std::vector<FailureCase>* failure_state_ptr = failure_state_locked->castPtr<std::vector<FailureCase>>())
+    {
+      executor_.spin_some(std::chrono::milliseconds(0));
 
-    last_failure_case_.reset(); // Clear message remaining
+      // Add failure cases subscribed to failure state
+      for(const FailureCase& failure_case : failure_case_queue_)
+      {
+        // Only add it if it isn't already present
+        if(std::find(failure_state_ptr->begin(), failure_state_ptr->end(), failure_case) == failure_state_ptr->end())
+        {
+          failure_state_ptr->push_back(failure_case);
+          
+          // Log what failure case was added for debugging
+          std::string failure_case_str = failureCaseToString(failure_case);
+          RCLCPP_DEBUG(
+            node_->get_logger(),
+            "[%s] added %s to [failure_state] port",
+            this->name().c_str(), failure_case_str.c_str());
+        }
+      } 
+    }
   }
+
+  failure_case_queue_.clear(); // Clear message remaining
 
   return BT::NodeStatus::RUNNING;
 }
@@ -66,6 +86,7 @@ void CreateDummyFailure::onHalted()
 
 
 // ------------------------------------------------------------
+// Subscriber Member Funtions
 // ------------------------------------------------------------
 
 
@@ -92,17 +113,19 @@ void CreateDummyFailure::createSubscriber()
 
   subscriber_ = node_->create_subscription<test_recovery_selector_msgs::msg::FailureCase>(
     topic,
-    rclcpp::QoS(10),
-    std::bind(&CreateDummyFailure::timerCallback, this, std::placeholders::_1),
+    rclcpp::QoS(10), /* For now only hold 10 failures at a time for now */
+    std::bind(&CreateDummyFailure::listenerCallback, this, std::placeholders::_1),
     subscriber_options
   );
 }
 
 
-void CreateDummyFailure::timerCallback(const test_recovery_selector_msgs::msg::FailureCase& msg)
+void CreateDummyFailure::listenerCallback(const test_recovery_selector_msgs::msg::FailureCase& msg)
 {
-  // Map the case id to the FailureCasee enumerator
-  last_failure_case_ = static_cast<FailureCase>(msg.case_id);
+  // Map the case id to the FailureCase enumerator
+  FailureCase failure_case = static_cast<FailureCase>(msg.case_id);
+
+  failure_case_queue_.push_back(failure_case);
 
   return;
 }
