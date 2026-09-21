@@ -21,23 +21,24 @@ DummyRecoveryStrategy::DummyRecoveryStrategy(
 BT::PortsList DummyRecoveryStrategy::providedPorts()
 {
   return {
-    BT::BidirectionalPort<FailureCase>("failure_state", "string representing failure state")
+    BT::BidirectionalPort<std::vector<FailureCase>>("failure_state", "vector of failure cases present in failure state")
   };
 }
 
 
 BT::NodeStatus DummyRecoveryStrategy::onStart()
 {
-  // ---------- Verify input and bidirectional ports are valid ---------- //
+  // ---------- Verify bidirectional port is valid ---------- //
   // Verify [failure_state] port is valid
-  BT::Expected<FailureCase> maybe_failure_state = getInput<FailureCase>("failure_state");
+  BT::Expected<std::vector<FailureCase>> maybe_failure_state =
+    getInput<std::vector<FailureCase>>("failure_state");
   if(!maybe_failure_state)
   {
     throw BT::RuntimeError(
       "invalid input port [failure_state]: ", maybe_failure_state.error());
   }
   failure_state_ = maybe_failure_state.value();
-  // ---------- Verify input and bidirectional ports are valid ---------- //
+  // ---------- Verify bidirectional port is valid ---------- //
 
   failure_case_string_ = failureCaseToString(failure_case_);
 
@@ -58,19 +59,17 @@ BT::NodeStatus DummyRecoveryStrategy::onRunning()
   // Return SUCCESS if completion time reached
   if(node_->now() >= completion_time_ros_)
   {
-    failure_state_ = FailureCase::NO_FAILURE; // Remove failure case from failure_state
-
-    // TEMPORARY: Clear the value stored at the "failure_state" blackboard entry without removing
-    // the entry (and its type info) from the blackboard, so the port keeps its type
-    // for the next write
-    if(auto any_locked = getLockedPortContent("failure_state"))
-    {
-      any_locked.assign(BT::Any());
-    }
+    // Remove all values of 'failure_case_' from failure_state
+    failure_state_.erase(
+      std::remove(failure_state_.begin(), failure_state_.end(), failure_case_),
+      failure_state_.end());
+    
+    setOutput("failure_state", failure_state_);
 
     RCLCPP_INFO(
       node_->get_logger(),
-      "[%s] successfully recovered from failure: %s!", this->name().c_str(), failure_case_string_.c_str());
+      "[%s] successfully recovered from failure: %s!",
+      this->name().c_str(), failure_case_string_.c_str());
 
     return BT::NodeStatus::SUCCESS;
   }

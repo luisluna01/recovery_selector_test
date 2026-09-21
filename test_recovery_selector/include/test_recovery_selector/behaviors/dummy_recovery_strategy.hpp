@@ -41,7 +41,7 @@ private:
   rclcpp::Time last_print_time_;
   rclcpp::Duration print_period_ = rclcpp::Duration::from_seconds(1.0);
 
-  FailureCase failure_state_; // Failure state set from input port
+  std::vector<FailureCase> failure_state_; // Failure state set from input port
   FailureCase failure_case_; // Failure case dedicated to behavior instance
   double completion_time_; // Time for this behavior to run in seconds, set in constructor
 
