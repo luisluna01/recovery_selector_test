@@ -2,7 +2,7 @@
 <root BTCPP_format="4">
     <BehaviorTree ID="TestRecoverySelector">
         <Parallel success_count="1" failure_count="1">
-            <CreateDummyFailure topic="/failure_source" failure_state="{failure_state}"/>
+            <!-- <CreateDummyFailure topic="/failure_source" failure_state="{failure_state}"/> -->
 
             <ReactiveSequence>
                 <!-- Only use when ticking rate is <= 100ms -->
@@ -17,28 +17,34 @@
 
                     <Print message="Default: No failures..."/>
                 </Switch3> -->
-                <Fallback>
-                    <RecoverySelector failure_state="{failure_state}" case_1="LOW_BATTERY" case_2="MOTOR_FAILURE" case_3="FAILED_GRASP">
-                        <!-- Low Battery -->
-                        <RecoverFromLowBattery failure_state="{failure_state}"/>
+                <!-- <Fallback> -->
+                    <KeepRunningUntilFailure>
+                        <RecoverySelector failure_state="{failure_state}" case_1="LOW_BATTERY" case_2="MOTOR_FAILURE" case_3="FAILED_GRASP">
+                            <!-- Low Battery -->
+                            <!-- <Print message="Ticking Low Battery"/> -->
+                            <RecoverFromLowBattery failure_state="{failure_state}"/>
 
-                        <!-- Motor Failure -->
-                        <RecoverFromMotorFailure failure_state="{failure_state}"/>
+                            <!-- Motor Failure -->
+                            <!-- <Print message="Ticking Motor Failure"/> -->
+                            <RecoverFromMotorFailure failure_state="{failure_state}"/>
 
-                        <!-- Failed Grasp -->
-                        <RecoverFromFailedGrasp failure_state="{failure_state}"/>
+                            <!-- Failed Grasp -->
+                            <!-- <Print message="Ticking Failed Grasp"/> -->
+                            <RecoverFromFailedGrasp failure_state="{failure_state}"/>
 
-                        <!-- Default -->
-                        <AlwaysSuccess/>
-                    </RecoverySelector>
+                            <!-- Default -->
+                            <Print message="Ticking Default"/>
+                            <!-- <AlwaysSuccess/> -->
+                        </RecoverySelector>
+                    </KeepRunningUntilFailure>
 
-                    <ForceFailure>
+                    <!-- <ForceFailure>
                         <Print message="Failed to recover!"/>
-                    </ForceFailure>
-                </Fallback>
+                    </ForceFailure> -->
+                <!-- </Fallback> -->
                 
                 <!-- ~~~~~ Main Task ~~~~~ -->
-                <ReactiveFallback>
+                <!-- <ReactiveFallback>
                     <ReconstructObject condition_bool="{reconstruction_complete}"/>
                     <PerformReconstruction result="{reconstruction_complete}"/>
                 </ReactiveFallback>
@@ -51,7 +57,7 @@
                 <ReactiveFallback>
                     <PipeGrasped condition_bool="{pipe_grasped}"/>
                     <GraspPipe result="{pipe_grasped}"/>
-                </ReactiveFallback>
+                </ReactiveFallback> -->
                 <!-- ~~~~~ Main Task ~~~~~ -->
             </ReactiveSequence>
         </Parallel>

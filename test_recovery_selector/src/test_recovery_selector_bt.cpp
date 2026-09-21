@@ -91,9 +91,22 @@ int main(int argc, char* argv[])
 
     while (rclcpp::ok() && status == BT::NodeStatus::RUNNING)
     {
+      // // Print failure cases in failure state blackboard key
+      // auto failure_state = tree.rootBlackboard()->get<std::vector<FailureCase>>("failure_state");
+      // RCLCPP_INFO(ros_node->get_logger(), "failure_state: ");
+      // for (const FailureCase& failure_case : failure_state)
+      // {
+      //   RCLCPP_INFO(
+      //     ros_node->get_logger(),
+      //     "  - %s",
+      //     test_recovery_selector::failureCaseToString(failure_case).c_str());
+      // }
+      
       RCLCPP_INFO(ros_node->get_logger(), "ticking----");
+
       status = tree.tickOnce();
       tree.sleep(std::chrono::milliseconds(1000));
+
       RCLCPP_INFO(ros_node->get_logger(), "finished tick----\n");
     }
   }
