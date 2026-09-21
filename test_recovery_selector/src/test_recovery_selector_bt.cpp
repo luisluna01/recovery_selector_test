@@ -20,7 +20,7 @@
 // nrg_behaviors
 #include "nrg_behaviors/nrg_behaviors.hpp"
 
-using FailureCase = test_recovery_selector::FailureCase;
+using test_recovery_selector::FailureCase;
 
 int main(int argc, char* argv[])
 {
