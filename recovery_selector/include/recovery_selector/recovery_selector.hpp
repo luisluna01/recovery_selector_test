@@ -178,9 +178,12 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
       }
     }
 
-    // return FAILURE if an unregistered failure case is present
+    // return FAILURE and halt all children (including default) if an unregistered failure case is present
+    // TODO: Think more on this (Potentially add graceful shutdown for unregistered failure cases)
     if(unregistered_failure_case)
     {
+      resetChildren();
+
       return BT::NodeStatus::FAILURE;
     }
   }
