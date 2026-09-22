@@ -76,6 +76,7 @@ int main(int argc, char* argv[])
     share_path + "/behavior_trees/test_recovery_selector.xml");
 
   // Initialize blackboard variables that are not intialized by the tree
+  tree.rootBlackboard()->set<std::vector<FailureCase>>("failure_state", std::vector<FailureCase>());
   tree.rootBlackboard()->set<bool>("reconstruction_complete", false);
   tree.rootBlackboard()->set<bool>("grasps_detected", false);
   tree.rootBlackboard()->set<bool>("pipe_grasped", false);
