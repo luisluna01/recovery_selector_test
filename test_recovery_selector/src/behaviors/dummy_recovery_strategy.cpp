@@ -37,7 +37,6 @@ BT::NodeStatus DummyRecoveryStrategy::onStart()
     throw BT::RuntimeError(
       "invalid input port [failure_state]: ", maybe_failure_state.error());
   }
-  failure_state_ = maybe_failure_state.value();
   // ---------- Verify bidirectional port is valid ---------- //
 
   failure_case_string_ = failureCaseToString(failure_case_);
@@ -58,14 +57,18 @@ BT::NodeStatus DummyRecoveryStrategy::onRunning()
 {
   // Return SUCCESS if completion time reached
   if(node_->now() >= completion_time_ros_)
-  {
-    // Remove all values of 'failure_case_' from failure_state
-    failure_state_.erase(
-      std::remove(failure_state_.begin(), failure_state_.end(), failure_case_),
-      failure_state_.end());
+  { 
+    // Remove all values of 'failure_case_' from [failure_state] port
+    // Note: Read and write failure_state value directly while ensuring thread safety
+    if(auto failure_state_locked = getLockedPortContent("failure_state"))
+    {
+      auto* failure_state_ptr = failure_state_locked->castPtr<std::vector<FailureCase>>();
+      
+      failure_state_ptr->erase(
+        std::remove(failure_state_ptr->begin(), failure_state_ptr->end(), failure_case_),
+        failure_state_ptr->end());
+    }
     
-    setOutput("failure_state", failure_state_);
-
     RCLCPP_INFO(
       node_->get_logger(),
       "[%s] successfully recovered from failure: %s!",
