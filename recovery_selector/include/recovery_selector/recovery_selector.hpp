@@ -19,10 +19,9 @@
 
 namespace recovery_selector
 {
-
-// ----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 // Class definition
-// ----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 template <typename EnumType, size_t NUM_CASES>
 class RecoverySelector : public BT::ControlNode
 {
@@ -51,10 +50,9 @@ private:
 
   virtual BT::NodeStatus tick() override;
 };
-
-// ----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 // Member function definitions
-// ----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
 template <typename EnumType, size_t NUM_CASES>
 inline RecoverySelector<EnumType, NUM_CASES>::RecoverySelector(
   const std::string& name, const BT::NodeConfig& config
@@ -93,6 +91,7 @@ inline BT::PortsList RecoverySelector<EnumType, NUM_CASES>::providedPorts()
 template <typename EnumType, size_t NUM_CASES>
 inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
 {
+  // -------------- Verify ports and child branches are used properly ---------------
   // Throw error if RecoverySelector has invalid number of children
   if(childrenCount() != NUM_CASES + 1)
   {
@@ -138,19 +137,18 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
       }
     }
   }
+  // -------------- Verify ports and child branches are used properly ---------------
 
-  std::vector<EnumType> failure_state; // Current failure state to resolve from
+  std::vector<EnumType> failure_state = maybe_failure_state.value(); // Current failure state to resolve from
   EnumType case_value;
   bool unregistered_failure_case = true; // Is there an unregistered failure case
   int child_index = int(NUM_CASES);
   bool found_case = false;
 
-  // If failure state is present create index to identify child that should be ticked
-  // - If no failure state is choose default child
-  if(maybe_failure_state.has_value())
+  // If failure state is not empty attempt to create index to identify child that should be ticked
+  // - If failure state is empty choose default child
+  if(!failure_state.empty())
   {
-    failure_state = maybe_failure_state.value();
-
     // Check each case until the first match
     for(int index = 0; index < int(NUM_CASES); ++index)
     {
