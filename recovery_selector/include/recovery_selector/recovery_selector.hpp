@@ -100,7 +100,7 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
   if(childrenCount() != NUM_CASES + 1)
   {
     throw BT::LogicError(
-      "Wrong number of children in RecoverySelector: must be (num_cases + default)");
+      "Wrong number of children in RecoverySelector: must be (num_cases + undefined_failure)");
   }
 
   // Throw an error if [failure_state] port is invalid
@@ -145,7 +145,7 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
 
   
   EnumType case_value{};
-  int child_index = int(NUM_CASES); // Initilaize the child_index to the default child
+  int child_index = int(NUM_CASES); // Initilaize the child_index to the undefined_failure child
   bool found_case = false;
 
   // Current failure state to resolve from
@@ -153,7 +153,7 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
 
   // If failure state is not empty attempt attempt to create index to identify child that should be
   // ticked
-  // - If failure state has unregistered failure case tick default branch
+  // - If failure state has unregistered failure case tick undefined_failure branch
   if(!failure_state.empty())
   {
     // Check each case until the first match
@@ -189,8 +189,8 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
     return BT::NodeStatus::SUCCESS;
   }
 
-  // Unless default child, halt currently running child if different from appropriate case
-  // TODO: Test if RecoverySelector halts default child when a case matches
+  // Unless undefined_failure child, halt currently running child if different from appropriate case
+  // TODO: Test if RecoverySelector halts undefined_failure child when a case matches
   if(running_child_ != -1 && running_child_ != child_index)
   {
     haltChild(running_child_);
@@ -205,7 +205,7 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
 
   if(selected_child_status == BT::NodeStatus::SKIPPED)
   {
-    // Clear index so default child ticked next
+    // Clear index so undefined_failure child ticked next
     running_child_ = -1;
 
     return BT::NodeStatus::SKIPPED;
@@ -219,7 +219,7 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
     // Set status of all children to IDLE and send halt() signal to all RUNNING children
     resetChildren();
 
-    // Clear index so default child ticked next
+    // Clear index so undefined_failure child ticked next
     running_child_ = -1;
   }
 
