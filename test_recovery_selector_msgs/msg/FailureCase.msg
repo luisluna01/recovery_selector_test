@@ -1,5 +1,4 @@
 # Constants for failure cases available in test_recovery_selector::FailureCase
-uint8 CASE_NO_FAILURE=0
 uint8 CASE_LOW_BATTERY=1
 uint8 CASE_MOTOR_FAILURE=2
 uint8 CASE_FAILED_GRASP=3

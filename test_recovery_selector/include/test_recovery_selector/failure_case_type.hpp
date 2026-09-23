@@ -13,7 +13,6 @@ namespace test_recovery_selector
 // This enum creates a type to represent possible failure cases written and used by [BT::TreeNode]s
 enum class FailureCase
 {
-  NO_FAILURE, // Keep first
   LOW_BATTERY,
   MOTOR_FAILURE,
   FAILED_GRASP,
@@ -29,8 +28,6 @@ inline std::string failureCaseToString(FailureCase failure_case)
 {
   switch (failure_case)
   {
-    case FailureCase::NO_FAILURE:
-      return "NO_FAILURE";
     case FailureCase::LOW_BATTERY:
       return "LOW_BATTERY";
     case FailureCase::MOTOR_FAILURE:
@@ -59,7 +56,7 @@ namespace BT
 {
 
 // Single enum used only by the vector parser below.
-// Exmple: getInput<FailureCase> never reaches this; parseString uses the scripting registry first
+// Example: getInput<FailureCase> never reaches this; parseString uses the scripting registry first
 template <>
 inline test_recovery_selector::FailureCase convertFromString(StringView failure_case_string)
 {

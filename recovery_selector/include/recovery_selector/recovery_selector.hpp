@@ -78,7 +78,7 @@ inline BT::PortsList RecoverySelector<EnumType, NUM_CASES>::providedPorts()
   ports.insert(BT::InputPort<std::vector<EnumType>>("failure_state"));
 
   // Create port for cases of potential failure states
-  for(unsigned i = 1; i <= NUM_CASES; i++)
+  for(size_t i = 1; i <= NUM_CASES; i++)
   {
     std::string case_key = std::string("case_") + std::to_string(i);
     ports.insert(BT::InputPort<EnumType>(case_key));
