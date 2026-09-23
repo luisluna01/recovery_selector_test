@@ -19,6 +19,8 @@
 
 namespace recovery_selector
 {
+
+
 // --------------------------------------------------------------------------------
 // Class definition
 // --------------------------------------------------------------------------------
@@ -50,6 +52,8 @@ private:
 
   virtual BT::NodeStatus tick() override;
 };
+
+
 // --------------------------------------------------------------------------------
 // Member function definitions
 // --------------------------------------------------------------------------------
@@ -100,7 +104,7 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
   }
 
   // Throw an error if [failure_state] port is invalid
-  BT::Expected<std::vector<EnumType>> maybe_failure_state = getInput<std::vector<EnumType>>("failure_state");
+  auto maybe_failure_state = getInput<std::vector<EnumType>>("failure_state");
   if(!maybe_failure_state)
   {
     // Record if [failure_state] input port is empty 
@@ -174,16 +178,13 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
           break;
         }
       }
-    }
 
-    // return FAILURE and halt all children (including default) if an unregistered failure case is present
-    // TODO: Think more on this (Potentially add graceful shutdown for unregistered failure cases)
-    if(unregistered_failure_case)
-    {
-      resetChildren();
-
-      return BT::NodeStatus::FAILURE;
     }
+  }
+  // If failure state is empty return SUCCESS
+  else
+  {
+    return BT::NodeStatus::SUCCESS;
   }
 
   // Unless default child, halt currently running child if different from appropriate case
