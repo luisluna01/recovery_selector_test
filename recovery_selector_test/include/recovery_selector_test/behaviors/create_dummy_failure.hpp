@@ -7,13 +7,13 @@
 #include <rclcpp/rclcpp.hpp>
 
 // FailureCase type
-#include "test_recovery_selector/failure_case_type.hpp"
+#include "recovery_selector_test/failure_case_type.hpp"
 
 // FailureCase message
-#include "test_recovery_selector_msgs/msg/failure_case.hpp"
+#include "recovery_selector_test_msgs/msg/failure_case.hpp"
 
 
-namespace test_recovery_selector::behaviors
+namespace recovery_selector_test::behaviors
 {
 
 // This behavior subscribes a fake failure state as a FailureCase enum class type provided by a
@@ -42,14 +42,14 @@ private:
   void createSubscriber();
 
   // Subscriber callback which reads and copies the FailureCase message
-  void listenerCallback(const test_recovery_selector_msgs::msg::FailureCase& msg);
+  void listenerCallback(const recovery_selector_test_msgs::msg::FailureCase& msg);
 
   rclcpp::Node::SharedPtr node_;
   rclcpp::CallbackGroup::SharedPtr callback_group_;
   rclcpp::executors::SingleThreadedExecutor executor_; // Create SingleThreadedExecutor
-  rclcpp::Subscription<test_recovery_selector_msgs::msg::FailureCase>::SharedPtr subscriber_;
+  rclcpp::Subscription<recovery_selector_test_msgs::msg::FailureCase>::SharedPtr subscriber_;
 
   std::vector<FailureCase> failure_case_queue_;
 };
 
-} // namespace test_recovery_selector
+} // namespace recovery_selector_test::behaviors

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(test_recovery_selector)
+project(recovery_selector_test)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -15,12 +15,11 @@ find_package(behaviortree_cpp REQUIRED)
 find_package(recovery_selector REQUIRED)
 find_package(nrg_behaviors REQUIRED)
 find_package(ament_index_cpp REQUIRED)
-find_package(test_recovery_selector_msgs REQUIRED)
+find_package(recovery_selector_test_msgs REQUIRED)
 find_package(magic_enum REQUIRED)
-find_package(test_recovery_selector_msgs)
 
 # Create behavior tree node executable
-add_executable(test_recovery_selector_bt src/test_recovery_selector_bt.cpp
+add_executable(recovery_selector_test_bt src/recovery_selector_test_bt.cpp
   # Behaviors
   src/behaviors/create_dummy_failure.cpp
   src/behaviors/dummy_task.cpp
@@ -32,34 +31,34 @@ add_executable(test_recovery_selector_bt src/test_recovery_selector_bt.cpp
 add_executable(dummy_failure_publisher src/dummy_failure_publisher.cpp)
 
 # Add include directories
-target_include_directories(test_recovery_selector_bt PRIVATE
+target_include_directories(recovery_selector_test_bt PRIVATE
   include
 )
 target_include_directories(dummy_failure_publisher PRIVATE
   include
 )
 
-# Link dependencies to test_recovery_selector_bt
-ament_target_dependencies(test_recovery_selector_bt
+# Link dependencies to recovery_selector_test_bt
+ament_target_dependencies(recovery_selector_test_bt
   rclcpp
   behaviortree_cpp
   ament_index_cpp
   recovery_selector
   nrg_behaviors
-  test_recovery_selector_msgs
+  recovery_selector_test_msgs
 )
 
 # Link dependencies to dummy_failure_publisher node
 ament_target_dependencies(dummy_failure_publisher
   rclcpp
-  test_recovery_selector_msgs
+  recovery_selector_test_msgs
 )
 target_link_libraries(dummy_failure_publisher
   magic_enum::magic_enum
 )
 
 # Install executables
-install(TARGETS test_recovery_selector_bt dummy_failure_publisher
+install(TARGETS recovery_selector_test_bt dummy_failure_publisher
   DESTINATION lib/${PROJECT_NAME}
 )
 

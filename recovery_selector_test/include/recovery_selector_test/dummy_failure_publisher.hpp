@@ -9,12 +9,12 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-#include "test_recovery_selector_msgs/msg/failure_case.hpp" // FailureCase message
+#include "recovery_selector_test_msgs/msg/failure_case.hpp" // FailureCase message
 
-#include "test_recovery_selector/failure_case_type.hpp" // FailureCase type
+#include "recovery_selector_test/failure_case_type.hpp" // FailureCase type
 
 
-namespace test_recovery_selector::nodes
+namespace recovery_selector_test::nodes
 {
 
 class DummyFailurePublisher : public rclcpp::Node
@@ -31,7 +31,7 @@ private:
   // Non-blocking single-byte read. Returns true only if a byte was consumed.
   bool read_key(char& c);
 
-  rclcpp::Publisher<test_recovery_selector_msgs::msg::FailureCase>::SharedPtr publisher;
+  rclcpp::Publisher<recovery_selector_test_msgs::msg::FailureCase>::SharedPtr publisher;
   rclcpp::TimerBase::SharedPtr timer;
 
   termios original_termios{};
@@ -40,4 +40,4 @@ private:
   size_t failure_case_count_;
 };
 
-}  // namespace test_recovery_selector::nodes
+}  // namespace recovery_selector_test::nodes

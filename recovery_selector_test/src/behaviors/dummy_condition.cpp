@@ -1,7 +1,7 @@
-#include "test_recovery_selector/behaviors/dummy_condition.hpp"
+#include "recovery_selector_test/behaviors/dummy_condition.hpp"
 
 
-namespace test_recovery_selector::behaviors
+namespace recovery_selector_test::behaviors
 {
 
 DummyCondition::DummyCondition(
@@ -41,4 +41,4 @@ BT::NodeStatus DummyCondition::tick()
   return BT::NodeStatus::FAILURE;
 }
 
-} // namespace test_recovery_selector::behaviors
+} // namespace recovery_selector_test::behaviors

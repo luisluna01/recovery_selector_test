@@ -6,7 +6,7 @@
 #include <rclcpp/rclcpp.hpp>
 
 
-namespace test_recovery_selector::behaviors
+namespace recovery_selector_test::behaviors
 {
 
 class DummyCondition : public BT::ConditionNode
@@ -25,4 +25,4 @@ private:
   rclcpp::Node::SharedPtr node_;
 };
 
-} // namespace test_recovery_selector::behaviors
+} // namespace recovery_selector_test::behaviors

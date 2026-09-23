@@ -4,10 +4,10 @@
 #include <behaviortree_cpp/action_node.h>
 
 // Import the FAILURE_CASE type
-#include "test_recovery_selector/failure_case_type.hpp"
+#include "recovery_selector_test/failure_case_type.hpp"
 
 
-namespace test_recovery_selector::behaviors
+namespace recovery_selector_test::behaviors
 {
 
 // This behavior acts as a fake child of the RecoverySelector that performs a process to recover
@@ -47,4 +47,4 @@ private:
   std::string failure_case_string_;
 };
 
-} // namespace test_recovery_selector::behaviors
+} // namespace recovery_selector_test::behaviors

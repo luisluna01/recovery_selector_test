@@ -1,29 +1,21 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>test_recovery_selector</name>
+  <name>recovery_selector_test_msgs</name>
   <version>0.0.0</version>
-  <description>ROS2 C++ package meant to test the RecoverySelector package</description>
+  <description>Host messages for recovery_selector_test pkg</description>
   <maintainer email="luisluna12@utexas.edu">Luis Luna</maintainer>
   <license>BSD-3-Clause</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
 
-  <!-- Libraries -->
-  <depend>rclcpp</depend>
-  <depend>behaviortree_cpp</depend>
-  <depend>magic_enum</depend>
-
-  <!-- Packages -->
-  <depend>ament_index_cpp</depend>
-  <depend>recovery_selector</depend>
-  <depend>nrg_behaviors</depend>
-
-  <!-- Interfaces -->
-  <depend>test_recovery_selector_msgs</depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
   
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
+
+  <member_of_group>rosidl_interface_packages</member_of_group>
 
   <export>
     <build_type>ament_cmake</build_type>

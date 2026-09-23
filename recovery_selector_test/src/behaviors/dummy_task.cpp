@@ -1,7 +1,7 @@
-#include "test_recovery_selector/behaviors/dummy_task.hpp"
+#include "recovery_selector_test/behaviors/dummy_task.hpp"
 
 
-namespace test_recovery_selector::behaviors
+namespace recovery_selector_test::behaviors
 {
 
 DummyTask::DummyTask(
@@ -71,4 +71,4 @@ void DummyTask::onHalted()
   RCLCPP_WARN(node_->get_logger(), "[%s] halted", this->name().c_str()); 
 }
 
-} // namespace test_recovery_selector::behaviors
+} // namespace recovery_selector_test::behaviors

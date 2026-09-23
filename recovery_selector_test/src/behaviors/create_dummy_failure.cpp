@@ -1,7 +1,7 @@
-#include "test_recovery_selector/behaviors/create_dummy_failure.hpp"
+#include "recovery_selector_test/behaviors/create_dummy_failure.hpp"
 
 
-namespace test_recovery_selector::behaviors
+namespace recovery_selector_test::behaviors
 {
 
 CreateDummyFailure::CreateDummyFailure(
@@ -111,7 +111,7 @@ void CreateDummyFailure::createSubscriber()
 
   executor_.add_callback_group(callback_group_, node_->get_node_base_interface());
 
-  subscriber_ = node_->create_subscription<test_recovery_selector_msgs::msg::FailureCase>(
+  subscriber_ = node_->create_subscription<recovery_selector_test_msgs::msg::FailureCase>(
     topic,
     rclcpp::QoS(10), /* For now only hold 10 failures at a time for now */
     std::bind(&CreateDummyFailure::listenerCallback, this, std::placeholders::_1),
@@ -120,7 +120,7 @@ void CreateDummyFailure::createSubscriber()
 }
 
 
-void CreateDummyFailure::listenerCallback(const test_recovery_selector_msgs::msg::FailureCase& msg)
+void CreateDummyFailure::listenerCallback(const recovery_selector_test_msgs::msg::FailureCase& msg)
 {
   // Map the case id to the FailureCase enumerator
   FailureCase failure_case = static_cast<FailureCase>(msg.case_id);
@@ -130,4 +130,4 @@ void CreateDummyFailure::listenerCallback(const test_recovery_selector_msgs::msg
   return;
 }
 
-} // namespace test_recovery_selector::behaviors
+} // namespace recovery_selector_test::behaviors

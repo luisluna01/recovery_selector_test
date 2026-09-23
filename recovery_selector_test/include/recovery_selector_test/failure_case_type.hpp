@@ -7,7 +7,7 @@
 #include <behaviortree_cpp/basic_types.h>
 
 
-namespace test_recovery_selector
+namespace recovery_selector_test
 {
 
 // This enum creates a type to represent possible failure cases written and used by [BT::TreeNode]s
@@ -49,7 +49,7 @@ inline std::string failureCaseToString(FailureCase failure_case)
   throw std::invalid_argument("Input must be an enumerator from FailureCase");
 }
 
-} // namespace test_recovery_selector
+} // namespace recovery_selector_test
 
 
 namespace BT
@@ -58,10 +58,10 @@ namespace BT
 // Single enum used only by the vector parser below.
 // Example: getInput<FailureCase> never reaches this; parseString uses the scripting registry first
 template <>
-inline test_recovery_selector::FailureCase convertFromString(StringView failure_case_string)
+inline recovery_selector_test::FailureCase convertFromString(StringView failure_case_string)
 {
-  using test_recovery_selector::FailureCase;
-  using test_recovery_selector::failureCaseToString;
+  using recovery_selector_test::FailureCase;
+  using recovery_selector_test::failureCaseToString;
 
   const auto last_failure_case = static_cast<uint8_t>(FailureCase::UNDEFINED_FAILURE);
   for (int i = 0; i <= last_failure_case; ++i)
@@ -78,15 +78,15 @@ inline test_recovery_selector::FailureCase convertFromString(StringView failure_
 // Vector parser for enums
 // Example: "LOW_BATTERY;MOTOR_FAILURE" -> {LOW_BATTERY, MOTOR_FAILURE}
 template <>
-inline std::vector<test_recovery_selector::FailureCase> convertFromString(StringView str)
+inline std::vector<recovery_selector_test::FailureCase> convertFromString(StringView str)
 {
   const auto parts = splitString(str, ';');
 
-  std::vector<test_recovery_selector::FailureCase> output;
+  std::vector<recovery_selector_test::FailureCase> output;
   output.reserve(parts.size());
   for (const auto& part : parts)
   {
-    output.push_back(convertFromString<test_recovery_selector::FailureCase>(part));
+    output.push_back(convertFromString<recovery_selector_test::FailureCase>(part));
   }
   return output;
 }

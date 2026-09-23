@@ -1,7 +1,7 @@
-#include "test_recovery_selector/behaviors/dummy_recovery_strategy.hpp"
+#include "recovery_selector_test/behaviors/dummy_recovery_strategy.hpp"
 
 
-namespace test_recovery_selector::behaviors
+namespace recovery_selector_test::behaviors
 {
 
 DummyRecoveryStrategy::DummyRecoveryStrategy(
@@ -95,4 +95,4 @@ void DummyRecoveryStrategy:: onHalted()
   RCLCPP_WARN(node_->get_logger(), "[%s] halted", this->name().c_str());
 }
 
-} // namespace test_recovery_selector::behaviors
+} // namespace recovery_selector_test::behaviors

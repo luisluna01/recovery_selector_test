@@ -1,14 +1,14 @@
-#include "test_recovery_selector/dummy_failure_publisher.hpp"
+#include "recovery_selector_test/dummy_failure_publisher.hpp"
 
 
-namespace test_recovery_selector::nodes
+namespace recovery_selector_test::nodes
 {
 
 // -- Member Function Definitions of DummyFailurePublisher Class -- //
 DummyFailurePublisher::DummyFailurePublisher()
 : rclcpp::Node("dummy_failure_publisher")
 {
-  publisher = this->create_publisher<test_recovery_selector_msgs::msg::FailureCase>(
+  publisher = this->create_publisher<recovery_selector_test_msgs::msg::FailureCase>(
     "/failure_source",
     rclcpp::QoS(10));
 
@@ -87,7 +87,7 @@ void DummyFailurePublisher::timer_callback()
   uint8_t case_id = static_cast<uint8_t>(c - '0'); // Convert from key pressed to integer
 
   // Create and populate FailureCase message
-  auto msg = test_recovery_selector_msgs::msg::FailureCase();  
+  auto msg = recovery_selector_test_msgs::msg::FailureCase();  
   msg.case_id = case_id;
 
   FailureCase failure_case = static_cast<FailureCase>(case_id);
@@ -121,13 +121,13 @@ bool DummyFailurePublisher::read_key(char& c)
 }
 // -- Member Function Definitions of DummyFailurePublisher Class -- //
 
-} //namespace test_recovery_selector::nodes
+} //namespace recovery_selector_test::nodes
 
 
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);  
-  auto node = std::make_shared<test_recovery_selector::nodes::DummyFailurePublisher>();
+  auto node = std::make_shared<recovery_selector_test::nodes::DummyFailurePublisher>();
   rclcpp::spin(node);
   rclcpp::shutdown();
   

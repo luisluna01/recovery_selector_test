@@ -5,7 +5,7 @@
 #include <behaviortree_cpp/action_node.h>
 
 
-namespace test_recovery_selector::behaviors
+namespace recovery_selector_test::behaviors
 {
 
 // This behavior pretends to perform a task by running for a desired amount of time before
@@ -42,4 +42,4 @@ private:
   bool use_result_flag_; // Whether or not result port will be used
 };
 
-} // namespace test_recovery_selector::behaviors
+} // namespace recovery_selector_test::behaviors

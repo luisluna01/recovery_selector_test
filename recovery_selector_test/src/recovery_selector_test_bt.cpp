@@ -5,75 +5,75 @@
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
-// test_recovery_selector FailureCase type
-#include "test_recovery_selector/failure_case_type.hpp"
+// recovery_selector_test FailureCase type
+#include "recovery_selector_test/failure_case_type.hpp"
 
 // RecoverySelector behavior
 #include "recovery_selector/recovery_selector.hpp"
 
-// test_recovery_selector behaviors
-#include "test_recovery_selector/behaviors/create_dummy_failure.hpp"
-#include "test_recovery_selector/behaviors/dummy_task.hpp"
-#include "test_recovery_selector/behaviors/dummy_recovery_strategy.hpp"
-#include "test_recovery_selector/behaviors/dummy_condition.hpp"
+// recovery_selector_test behaviors
+#include "recovery_selector_test/behaviors/create_dummy_failure.hpp"
+#include "recovery_selector_test/behaviors/dummy_task.hpp"
+#include "recovery_selector_test/behaviors/dummy_recovery_strategy.hpp"
+#include "recovery_selector_test/behaviors/dummy_condition.hpp"
 
 // nrg_behaviors
 #include "nrg_behaviors/nrg_behaviors.hpp"
 
-using test_recovery_selector::FailureCase;
+using recovery_selector_test::FailureCase;
 
 int main(int argc, char* argv[])
 {
   rclcpp::init(argc, argv);
 
-  rclcpp::Node::SharedPtr ros_node = std::make_shared<rclcpp::Node>("test_recovery_selector_bt");
+  rclcpp::Node::SharedPtr ros_node = std::make_shared<rclcpp::Node>("recovery_selector_test_bt");
 
   BT::BehaviorTreeFactory factory; // Initialize BT factory which registers the tree and tree nodes
 
   // Register RecoverySelector to read 3 failure cases from the FailureCase type
   factory.registerNodeType<recovery_selector::RecoverySelector<FailureCase, 3>>("RecoverySelector");
   
-  // ---------- Register test_recovery_selector behaviors ---------- //
-  factory.registerNodeType<test_recovery_selector::behaviors::CreateDummyFailure>(
+  // ---------- Register recovery_selector_test behaviors ---------- //
+  factory.registerNodeType<recovery_selector_test::behaviors::CreateDummyFailure>(
     "CreateDummyFailure", ros_node);
   
   // Create different DummyRecoveryStrategy behaviors
-  factory.registerNodeType<test_recovery_selector::behaviors::DummyRecoveryStrategy>(
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyRecoveryStrategy>(
     "RecoverFromLowBattery", ros_node, FailureCase::LOW_BATTERY);
-  factory.registerNodeType<test_recovery_selector::behaviors::DummyRecoveryStrategy>(
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyRecoveryStrategy>(
     "RecoverFromMotorFailure", ros_node, FailureCase::MOTOR_FAILURE);
-  factory.registerNodeType<test_recovery_selector::behaviors::DummyRecoveryStrategy>(
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyRecoveryStrategy>(
     "RecoverFromFailedGrasp", ros_node, FailureCase::FAILED_GRASP);
 
   // Create different DummyCondition behaviors
-  factory.registerNodeType<test_recovery_selector::behaviors::DummyCondition>(
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyCondition>(
     "ReconstructObject", ros_node);
-  factory.registerNodeType<test_recovery_selector::behaviors::DummyCondition>(
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyCondition>(
     "GraspsDetected", ros_node);
-  factory.registerNodeType<test_recovery_selector::behaviors::DummyCondition>(
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyCondition>(
     "PipeGrasped", ros_node);
 
   // Create different DummyTask behaviors
-  factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>(
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
     "PerformReconstruction", ros_node, 10.0, true);
-  factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>(
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
     "GeneratePredictedGrasps", ros_node, 10.0, true);
-  factory.registerNodeType<test_recovery_selector::behaviors::DummyTask>(
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
     "GraspPipe", ros_node, 10.0, true);
-  // ---------- Register test_recovery_selector behaviors ---------- //
+  // ---------- Register recovery_selector_test behaviors ---------- //
 
   // Register nrg_utility_behaviors
   nrg_utility_behaviors::Config config;
   config.ros_node = ros_node; // Share ROS2 node with utility tree nodes
   nrg_utility_behaviors::registerBehaviors(factory, config);
 
-  // Register test_recovery_selector FailureCase type
+  // Register recovery_selector_test FailureCase type
   factory.registerScriptingEnums<FailureCase>();
 
   // Create behavior tree
-  std::string share_path = ament_index_cpp::get_package_share_directory("test_recovery_selector");
+  std::string share_path = ament_index_cpp::get_package_share_directory("recovery_selector_test");
   BT::Tree tree = factory.createTreeFromFile(
-    share_path + "/behavior_trees/test_recovery_selector.xml");
+    share_path + "/behavior_trees/recovery_selector_test.xml");
 
   // Initialize blackboard variables that are not intialized by the tree
   tree.rootBlackboard()->set<std::vector<FailureCase>>("failure_state", std::vector<FailureCase>());
@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
 
   BT::Groot2Publisher publisher(tree); // Connect to Groot2Publisher
 
-  // BT::StdCoutLogger logger(tree); // Log status of tree during each tick
+  BT::StdCoutLogger logger(tree); // Log status of tree during each tick
   
   try
   {
@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
       //   RCLCPP_INFO(
       //     ros_node->get_logger(),
       //     "  - %s",
-      //     test_recovery_selector::failureCaseToString(failure_case).c_str());
+      //     recovery_selector_test::failureCaseToString(failure_case).c_str());
       // }
       
       RCLCPP_INFO(ros_node->get_logger(), "ticking----");
