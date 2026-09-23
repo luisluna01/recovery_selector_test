@@ -143,14 +143,17 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
   }
   // -------------- Verify ports and child branches are used properly ---------------
 
-  std::vector<EnumType> failure_state = maybe_failure_state.value(); // Current failure state to resolve from
-  EnumType case_value;
-  bool unregistered_failure_case = true; // Is there an unregistered failure case
-  int child_index = int(NUM_CASES);
+  
+  EnumType case_value{};
+  int child_index = int(NUM_CASES); // Initilaize the child_index to the default child
   bool found_case = false;
 
-  // If failure state is not empty attempt to create index to identify child that should be ticked
-  // - If failure state is empty choose default child
+  // Current failure state to resolve from
+  std::vector<EnumType> failure_state = maybe_failure_state.value();
+
+  // If failure state is not empty attempt attempt to create index to identify child that should be
+  // ticked
+  // - If failure state has unregistered failure case tick default branch
   if(!failure_state.empty())
   {
     // Check each case until the first match
@@ -166,7 +169,6 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
           {
             child_index = index;
 
-            unregistered_failure_case=false; // The failure case matches a key
             found_case = true;
             break;
           }

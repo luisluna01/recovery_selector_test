@@ -33,7 +33,9 @@
                         <RecoverFromFailedGrasp failure_state="{failure_state}"/>
 
                         <!-- Default -->
-                        <Print message="Ticking Default"/>
+                        <Timeout msec="5000">
+                            <Print message="Cannot resolve FailureCase. Performing Graceful Shutdown"/>
+                        </Timeout>
                         <!-- <AlwaysSuccess/> -->
                     </RecoverySelector>
                 </KeepRunningUntilFailure>
