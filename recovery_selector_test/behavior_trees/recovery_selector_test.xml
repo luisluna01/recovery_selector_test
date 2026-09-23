@@ -18,27 +18,22 @@
                     <Print message="Default: No failures..."/>
                 </Switch3> -->
                 <!-- <Fallback> -->
-                <KeepRunningUntilFailure>
-                    <RecoverySelector failure_state="{failure_state}" case_1="LOW_BATTERY" case_2="MOTOR_FAILURE" case_3="FAILED_GRASP">
-                        <!-- Low Battery -->
-                        <!-- <Print message="Ticking Low Battery"/> -->
-                        <RecoverFromLowBattery failure_state="{failure_state}"/>
+                <RecoverySelector failure_state="{failure_state}" case_1="LOW_BATTERY" case_2="MOTOR_FAILURE" case_3="FAILED_GRASP">
+                    <!-- Low Battery -->
+                    <RecoverFromLowBattery failure_state="{failure_state}"/>
 
-                        <!-- Motor Failure -->
-                        <!-- <Print message="Ticking Motor Failure"/> -->
-                        <RecoverFromMotorFailure failure_state="{failure_state}"/>
+                    <!-- Motor Failure -->
+                    <RecoverFromMotorFailure failure_state="{failure_state}"/>
 
-                        <!-- Failed Grasp -->
-                        <!-- <Print message="Ticking Failed Grasp"/> -->
-                        <RecoverFromFailedGrasp failure_state="{failure_state}"/>
+                    <!-- Failed Grasp -->
+                    <RecoverFromFailedGrasp failure_state="{failure_state}"/>
 
-                        <!-- Default -->
-                        <Timeout msec="5000">
-                            <Print message="Cannot resolve FailureCase. Performing Graceful Shutdown"/>
-                        </Timeout>
-                        <!-- <AlwaysSuccess/> -->
-                    </RecoverySelector>
-                </KeepRunningUntilFailure>
+                    <!-- Default -->
+                    <Sequence>
+                        <GracefulShutdown/>
+                        <AlwaysFailure/> <!-- Important to abort tree -->
+                    </Sequence>
+                </RecoverySelector>
 
                     <!-- <ForceFailure>
                         <Print message="RecoverySelector Failed!"/>
@@ -46,7 +41,7 @@
                 <!-- </Fallback> -->
                 
                 <!-- ~~~~~ Main Task ~~~~~ -->
-                <!-- <ReactiveFallback>
+                <ReactiveFallback>
                     <ReconstructObject condition_bool="{reconstruction_complete}"/>
                     <PerformReconstruction result="{reconstruction_complete}"/>
                 </ReactiveFallback>
@@ -59,7 +54,7 @@
                 <ReactiveFallback>
                     <PipeGrasped condition_bool="{pipe_grasped}"/>
                     <GraspPipe result="{pipe_grasped}"/>
-                </ReactiveFallback> -->
+                </ReactiveFallback>
                 <!-- ~~~~~ Main Task ~~~~~ -->
             </ReactiveSequence>
         </Parallel>

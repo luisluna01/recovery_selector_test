@@ -16,6 +16,7 @@
 #include "recovery_selector_test/behaviors/dummy_task.hpp"
 #include "recovery_selector_test/behaviors/dummy_recovery_strategy.hpp"
 #include "recovery_selector_test/behaviors/dummy_condition.hpp"
+#include "recovery_selector_test/behaviors/dummy_graceful_shutdown.hpp"
 
 // nrg_behaviors
 #include "nrg_behaviors/nrg_behaviors.hpp"
@@ -60,6 +61,10 @@ int main(int argc, char* argv[])
     "GeneratePredictedGrasps", ros_node, 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
     "GraspPipe", ros_node, 10.0, true);
+
+  // Create DummyGracefulShutdown behavior
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyGracefulShutdown>(
+    "GracefulShutdown", ros_node);
   // ---------- Register recovery_selector_test behaviors ---------- //
 
   // Register nrg_utility_behaviors
@@ -83,7 +88,7 @@ int main(int argc, char* argv[])
 
   BT::Groot2Publisher publisher(tree); // Connect to Groot2Publisher
 
-  BT::StdCoutLogger logger(tree); // Log status of tree during each tick
+  // BT::StdCoutLogger logger(tree); // Log status of tree during each tick
   
   try
   {
