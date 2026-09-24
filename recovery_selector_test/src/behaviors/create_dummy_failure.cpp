@@ -15,7 +15,8 @@ BT::PortsList CreateDummyFailure::providedPorts()
 {
   return {
     BT::InputPort<std::string>("topic", "/failure_source", "topic to subscribe to"),
-    BT::BidirectionalPort<std::vector<FailureCase>>("failure_state", "failures present in the blackboard")
+    BT::BidirectionalPort<std::vector<FailureCase>>("failure_state",
+      "failures present in the blackboard")
   };
 }
 
@@ -50,7 +51,8 @@ BT::NodeStatus CreateDummyFailure::onRunning()
       failure_state_locked.assign(std::vector<FailureCase>({})); // Assign empty vector
     }
     // Note: castPtr() access the value by pointer
-    else if(std::vector<FailureCase>* failure_state_ptr = failure_state_locked->castPtr<std::vector<FailureCase>>())
+    else if(std::vector<FailureCase>* failure_state_ptr =
+      failure_state_locked->castPtr<std::vector<FailureCase>>())
     {
       executor_.spin_some(std::chrono::milliseconds(0));
 
@@ -58,7 +60,8 @@ BT::NodeStatus CreateDummyFailure::onRunning()
       for(const FailureCase& failure_case : failure_case_queue_)
       {
         // Only add it if it isn't already present
-        if(std::find(failure_state_ptr->begin(), failure_state_ptr->end(), failure_case) == failure_state_ptr->end())
+        if(std::find(failure_state_ptr->begin(), failure_state_ptr->end(), failure_case) ==
+          failure_state_ptr->end())
         {
           failure_state_ptr->push_back(failure_case);
           
