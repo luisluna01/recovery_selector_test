@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 
   // Create different DummyCondition behaviors
   factory.registerNodeType<recovery_selector_test::behaviors::DummyCondition>(
-    "ReconstructObject", ros_node);
+    "ReconstructionComplete", ros_node);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyCondition>(
     "GraspsDetected", ros_node);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyCondition>(
@@ -56,11 +56,11 @@ int main(int argc, char* argv[])
 
   // Create different DummyTask behaviors
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "PerformReconstruction", ros_node, 10.0, true);
+    "ReconstructObject", ros_node, "/failure_source", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "GeneratePredictedGrasps", ros_node, 10.0, true);
+    "GeneratePredictedGrasps", ros_node, "/failure_source", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "GraspPipe", ros_node, 10.0, true);
+    "GraspPipe", ros_node, "/failure_source", 10.0, true);
 
   // Create DummyGracefulShutdown behavior
   factory.registerNodeType<recovery_selector_test::behaviors::DummyGracefulShutdown>(
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
 
   BT::Groot2Publisher publisher(tree); // Connect to Groot2Publisher
 
-  // BT::StdCoutLogger logger(tree); // Log status of tree during each tick
+  BT::StdCoutLogger logger(tree); // Log status of tree during each tick
   
   try
   {
