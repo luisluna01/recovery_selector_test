@@ -26,6 +26,7 @@ add_executable(recovery_selector_test_bt src/recovery_selector_test_bt.cpp
   src/behaviors/dummy_recovery_strategy.cpp
   src/behaviors/dummy_condition.cpp
   src/behaviors/dummy_graceful_shutdown.cpp
+  src/behaviors/no_failures_present.cpp
 )
 
 # Create dummy_failure_publisher node

@@ -17,6 +17,7 @@
 #include "recovery_selector_test/behaviors/dummy_recovery_strategy.hpp"
 #include "recovery_selector_test/behaviors/dummy_condition.hpp"
 #include "recovery_selector_test/behaviors/dummy_graceful_shutdown.hpp"
+#include "recovery_selector_test/behaviors/no_failures_present.hpp"
 
 // nrg_behaviors
 #include "nrg_behaviors/nrg_behaviors.hpp"
@@ -65,6 +66,9 @@ int main(int argc, char* argv[])
   // Create DummyGracefulShutdown behavior
   factory.registerNodeType<recovery_selector_test::behaviors::DummyGracefulShutdown>(
     "GracefulShutdown", ros_node);
+
+  factory.registerNodeType<recovery_selector_test::behaviors::NoFailuresPresent>(
+    "NoFailuresPresent", ros_node);
   // ---------- Register recovery_selector_test behaviors ---------- //
 
   // Register nrg_utility_behaviors
