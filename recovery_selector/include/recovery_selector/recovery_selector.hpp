@@ -183,10 +183,10 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
 
     }
   }
-  // If failure state is empty return SUCCESS
+  // If failure state is empty return RUNNING
   else
   {
-    return BT::NodeStatus::SUCCESS;
+    return BT::NodeStatus::RUNNING;
   }
 
   // Unless undefined_failure child, halt currently running child if different from appropriate case
@@ -214,7 +214,7 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
   {
     running_child_ = child_index;
   }
-  else // If RecoverySelector returns SUCCESS or FAILURE
+  else
   {
     // Set status of all children to IDLE and send halt() signal to all RUNNING children
     resetChildren();
@@ -223,7 +223,12 @@ inline BT::NodeStatus RecoverySelector<EnumType, NUM_CASES>::tick()
     running_child_ = -1;
   }
 
-  return selected_child_status;
+  if (selected_child_status == BT::NodeStatus::FAILURE)
+  {
+    return BT::NodeStatus::FAILURE;
+  }
+
+  return BT::NodeStatus::RUNNING;
 }
 
 
