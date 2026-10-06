@@ -57,11 +57,14 @@ int main(int argc, char* argv[])
 
   // Create different DummyTask behaviors
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "ReconstructObject", ros_node, "/failure_source", 10.0, true);
+    "ReconstructObject", ros_node, "/failure_source",
+    /*completion_time=*/10.0, /*use_result_flag=*/true, /*use_subscriber=*/false);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "GeneratePredictedGrasps", ros_node, "/failure_source", 10.0, true);
+    "GeneratePredictedGrasps", ros_node, "/failure_source",
+    /*completion_time=*/10.0, /*use_result_flag=*/true, /*use_subscriber=*/false);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "GraspPipe", ros_node, "/failure_source", 10.0, true);
+    "GraspPipe", ros_node, "/failure_source",
+    /*completion_time=*/10.0, /*use_result_flag=*/true, /*use_subscriber=*/false);
 
   // Create DummyGracefulShutdown behavior
   factory.registerNodeType<recovery_selector_test::behaviors::DummyGracefulShutdown>(
@@ -92,7 +95,7 @@ int main(int argc, char* argv[])
 
   BT::Groot2Publisher publisher(tree); // Connect to Groot2Publisher
 
-  BT::StdCoutLogger logger(tree); // Log status of tree during each tick
+  // BT::StdCoutLogger logger(tree); // Log status of tree during each tick
   
   try
   {
@@ -101,16 +104,16 @@ int main(int argc, char* argv[])
 
     while (rclcpp::ok() && status == BT::NodeStatus::RUNNING)
     {
-      // // Print failure cases in failure state blackboard key
-      // auto failure_state = tree.rootBlackboard()->get<std::vector<FailureCase>>("failure_state");
-      // RCLCPP_INFO(ros_node->get_logger(), "failure_state: ");
-      // for (const FailureCase& failure_case : failure_state)
-      // {
-      //   RCLCPP_INFO(
-      //     ros_node->get_logger(),
-      //     "  - %s",
-      //     recovery_selector_test::failureCaseToString(failure_case).c_str());
-      // }
+      // Print failure cases in failure state blackboard key
+      auto failure_state = tree.rootBlackboard()->get<std::vector<FailureCase>>("failure_state");
+      RCLCPP_INFO(ros_node->get_logger(), "failure_state: ");
+      for (const FailureCase& failure_case : failure_state)
+      {
+        RCLCPP_INFO(
+          ros_node->get_logger(),
+          "  - %s",
+          recovery_selector_test::failureCaseToString(failure_case).c_str());
+      }
       
       RCLCPP_INFO(ros_node->get_logger(), "ticking----");
 
