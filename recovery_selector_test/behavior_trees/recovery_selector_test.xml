@@ -4,59 +4,50 @@
         <!-- <Parallel success_count="1" failure_count="1"> -->
             <!-- <CreateDummyFailure topic="/failure_source" failure_state="{failure_state}"/> -->
 
-            <ReactiveSequence>
+            <ReactiveFallback>
                 <!-- Only use when ticking rate is <= 100ms -->
-                <!-- <Print message="~~~~~~~~~~ ticking tree ~~~~~~~~~~"/> -->
-
-                <!-- <Switch3 variable="{failure_state}" case_1="a" case_2="b" case_3="c">
-                    <Print message="Case A resolving..."/>
-
-                    <Print message="Case B resolving..."/>
-
-                    <Print message="Case C resolving..."/>
-
-                    <Print message="Default: No failures..."/>
-                </Switch3> -->
-                <Fallback>
-                    <RecoverySelector failure_state="{failure_state}" case_1="LOW_BATTERY" case_2="MOTOR_FAILURE" case_3="FAILED_GRASP">
-                        <!-- Low Battery -->
-                        <RecoverFromLowBattery failure_state="{failure_state}"/>
-
-                        <!-- Motor Failure -->
-                        <RecoverFromMotorFailure failure_state="{failure_state}"/>
-
-                        <!-- Failed Grasp -->
-                        <RecoverFromFailedGrasp failure_state="{failure_state}"/>
-
-                        <!-- Default -->
-                        <Sequence>
-                            <GracefulShutdown/>
-                            <AlwaysFailure/> <!-- Important to abort tree -->
-                        </Sequence>
-                    </RecoverySelector>
-
-                    <ForceFailure>
-                        <Print message="RecoverySelector Failed!"/>
-                    </ForceFailure>
-                </Fallback>
+                <!-- <Print message="~~~~~~~~~~ ticking tree ~~~~~~~~~~"/> --> 
                 
-                <!-- ~~~~~ Main Task ~~~~~ -->
-                <ReactiveFallback>
-                    <ReconstructionComplete condition_bool="{reconstruction_complete}"/>
-                    <ReconstructObject result="{reconstruction_complete}" failure_state="{failure_state}"/>
-                </ReactiveFallback>
+                <ReactiveSequence>
+                    <NoFailuresPresent failure_state="{failure_state}"/>
+                    
+                    <!-- ~~~~~ Main Task ~~~~~ -->
+                    <ReactiveFallback>
+                        <ReconstructionComplete condition_bool="{reconstruction_complete}"/>
+                        <ReconstructObject result="{reconstruction_complete}" failure_state="{failure_state}"/>
+                    </ReactiveFallback>
 
-                <ReactiveFallback>
-                    <GraspsDetected condition_bool="{grasps_detected}"/>
-                    <GeneratePredictedGrasps result="{grasps_detected}" failure_state="{failure_state}"/>
-                </ReactiveFallback>
-                
-                <ReactiveFallback>
-                    <PipeGrasped condition_bool="{pipe_grasped}"/>
-                    <GraspPipe result="{pipe_grasped}" failure_state="{failure_state}"/>
-                </ReactiveFallback>
-                <!-- ~~~~~ Main Task ~~~~~ -->
-            </ReactiveSequence>
+                    <ReactiveFallback>
+                        <GraspsDetected condition_bool="{grasps_detected}"/>
+                        <GeneratePredictedGrasps result="{grasps_detected}" failure_state="{failure_state}"/>
+                    </ReactiveFallback>
+                    
+                    <ReactiveFallback>
+                        <PipeGrasped condition_bool="{pipe_grasped}"/>
+                        <GraspPipe result="{pipe_grasped}" failure_state="{failure_state}"/>
+                    </ReactiveFallback>
+                    <!-- ~~~~~ Main Task ~~~~~ -->
+                </ReactiveSequence>
+
+                <RecoverySelector failure_state="{failure_state}" case_1="LOW_BATTERY" case_2="MOTOR_FAILURE" case_3="FAILED_GRASP">
+                    <!-- Low Battery -->
+                    <RecoverFromLowBattery failure_state="{failure_state}"/>
+
+                    <!-- Motor Failure -->
+                    <RecoverFromMotorFailure failure_state="{failure_state}"/>
+
+                    <!-- Failed Grasp -->
+                    <RecoverFromFailedGrasp failure_state="{failure_state}"/>
+
+                    <!-- Default -->
+                    <Sequence>
+                        <GracefulShutdown/>
+                        
+                        <AlwaysFailure/> <!-- Important to abort tree -->
+                    </Sequence>
+                </RecoverySelector>
+
+            </ReactiveFallback>
         <!-- </Parallel> -->
     </BehaviorTree>
 </root>
