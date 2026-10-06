@@ -10,27 +10,14 @@ DummyTask::DummyTask(
   const rclcpp::Node::SharedPtr& node,
   const std::string& topic,
   double completion_time,
-  bool use_result_flag,
-  bool use_subscriber
+  bool use_result_flag
 ):
   StatefulActionNode(name, config),
   node_(node),
   topic_(topic),
   completion_time_(completion_time),
-  use_result_flag_(use_result_flag),
-  use_subscriber_(use_subscriber)
-{
-  // [failure_state] port is only meaningful when failures are read from the subscriber
-  const bool failure_state_in_xml =
-    config.input_ports.count("failure_state") > 0 ||
-    config.output_ports.count("failure_state") > 0;
-
-  if(!use_subscriber_ && failure_state_in_xml)
-  {
-    throw BT::RuntimeError(
-      "[", name, "]: port [failure_state] is set in the XML but use_subscriber is false");
-  }
-}
+  use_result_flag_(use_result_flag)
+{}
 
 
 BT::PortsList DummyTask::providedPorts()
@@ -46,30 +33,27 @@ BT::PortsList DummyTask::providedPorts()
 
 BT::NodeStatus DummyTask::onStart()
 {
+  // Validate [failure_state] port
+  auto maybe_failure_state = getInput<std::vector<FailureCase>>("failure_state");
+  if(!maybe_failure_state)
+  {
+    throw BT::RuntimeError(
+      "invalid input port [failure_state]: ", maybe_failure_state.error());
+  }
+  failure_state_ = maybe_failure_state.value();
+
   // Record time behavior should complete using ROS time
   completion_time_ros_ = node_->now() + rclcpp::Duration::from_seconds(completion_time_);
 
-  if(use_subscriber_)
+  // Create subscriber on first tick only
+  if (!subscriber_)
   {
-    // Validate [failure_state] port
-    auto maybe_failure_state = getInput<std::vector<FailureCase>>("failure_state");
-    if(!maybe_failure_state)
-    {
-      throw BT::RuntimeError(
-        "invalid input port [failure_state]: ", maybe_failure_state.error());
-    }
-    failure_state_ = maybe_failure_state.value();
-
-    // Create subscriber on first tick only
-    if (!subscriber_)
-    {
-      createSubscriber();
-    }
-
-    // Drain the messages from the queue and clear last_message_
-    executor_.spin_some(std::chrono::milliseconds(0));
-    failure_case_vec_.clear(); // Clear any messages received after spin_some()
+    createSubscriber();
   }
+
+  // Drain the messages from the queue and clear last_message_
+  executor_.spin_some(std::chrono::milliseconds(0));
+  failure_case_vec_.clear(); // Clear any messages received after spin_some()
 
   last_print_time_ = node_->now();
   RCLCPP_INFO(node_->get_logger(), "[%s] performing task...", this->name().c_str());
@@ -96,14 +80,11 @@ BT::NodeStatus DummyTask::onRunning()
     return BT::NodeStatus::SUCCESS;
   }
 
-  if(use_subscriber_)
-  {
-    // Subscribe all messages from the queue
-    executor_.spin_some(std::chrono::milliseconds(0));
-  }
+  // Subscribe all messages from the queue
+  executor_.spin_some(std::chrono::milliseconds(0));
 
   // Output first failure_case read from subscriber
-  if(use_subscriber_ && !failure_case_vec_.empty())
+  if(!failure_case_vec_.empty())
   {
     // Get latest value in failure_state blackboard key
     failure_state_ = getInput<std::vector<FailureCase>>("failure_state").value();

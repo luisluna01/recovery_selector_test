@@ -1,8 +1,8 @@
 <!-- Templated Tree -->
 <root BTCPP_format="4">
     <BehaviorTree ID="RecoverySelectorTest">
-        <Parallel success_count="1" failure_count="1">
-            <CreateDummyFailure topic="/failure_source" failure_state="{failure_state}"/>
+        <!-- <Parallel success_count="1" failure_count="1"> -->
+            <!-- <CreateDummyFailure topic="/failure_source" failure_state="{failure_state}"/> -->
 
             <ReactiveFallback>
                 <!-- Only use when ticking rate is <= 100ms -->
@@ -14,17 +14,17 @@
                     <!-- ~~~~~ Main Task ~~~~~ -->
                     <ReactiveFallback>
                         <ReconstructionComplete condition_bool="{reconstruction_complete}"/>
-                        <ReconstructObject result="{reconstruction_complete}"/>
+                        <ReconstructObject result="{reconstruction_complete}" failure_state="{failure_state}"/>
                     </ReactiveFallback>
 
                     <ReactiveFallback>
                         <GraspsDetected condition_bool="{grasps_detected}"/>
-                        <GeneratePredictedGrasps result="{grasps_detected}"/>
+                        <GeneratePredictedGrasps result="{grasps_detected}" failure_state="{failure_state}"/>
                     </ReactiveFallback>
                     
                     <ReactiveFallback>
                         <PipeGrasped condition_bool="{pipe_grasped}"/>
-                        <GraspPipe result="{pipe_grasped}"/>
+                        <GraspPipe result="{pipe_grasped}" failure_state="{failure_state}"/>
                     </ReactiveFallback>
                     <!-- ~~~~~ Main Task ~~~~~ -->
                 </ReactiveSequence>
@@ -48,6 +48,6 @@
                 </RecoverySelector>
 
             </ReactiveFallback>
-        </Parallel>
+        <!-- </Parallel> -->
     </BehaviorTree>
 </root>

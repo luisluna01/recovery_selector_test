@@ -23,8 +23,7 @@ public:
     const rclcpp::Node::SharedPtr& node,
     const std::string& topic = "/failure_source",
     double completion_time = 10.0,
-    bool use_result_flag = false,
-    bool use_subscriber = true
+    bool use_result_flag = false
   );
 
   static BT::PortsList providedPorts();
@@ -48,8 +47,7 @@ private:
   rclcpp::CallbackGroup::SharedPtr callback_group_;
   rclcpp::executors::SingleThreadedExecutor executor_;
 
-  // Each DummyTask with use_subscriber_ set to true creates its own, so every instance receives
-  // every message published on topic_
+  // Static to ensure only one subscriber is created across all DummyTask nodes
   rclcpp::Subscription<recovery_selector_test_msgs::msg::FailureCase>::SharedPtr subscriber_;
 
   rclcpp::Time completion_time_ros_;
@@ -62,7 +60,6 @@ private:
   std::string topic_; // Topic name used for the subscriber
   double completion_time_; // Time for this behavior to run in seconds
   bool use_result_flag_; // Whether or not result port will be used
-  bool use_subscriber_; // Whether or not to listen for failure cases on topic_
 };
 
 } // namespace recovery_selector_test::behaviors

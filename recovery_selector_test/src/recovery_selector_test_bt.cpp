@@ -57,14 +57,11 @@ int main(int argc, char* argv[])
 
   // Create different DummyTask behaviors
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "ReconstructObject", ros_node, "/failure_source",
-    /*completion_time=*/10.0, /*use_result_flag=*/true, /*use_subscriber=*/false);
+    "ReconstructObject", ros_node, "/failure_source", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "GeneratePredictedGrasps", ros_node, "/failure_source",
-    /*completion_time=*/10.0, /*use_result_flag=*/true, /*use_subscriber=*/false);
+    "GeneratePredictedGrasps", ros_node, "/failure_source", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "GraspPipe", ros_node, "/failure_source",
-    /*completion_time=*/10.0, /*use_result_flag=*/true, /*use_subscriber=*/false);
+    "GraspPipe", ros_node, "/failure_source", 10.0, true);
 
   // Create DummyGracefulShutdown behavior
   factory.registerNodeType<recovery_selector_test::behaviors::DummyGracefulShutdown>(
