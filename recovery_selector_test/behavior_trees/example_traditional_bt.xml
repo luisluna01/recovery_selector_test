@@ -1,0 +1,11 @@
+<root BTCPP_format="4">
+    <BehaviorTree ID="ExampleTraditionalBT">
+        <ReactiveFallback>
+            
+            <InRoom condition_bool="{in_room}"/>
+
+            <WalkInRoom result="{in_room}" failure_state="{failure_state}"/>
+
+        </ReactiveFallback>        
+    </BehaviorTree>
+</root>

@@ -18,9 +18,8 @@ find_package(ament_index_cpp REQUIRED)
 find_package(recovery_selector_test_msgs REQUIRED)
 find_package(magic_enum REQUIRED)
 
-# Create behavior tree node executable
-add_executable(recovery_selector_test_bt src/recovery_selector_test_bt.cpp
-  # Behaviors
+# Behaviors shared by the behavior tree executables
+add_library(recovery_selector_test_behaviors STATIC
   src/behaviors/create_dummy_failure.cpp
   src/behaviors/dummy_task.cpp
   src/behaviors/dummy_recovery_strategy.cpp
@@ -28,26 +27,49 @@ add_executable(recovery_selector_test_bt src/recovery_selector_test_bt.cpp
   src/behaviors/dummy_graceful_shutdown.cpp
   src/behaviors/no_failures_present.cpp
 )
+target_include_directories(recovery_selector_test_behaviors PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+ament_target_dependencies(recovery_selector_test_behaviors PUBLIC
+  rclcpp
+  behaviortree_cpp
+  recovery_selector_test_msgs
+)
+target_link_libraries(recovery_selector_test_behaviors PUBLIC
+  magic_enum::magic_enum
+)
+set_target_properties(recovery_selector_test_behaviors PROPERTIES
+  POSITION_INDEPENDENT_CODE ON
+)
+
+# Create behavior tree node executables
+add_executable(recovery_selector_test_bt src/recovery_selector_test_bt.cpp)
+add_executable(example_traditional_bt src/example_traditional_bt.cpp)
 
 # Create dummy_failure_publisher node
 add_executable(dummy_failure_publisher src/dummy_failure_publisher.cpp)
-
-# Add include directories
-target_include_directories(recovery_selector_test_bt PRIVATE
-  include
-)
 target_include_directories(dummy_failure_publisher PRIVATE
   include
 )
 
-# Link dependencies to recovery_selector_test_bt
-ament_target_dependencies(recovery_selector_test_bt
-  rclcpp
-  behaviortree_cpp
+# Link shared behaviors (and their dependencies) to the behavior tree executables
+target_link_libraries(recovery_selector_test_bt PRIVATE
+  recovery_selector_test_behaviors
+)
+target_link_libraries(example_traditional_bt PRIVATE
+  recovery_selector_test_behaviors
+)
+
+# Link dependencies specific to each behavior tree executable
+ament_target_dependencies(recovery_selector_test_bt PUBLIC
   ament_index_cpp
   recovery_selector
   nrg_behaviors
-  recovery_selector_test_msgs
+)
+ament_target_dependencies(example_traditional_bt PUBLIC
+  ament_index_cpp
+  recovery_selector
 )
 
 # Link dependencies to dummy_failure_publisher node
@@ -60,7 +82,7 @@ target_link_libraries(dummy_failure_publisher
 )
 
 # Install executables
-install(TARGETS recovery_selector_test_bt dummy_failure_publisher
+install(TARGETS recovery_selector_test_bt example_traditional_bt dummy_failure_publisher
   DESTINATION lib/${PROJECT_NAME}
 )
 
