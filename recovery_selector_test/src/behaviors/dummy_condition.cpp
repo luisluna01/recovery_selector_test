@@ -13,7 +13,7 @@ DummyCondition::DummyCondition(
 
 BT::PortsList DummyCondition::providedPorts()
 {
-  return { BT::InputPort<bool>("condition_bool", "Boolean determines if condition is true")};
+  return { BT::InputPort<bool>("condition_bool", false, "Boolean determines if condition is true")};
 }
 
 
