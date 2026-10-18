@@ -42,6 +42,8 @@ BT::NodeStatus DummyTask::onStart()
   }
   failure_state_ = maybe_failure_state.value();
 
+  task_complete_ = false;
+
   // Record time behavior should complete using ROS time
   completion_time_ros_ = node_->now() + rclcpp::Duration::from_seconds(completion_time_);
 
@@ -62,6 +64,7 @@ BT::NodeStatus DummyTask::onStart()
   {
     setOutput("result", false);
   }
+
   return BT::NodeStatus::RUNNING;
 }
 
@@ -69,15 +72,24 @@ BT::NodeStatus DummyTask::onStart()
 BT::NodeStatus DummyTask::onRunning()
 {
   // Return SUCCESS if completion time reached
-  if(node_->now() >= completion_time_ros_)
+  // Note:  Placed before setting [result] to 'true' to make behavior return SUCCESS after one
+  //        more tick
+  if(task_complete_ == true)
   {
     RCLCPP_INFO(node_->get_logger(), "[%s] task complete!", this->name().c_str());
 
+    return BT::NodeStatus::SUCCESS;
+  }
+
+  // Outpur result to 'true' if completion time reached
+  if(node_->now() >= completion_time_ros_)
+  {
     if(use_result_flag_)
     {
       setOutput("result", true);
     }
-    return BT::NodeStatus::SUCCESS;
+
+    task_complete_ = true;
   }
 
   // Subscribe all messages from the queue

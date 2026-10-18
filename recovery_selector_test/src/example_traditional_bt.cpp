@@ -1,9 +1,9 @@
 #include <rclcpp/rclcpp.hpp>
 #include <behaviortree_cpp/bt_factory.h>
 #include <behaviortree_cpp/loggers/groot2_publisher.h>
+#include <behaviortree_cpp/loggers/bt_cout_logger.h>
 
 #include <ament_index_cpp/get_package_share_directory.hpp>
-
 
 // recovery_selector_test FailureCase type
 #include "recovery_selector_test/failure_case_type.hpp"
@@ -49,6 +49,8 @@ int main(int argc, char* argv[])
   tree.rootBlackboard()->set<bool>("in_room", false);
 
   BT::Groot2Publisher publisher(tree); // Connect to Groot2Publisher
+
+  // BT::StdCoutLogger logger(tree); // Log status of tree during each tick
 
   try
   {
