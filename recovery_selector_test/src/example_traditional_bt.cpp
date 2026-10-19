@@ -20,6 +20,9 @@
 #include "recovery_selector_test/behaviors/dummy_task_with_undo.hpp"
 #include "recovery_selector_test/behaviors/dummy_condition.hpp"
 
+// nrg_behaviors
+#include "nrg_behaviors/nrg_behaviors.hpp"
+
 using recovery_selector_test::FailureCase;
 
 // Directory the TreeNodesModel XMLs are written to for Groot2 (<package>/config)
@@ -75,6 +78,11 @@ int main(int argc, char* argv[])
     "UnlockDoor", ros_node, "/unlock_door_failure", 10.0, true);
   // ---------- Register recovery_selector_test behaviors ---------- //
   
+  // Register nrg_utility_behaviors
+  nrg_utility_behaviors::Config config;
+  config.ros_node = ros_node; // Share ROS2 node with utility tree nodes
+  nrg_utility_behaviors::registerBehaviors(factory, config);
+
   // Register recovery_selector_test FailureCase type
   factory.registerScriptingEnums<FailureCase>();
   

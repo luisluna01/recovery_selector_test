@@ -18,6 +18,7 @@ find_package(ament_index_cpp REQUIRED)
 find_package(recovery_selector_test_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(magic_enum REQUIRED)
+find_package(nrg_behaviors REQUIRED)
 
 # Behaviors shared by the behavior tree executables
 add_library(recovery_selector_test_behaviors STATIC
@@ -80,6 +81,7 @@ ament_target_dependencies(recovery_selector_test_bt PUBLIC
 ament_target_dependencies(example_traditional_bt PUBLIC
   ament_index_cpp
   recovery_selector
+  nrg_behaviors
 )
 
 # Link dependencies to dummy_failure_publisher node
