@@ -15,10 +15,10 @@ namespace recovery_selector_test::behaviors
 // returns FAILURE and outputs false on the [failure_case_bool] port. The port is never written
 // otherwise, and true messages are ignored
 // Note: Prints message every second
-class DummyTaskSimple : public BT::StatefulActionNode
+class SimpleDummyTask : public BT::StatefulActionNode
 {
 public:
-  DummyTaskSimple(
+  SimpleDummyTask(
     const std::string& name,
     const BT::NodeConfig& config,
     const rclcpp::Node::SharedPtr& node,

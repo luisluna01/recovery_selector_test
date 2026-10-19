@@ -1,10 +1,10 @@
-#include "recovery_selector_test/behaviors/dummy_task_simple.hpp"
+#include "recovery_selector_test/behaviors/simple_dummy_task.hpp"
 
 
 namespace recovery_selector_test::behaviors
 {
 
-DummyTaskSimple::DummyTaskSimple(
+SimpleDummyTask::SimpleDummyTask(
   const std::string& name,
   const BT::NodeConfig& config,
   const rclcpp::Node::SharedPtr& node,
@@ -20,7 +20,7 @@ DummyTaskSimple::DummyTaskSimple(
 {}
 
 
-BT::PortsList DummyTaskSimple::providedPorts()
+BT::PortsList SimpleDummyTask::providedPorts()
 {
   return{
     /* Implemented for condition nodes */
@@ -31,7 +31,7 @@ BT::PortsList DummyTaskSimple::providedPorts()
 }
 
 
-BT::NodeStatus DummyTaskSimple::onStart()
+BT::NodeStatus SimpleDummyTask::onStart()
 {
   task_complete_ = false;
 
@@ -60,7 +60,7 @@ BT::NodeStatus DummyTaskSimple::onStart()
 }
 
 
-BT::NodeStatus DummyTaskSimple::onRunning()
+BT::NodeStatus SimpleDummyTask::onRunning()
 {
   // Return SUCCESS if completion time reached
   // Note:  Placed before setting [result] to 'true' to make behavior return SUCCESS after one
@@ -110,7 +110,7 @@ BT::NodeStatus DummyTaskSimple::onRunning()
 }
 
 
-void DummyTaskSimple::onHalted()
+void SimpleDummyTask::onHalted()
 {
   RCLCPP_WARN(node_->get_logger(), "[%s] halted", this->name().c_str());
 }
@@ -119,7 +119,7 @@ void DummyTaskSimple::onHalted()
 // Helper Member Functions
 // ------------------------------------------------------------
 
-void DummyTaskSimple::createSubscriber()
+void SimpleDummyTask::createSubscriber()
 {
   // Create callback group for subscriber
   // Note: Invoked in current thread to avoid having to guard data in callback against concurrency
@@ -134,13 +134,13 @@ void DummyTaskSimple::createSubscriber()
   subscriber_ = node_->create_subscription<std_msgs::msg::Bool>(
     topic_,
     rclcpp::QoS(1), /* Only the current Bool message is needed */
-    std::bind(&DummyTaskSimple::listenerCallback, this, std::placeholders::_1),
+    std::bind(&SimpleDummyTask::listenerCallback, this, std::placeholders::_1),
     subscriber_options
   );
 }
 
 
-void DummyTaskSimple::listenerCallback(const std_msgs::msg::Bool& msg)
+void SimpleDummyTask::listenerCallback(const std_msgs::msg::Bool& msg)
 {
   // Only false messages are of interest. True messages are ignored
   if(!msg.data)
