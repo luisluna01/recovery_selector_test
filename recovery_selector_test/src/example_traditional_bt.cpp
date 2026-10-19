@@ -62,11 +62,11 @@ int main(int argc, char* argv[])
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
     "TurnHandle", ros_node, "/turn_handle", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "GraspHandle", ros_node, "/turn_handle", 10.0, true);
+    "GraspHandle", ros_node, "/grasp_handle", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "RealignGripper", ros_node, "/turn_handle", 10.0, false);
+    "RealignGripper", ros_node, "/realign_gripper", 10.0, false);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "UnlockDoor", ros_node, "/turn_handle", 10.0, true);
+    "UnlockDoor", ros_node, "/unlock_door", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
     "WalkToDoor", ros_node, "/walk_to_door", 10.0, true);
   // ---------- Register recovery_selector_test behaviors ---------- //
@@ -94,8 +94,6 @@ int main(int argc, char* argv[])
   tree.rootBlackboard()->set<bool>("handle_grasped", false);
   tree.rootBlackboard()->set<bool>("handle_turned", false);
   tree.rootBlackboard()->set<bool>("door_unlocked", true);
-
-  
 
   try
   {
