@@ -24,6 +24,7 @@ add_library(recovery_selector_test_behaviors STATIC
   src/behaviors/create_dummy_failure.cpp
   src/behaviors/dummy_task.cpp
   src/behaviors/simple_dummy_task.cpp
+  src/behaviors/dummy_task_with_undo.cpp
   src/behaviors/dummy_recovery_strategy.cpp
   src/behaviors/dummy_condition.cpp
   src/behaviors/dummy_graceful_shutdown.cpp
