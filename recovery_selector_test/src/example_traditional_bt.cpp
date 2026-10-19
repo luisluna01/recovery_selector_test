@@ -1,3 +1,5 @@
+#include <filesystem>
+
 #include <rclcpp/rclcpp.hpp>
 #include <behaviortree_cpp/bt_factory.h>
 #include <behaviortree_cpp/loggers/groot2_publisher.h>
@@ -7,6 +9,7 @@
 
 // recovery_selector_test FailureCase type
 #include "recovery_selector_test/failure_case_type.hpp"
+#include "recovery_selector_test/write_tree_nodes_model.hpp"
 
 // RecoverySelector behavior
 #include "recovery_selector/recovery_selector.hpp"
@@ -16,6 +19,10 @@
 #include "recovery_selector_test/behaviors/dummy_condition.hpp"
 
 using recovery_selector_test::FailureCase;
+
+// Directory the TreeNodesModel XMLs are written to for Groot2 (<package>/config)
+static const std::string CONFIG_DIR =
+  (std::filesystem::path(__FILE__).parent_path().parent_path() / "config").string();
 
 int main(int argc, char* argv[])
 {
@@ -69,8 +76,14 @@ int main(int argc, char* argv[])
   
   // Create behavior tree
   std::string share_path = ament_index_cpp::get_package_share_directory("recovery_selector_test");
-  BT::Tree tree = factory.createTreeFromFile(
-    share_path + "/behavior_trees/example_traditional_bt.xml");
+  const std::string bt_xml_name = "example_traditional_bt.xml";
+  BT::Tree tree = factory.createTreeFromFile(share_path + "/behavior_trees/" + bt_xml_name);
+
+  // Write tree and TreeNodesModel XML to config/ for Groot2
+  recovery_selector_test::writeTreeNodesModel(
+    tree, bt_xml_name, CONFIG_DIR, ros_node->get_logger());
+
+  // BT::StdCoutLogger logger(tree); // Log status of tree during each tick
 
   // Initialize blackboard keys read before any node has written them
   tree.rootBlackboard()->set<std::vector<FailureCase>>("failure_state", std::vector<FailureCase>());

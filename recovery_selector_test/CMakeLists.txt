@@ -92,10 +92,11 @@ install(
   DESTINATION include
 )
 
-# Install behavior_trees and launch directory
+# Install behavior_trees, config and launch directory
 install(
   DIRECTORY
     behavior_trees
+    config
     launch
   DESTINATION share/${PROJECT_NAME}
 )
