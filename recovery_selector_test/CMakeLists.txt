@@ -16,12 +16,14 @@ find_package(recovery_selector REQUIRED)
 find_package(nrg_behaviors REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(recovery_selector_test_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(magic_enum REQUIRED)
 
 # Behaviors shared by the behavior tree executables
 add_library(recovery_selector_test_behaviors STATIC
   src/behaviors/create_dummy_failure.cpp
   src/behaviors/dummy_task.cpp
+  src/behaviors/dummy_task_simple.cpp
   src/behaviors/dummy_recovery_strategy.cpp
   src/behaviors/dummy_condition.cpp
   src/behaviors/dummy_graceful_shutdown.cpp
@@ -35,6 +37,7 @@ ament_target_dependencies(recovery_selector_test_behaviors PUBLIC
   rclcpp
   behaviortree_cpp
   recovery_selector_test_msgs
+  std_msgs
 )
 target_link_libraries(recovery_selector_test_behaviors PUBLIC
   magic_enum::magic_enum
