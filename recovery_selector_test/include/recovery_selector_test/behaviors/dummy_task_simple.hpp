@@ -11,8 +11,9 @@ namespace recovery_selector_test::behaviors
 {
 
 // This behavior pretends to perform a task by running for a desired amount of time before
-// completion. It reads a std_msgs/msg/Bool topic and outputs the latest value on the
-// [failure_case_bool] port. The behavior returns FAILURE if the latest Bool message is true
+// completion. It reads a std_msgs/msg/Bool topic. If a false Bool message is received, the behavior
+// returns FAILURE and outputs false on the [failure_case_bool] port. The port is never written
+// otherwise, and true messages are ignored
 // Note: Prints message every second
 class DummyTaskSimple : public BT::StatefulActionNode
 {
@@ -40,7 +41,7 @@ private:
   // create duplicate subscriber
   void createSubscriber();
 
-  // Subscriber callback which reads and copies the Bool message
+  // Subscriber callback which records whether a false Bool message was received
   void listenerCallback(const std_msgs::msg::Bool& msg);
 
   rclcpp::Node::SharedPtr node_;
@@ -54,7 +55,7 @@ private:
   rclcpp::Time last_print_time_;
   rclcpp::Duration print_period_ = rclcpp::Duration::from_seconds(1.0);
 
-  bool failure_case_bool_ = false; // Data of the latest Bool message received
+  bool false_received_ = false; // Whether a false Bool message has been received
 
   std::string topic_; // Topic name used for the subscriber
   double completion_time_; // Time for this behavior to run in seconds

@@ -26,7 +26,7 @@ BT::PortsList DummyTaskSimple::providedPorts()
     /* Implemented for condition nodes */
     BT::OutputPort<bool>("result", "Whether or not the task completed successfully"),
     BT::OutputPort<bool>("failure_case_bool",
-      "Whether or not the latest Bool message received was true")
+      "Outputs false when a false Bool message is received. Never written otherwise")
   };
 }
 
@@ -44,9 +44,9 @@ BT::NodeStatus DummyTaskSimple::onStart()
     createSubscriber();
   }
 
-  // Read the current message on the topic
+  // Drain the message on the topic and discard any false message received before this start
   executor_.spin_some(std::chrono::milliseconds(0));
-  setOutput("failure_case_bool", failure_case_bool_);
+  false_received_ = false;
 
   last_print_time_ = node_->now();
   RCLCPP_INFO(node_->get_logger(), "[%s] performing task...", this->name().c_str());
@@ -86,14 +86,15 @@ BT::NodeStatus DummyTaskSimple::onRunning()
   // Read the current message on the topic
   executor_.spin_some(std::chrono::milliseconds(0));
 
-  // Output whether or not the latest Bool message is true
-  setOutput("failure_case_bool", failure_case_bool_);
-
-  if(failure_case_bool_)
+  // Output false and return FAILURE if a false Bool message was received
+  if(false_received_)
   {
+    false_received_ = false;
+    setOutput("failure_case_bool", false);
+
     RCLCPP_DEBUG(
       node_->get_logger(),
-      "[%s] [failure_case_bool] port is true", this->name().c_str());
+      "[%s] received false, set [failure_case_bool] port to false", this->name().c_str());
 
     return BT::NodeStatus::FAILURE;
   }
@@ -141,7 +142,11 @@ void DummyTaskSimple::createSubscriber()
 
 void DummyTaskSimple::listenerCallback(const std_msgs::msg::Bool& msg)
 {
-  failure_case_bool_ = msg.data;
+  // Only false messages are of interest. True messages are ignored
+  if(!msg.data)
+  {
+    false_received_ = true;
+  }
 
   return;
 }
