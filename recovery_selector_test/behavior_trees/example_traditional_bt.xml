@@ -44,7 +44,7 @@
                     
                     <!-- Turn Handle -->
                     <Sequence>
-                        <HandleGrasped condition_bool="{handle_grasped}"/>
+                        <HandleGrasped condition_bool="{handle_grasped}"/> <!-- Condition Node-->
                         <TurnHandle result="{handle_turned}" failure_state="{failure_state}"/>
                     </Sequence>
 
@@ -53,12 +53,12 @@
                         <DoorUnlocked condition_bool="{door_unlocked}"/> <!-- Condition Node -->
 
                         <Fallback>
-                            <GraspHandle failure_state="{failure_state}"/>
+                            <GraspHandle failure_state="{failure_state}" result="{handle_grasped}"/>
 
                             <!-- Realign gripper and regrasp handle if previoud handle grasp failed -->
                             <Sequence>
                                 <RealignGripper failure_state="{failure_state}"/>
-                                <GraspHandle failure_state="{failure_state}"/>
+                                <GraspHandle failure_state="{failure_state}" result="{handle_grasped}"/>
                             </Sequence>
                         </Fallback>
                     </Sequence>
