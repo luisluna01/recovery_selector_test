@@ -16,6 +16,7 @@
 
 // recovery_selector_test behaviors
 #include "recovery_selector_test/behaviors/dummy_task.hpp"
+#include "recovery_selector_test/behaviors/dummy_task_simple.hpp"
 #include "recovery_selector_test/behaviors/dummy_condition.hpp"
 
 using recovery_selector_test::FailureCase;
@@ -53,22 +54,22 @@ int main(int argc, char* argv[])
     "DoorUnlocked", ros_node);
   
   // Register recovery_selector_test::behaviors action nodes
-  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "WalkInRoom", ros_node, "/walk_in_room", 10.0, true);
-  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "PlanObstacleFreePath", ros_node, "/plan_obstacle_free_path", 10.0, true);
-  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "PushDoorOpen", ros_node, "/push_door_open", 10.0, true);
-  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "TurnHandle", ros_node, "/turn_handle", 10.0, true);
-  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "GraspHandle", ros_node, "/grasp_handle", 10.0, true);
-  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "RealignGripper", ros_node, "/realign_gripper", 10.0, false);
-  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "UnlockDoor", ros_node, "/unlock_door", 10.0, true);
-  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
-    "WalkToDoor", ros_node, "/walk_to_door", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTaskSimple>(
+    "WalkInRoom", ros_node, "/walk_in_room_failure", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTaskSimple>(
+    "PlanObstacleFreePath", ros_node, "/plan_obstacle_free_path_failure", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTaskSimple>(
+    "PushDoorOpen", ros_node, "/push_door_open_failure", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTaskSimple>(
+    "TurnHandle", ros_node, "/turn_handle_failure", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTaskSimple>(
+    "GraspHandle", ros_node, "/grasp_handle_failure_failure", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTaskSimple>(
+    "RealignGripper", ros_node, "/realign_gripper_failure", 10.0, false);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTaskSimple>(
+    "UnlockDoor", ros_node, "/unlock_door_failure", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTaskSimple>(
+    "WalkToDoor", ros_node, "/walk_to_door_failure", 10.0, true);
   // ---------- Register recovery_selector_test behaviors ---------- //
   
   // Register recovery_selector_test FailureCase type
