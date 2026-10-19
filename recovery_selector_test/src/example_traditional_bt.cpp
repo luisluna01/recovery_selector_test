@@ -29,11 +29,39 @@ int main(int argc, char* argv[])
   // Register RecoverySelector to read 3 failure cases from the FailureCase type
   factory.registerNodeType<recovery_selector::RecoverySelector<FailureCase, 3>>("RecoverySelector");
 
+  // Register recovery_selector_test::behaviors condition nodes
   factory.registerNodeType<recovery_selector_test::behaviors::DummyCondition>(
     "InRoom", ros_node);
-
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyCondition>(
+    "DoorOpen", ros_node);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyCondition>(
+    "ObstacleFreePath", ros_node);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyCondition>(
+    "NearDoor", ros_node);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyCondition>(
+    "HandleTurned", ros_node);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyCondition>(
+    "HandleGrasped", ros_node);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyCondition>(
+    "DoorUnlocked", ros_node);
+  
+  // Register recovery_selector_test::behaviors action nodes
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
     "WalkInRoom", ros_node, "/walk_in_room", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
+    "PlanObstacleFreePath", ros_node, "/plan_obstacle_free_path", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
+    "PushDoorOpen", ros_node, "/push_door_open", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
+    "TurnHandle", ros_node, "/turn_handle", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
+    "GraspHandle", ros_node, "/turn_handle", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
+    "RealignGripper", ros_node, "/turn_handle", 10.0, false);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
+    "UnlockDoor", ros_node, "/turn_handle", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
+    "WalkToDoor", ros_node, "/walk_to_door", 10.0, true);
   // ---------- Register recovery_selector_test behaviors ---------- //
   
   // Register recovery_selector_test FailureCase type
@@ -47,10 +75,14 @@ int main(int argc, char* argv[])
   // Initialize blackboard keys read before any node has written them
   tree.rootBlackboard()->set<std::vector<FailureCase>>("failure_state", std::vector<FailureCase>());
   tree.rootBlackboard()->set<bool>("in_room", false);
+  tree.rootBlackboard()->set<bool>("door_open", false);
+  tree.rootBlackboard()->set<bool>("near_door", false);
+  tree.rootBlackboard()->set<bool>("obstacle_free_path", true);
+  tree.rootBlackboard()->set<bool>("handle_grasped", false);
+  tree.rootBlackboard()->set<bool>("handle_turned", false);
+  tree.rootBlackboard()->set<bool>("door_unlocked", true);
 
-  BT::Groot2Publisher publisher(tree); // Connect to Groot2Publisher
-
-  // BT::StdCoutLogger logger(tree); // Log status of tree during each tick
+  
 
   try
   {
@@ -77,6 +109,8 @@ int main(int argc, char* argv[])
 
       RCLCPP_INFO(ros_node->get_logger(), "finished tick----\n");
     }
+
+      RCLCPP_INFO(ros_node->get_logger(), "Returned Status: %s\n", BT::toStr(status).c_str());
   }
   catch (const std::exception& e)
   {

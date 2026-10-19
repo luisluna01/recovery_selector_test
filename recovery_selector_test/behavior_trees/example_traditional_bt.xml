@@ -3,8 +3,96 @@
         <ReactiveFallback>
             
             <InRoom condition_bool="{in_room}"/>
+            
+            <!-- Walk in the room -->
+            <ReactiveSequence>
+                <DoorOpen condition_bool="{door_open}"/> <!-- Condition Node -->
+                
+                <ReactiveFallback>    
+                    <!-- WalkInRoom -->
+                    <ReactiveSequence>
+                        <ObstacleFreePath condition_bool="{obstacle_free_path}"/> <!-- Condition Node -->
+                        <WalkInRoom result="{in_room}" failure_state="{failure_state}"/>
+                    </ReactiveSequence>
 
-            <WalkInRoom result="{in_room}" failure_state="{failure_state}"/>
+                    <!-- Replan trajectory if obstacle present -->
+                    <Fallback>
+                        <PlanObstacleFreePath result="{obstacle_free_path}" failure_state="{failure_state}"/>
+
+                        <!-- Request user intervention if no obstacle free trajectory is not found -->
+                        <Sequence>
+                            <!-- RequestUserIntervention -->
+                            <PlanObstacleFreePath result="{obstacle_free_path}" failure_state="{failure_state}"/>
+                        </Sequence>
+                    </Fallback>
+                </ReactiveFallback>
+
+            </ReactiveSequence>
+
+            <!-- Open the door -->
+            <ReactiveSequence>
+
+                <NearDoor condition_bool="{near_door}"/> <!-- Condition Node -->
+                
+                <ReactiveFallback>
+
+                    <!-- Push Door Open -->
+                    <Sequence>
+                        <HandleTurned condition_bool="{handle_turned}"/> <!-- Condition Node -->
+                        <PushDoorOpen result="{door_open}" failure_state="{failure_state}"/>
+                    </Sequence>
+                    
+                    <!-- Turn Handle -->
+                    <Sequence>
+                        <HandleGrasped condition_bool="{handle_grasped}"/>
+                        <TurnHandle result="{handle_turned}" failure_state="{failure_state}"/>
+                    </Sequence>
+
+                    <!-- Grasp Handle -->
+                    <Sequence>
+                        <DoorUnlocked condition_bool="{door_unlocked}"/> <!-- Condition Node -->
+
+                        <Fallback>
+                            <GraspHandle failure_state="{failure_state}"/>
+
+                            <!-- Realign gripper and regrasp handle if previoud handle grasp failed -->
+                            <Sequence>
+                                <RealignGripper failure_state="{failure_state}"/>
+                                <GraspHandle failure_state="{failure_state}"/>
+                            </Sequence>
+                        </Fallback>
+                    </Sequence>
+
+                    <!-- Unlock door if TurnHandle failed due to door being locked -->
+                    <Fallback>
+                        <UnlockDoor result="{door_unlocked}" failure_state="{failure_state}"/>
+                    </Fallback>
+
+                </ReactiveFallback>
+
+            </ReactiveSequence>
+
+            <!-- Walk up to the door -->
+            <ReactiveFallback>
+                
+                <!-- WalkToDoor -->
+                <ReactiveSequence>
+                    <ObstacleFreePath condition_bool="{obstacle_free_path}"/> <!-- Condition Node -->
+                    <WalkToDoor result="{near_door}" failure_state="{failure_state}"/>
+                </ReactiveSequence>
+
+                <!-- Replan trajectory if obstacle present -->
+                <Fallback>
+                    <PlanObstacleFreePath result="{obstacle_free_path}" failure_state="{failure_state}"/>
+
+                    <!-- Request user intervention if no obstacle free trajectory is not found -->
+                    <Sequence>
+                        <!-- RequestUserIntervention -->
+                        <PlanObstacleFreePath result="{obstacle_free_path}" failure_state="{failure_state}"/>
+                    </Sequence>
+                </Fallback>
+
+            </ReactiveFallback>
 
         </ReactiveFallback>        
     </BehaviorTree>
