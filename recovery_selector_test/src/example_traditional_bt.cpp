@@ -95,14 +95,14 @@ int main(int argc, char* argv[])
   recovery_selector_test::writeTreeNodesModel(
     tree, bt_xml_name, CONFIG_DIR, ros_node->get_logger());
   
-  BT::Groot2Publisher publisher(tree); // Connect to Groot2Publisher
+  // BT::Groot2Publisher publisher(tree); // Connect to Groot2Publisher
 
   // BT::StdCoutLogger logger(tree); // Log status of tree during each tick
 
   // Initialize blackboard keys read before any node has written them
   tree.rootBlackboard()->set<std::vector<FailureCase>>("failure_state", std::vector<FailureCase>());
   tree.rootBlackboard()->set<bool>("in_room", false);
-  tree.rootBlackboard()->set<bool>("door_open", true);
+  tree.rootBlackboard()->set<bool>("door_open", false);
   tree.rootBlackboard()->set<bool>("near_door", false);
   tree.rootBlackboard()->set<bool>("obstacle_free_path", true);
   tree.rootBlackboard()->set<bool>("handle_grasped", false);

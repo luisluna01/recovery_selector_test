@@ -17,12 +17,12 @@
 
                     <!-- Replan trajectory if obstacle present -->
                     <Fallback>
-                        <PlanObstacleFreePath result="{obstacle_free_path}" failure_case_bool="{failure_case_bool}"/>
+                        <PlanObstacleFreePath result="{obstacle_free_path}" failure_case_bool="{not_needed}"/>
 
                         <!-- Request user intervention if no obstacle free trajectory is not found -->
                         <Sequence>
                             <!-- RequestUserIntervention -->
-                            <PlanObstacleFreePath result="{obstacle_free_path}" failure_case_bool="{failure_case_bool}"/>
+                            <PlanObstacleFreePath result="{obstacle_free_path}" failure_case_bool="{not_needed}"/>
                         </Sequence>
                     </Fallback>
                 </ReactiveFallback>
@@ -39,13 +39,13 @@
                     <!-- Push Door Open -->
                     <Sequence>
                         <HandleTurned condition_bool="{handle_turned}"/> <!-- Condition Node -->
-                        <PushDoorOpen result="{door_open}" failure_case_bool="{failure_case_bool}"/>
+                        <PushDoorOpen result="{door_open}" failure_case_bool="{not_needed}"/>
                     </Sequence>
                     
                     <!-- Turn Handle -->
                     <Sequence>
                         <HandleGrasped condition_bool="{handle_grasped}"/> <!-- Condition Node-->
-                        <TurnHandle result="{handle_turned}" failure_case_bool="{failure_case_bool}"/>
+                        <TurnHandle result="{handle_turned}" failure_case_bool="{door_unlocked}"/>
                     </Sequence>
 
                     <!-- Grasp Handle -->
@@ -53,19 +53,19 @@
                         <DoorUnlocked condition_bool="{door_unlocked}"/> <!-- Condition Node -->
 
                         <Fallback>
-                            <GraspHandle failure_case_bool="{failure_case_bool}" result="{handle_grasped}"/>
+                            <GraspHandle result="{handle_grasped}" failure_case_bool="{handle_grasped}"/>
 
                             <!-- Realign gripper and regrasp handle if previoud handle grasp failed -->
                             <Sequence>
-                                <RealignGripper failure_case_bool="{failure_case_bool}"/>
-                                <GraspHandle failure_case_bool="{failure_case_bool}" result="{handle_grasped}"/>
+                                <RealignGripper result="{not_needed}" failure_case_bool="{not_needed}"/>
+                                <GraspHandle result="{handle_grasped}" failure_case_bool="{handle_grasped}"/>
                             </Sequence>
                         </Fallback>
                     </Sequence>
 
                     <!-- Unlock door if TurnHandle failed due to door being locked -->
                     <Fallback>
-                        <UnlockDoor result="{door_unlocked}" failure_case_bool="{failure_case_bool}"/>
+                        <UnlockDoor result="{door_unlocked}" condition_undone="{handle_grasped}" failure_case_bool="{door_unlocked}"/>
                     </Fallback>
 
                 </ReactiveFallback>
