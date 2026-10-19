@@ -56,6 +56,12 @@ target_include_directories(dummy_failure_publisher PRIVATE
   include
 )
 
+# Create simple_dummy_failure_publisher node
+add_executable(simple_dummy_failure_publisher src/simple_dummy_failure_publisher.cpp)
+target_include_directories(simple_dummy_failure_publisher PRIVATE
+  include
+)
+
 # Link shared behaviors (and their dependencies) to the behavior tree executables
 target_link_libraries(recovery_selector_test_bt PRIVATE
   recovery_selector_test_behaviors
@@ -84,8 +90,15 @@ target_link_libraries(dummy_failure_publisher
   magic_enum::magic_enum
 )
 
+# Link dependencies to simple_dummy_failure_publisher node
+ament_target_dependencies(simple_dummy_failure_publisher
+  rclcpp
+  std_msgs
+)
+
 # Install executables
 install(TARGETS recovery_selector_test_bt example_traditional_bt dummy_failure_publisher
+  simple_dummy_failure_publisher
   DESTINATION lib/${PROJECT_NAME}
 )
 
