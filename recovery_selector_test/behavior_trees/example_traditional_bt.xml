@@ -21,7 +21,7 @@
 
                         <!-- Request user intervention if no obstacle free trajectory is not found -->
                         <Sequence>
-                            <WaitForInput name="RequestUserIntervention" use_service="true" service_name="/user_intervention"/> <!-- RequestUserIntervention -->
+                            <RequestUserIntervention service_name="/user_intervention"/>
                             <PlanObstacleFreePath result="{obstacle_free_path}" failure_case_bool="{not_needed}"/>
                         </Sequence>
                     </Fallback>
@@ -68,7 +68,7 @@
                         <UnlockDoor result="{door_unlocked}" condition_undone="{handle_grasped}" failure_case_bool="{door_unlocked}"/>
 
                         <Sequence>
-                            <WaitForInput name="RequestUserIntervention" use_service="true" service_name="/user_intervention"/> <!-- RequestUserIntervention -->
+                            <RequestUserIntervention service_name="/user_intervention" condition_resolved="{door_unlocked}"/>
                         </Sequence>
                     </Fallback>
 
@@ -91,7 +91,7 @@
 
                     <!-- Request user intervention if no obstacle free trajectory is not found -->
                     <Sequence>
-                        <WaitForInput name="RequestUserIntervention" use_service="true" service_name="/user_intervention"/> <!-- RequestUserIntervention -->
+                        <RequestUserIntervention service_name="/user_intervention"/>
                         <PlanObstacleFreePath result="{obstacle_free_path}" failure_case_bool="{failure_case_bool}"/>
                     </Sequence>
                 </Fallback>
