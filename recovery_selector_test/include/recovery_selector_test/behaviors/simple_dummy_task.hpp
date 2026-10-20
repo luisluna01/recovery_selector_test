@@ -14,6 +14,7 @@ namespace recovery_selector_test::behaviors
 // completion. It reads a std_msgs/msg/Bool topic. If a false Bool message is received, the behavior
 // returns FAILURE and outputs false on the [failure_case_bool] port. The port is never written
 // otherwise, and true messages are ignored
+// On start, it optionally outputs false on the [condition_undone] port to mark a condition as undone
 // Note: Prints message every second
 class SimpleDummyTask : public BT::StatefulActionNode
 {

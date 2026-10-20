@@ -26,7 +26,9 @@ BT::PortsList SimpleDummyTask::providedPorts()
     /* Implemented for condition nodes */
     BT::OutputPort<bool>("result", "Whether or not the task completed successfully"),
     BT::OutputPort<bool>("failure_case_bool",
-      "Outputs false when a false Bool message is received. Never written otherwise")
+      "Outputs false when a false Bool message is received. Never written otherwise"),
+    BT::OutputPort<bool>("condition_undone",
+      "(Optional) Set to false on task start to mark the condition as undone")
   };
 }
 
@@ -54,6 +56,13 @@ BT::NodeStatus SimpleDummyTask::onStart()
   if(use_result_flag_)
   {
     setOutput("result", false);
+  }
+
+  // Mark the condition as undone if the optional port is used
+  if(setOutput("condition_undone", false))
+  {
+    RCLCPP_DEBUG(
+      node_->get_logger(), "[%s] set [condition_undone] port to false", this->name().c_str());
   }
 
   return BT::NodeStatus::RUNNING;
