@@ -19,6 +19,7 @@
 #include "recovery_selector_test/behaviors/simple_dummy_task.hpp"
 #include "recovery_selector_test/behaviors/dummy_task_with_undo.hpp"
 #include "recovery_selector_test/behaviors/dummy_condition.hpp"
+#include "recovery_selector_test/behaviors/request_user_intervention.hpp"
 
 // nrg_behaviors
 #include "nrg_behaviors/nrg_behaviors.hpp"
@@ -76,6 +77,10 @@ int main(int argc, char* argv[])
   // Register recovery_selector_test::behaviors::DummyTaskUndo nodes
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTaskWithUndo>(
     "UnlockDoor", ros_node, "/unlock_door_failure", 10.0, true);
+
+  // Register recovery_selector_test::behaviors::RequestUserIntervention
+  factory.registerNodeType<recovery_selector_test::behaviors::RequestUserIntervention>(
+    "RequestUserIntervention", ros_node);
   // ---------- Register recovery_selector_test behaviors ---------- //
   
   // Register nrg_utility_behaviors

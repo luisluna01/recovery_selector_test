@@ -21,7 +21,7 @@
 
                         <!-- Request user intervention if no obstacle free trajectory is not found -->
                         <Sequence>
-                            <!-- RequestUserIntervention -->
+                            <WaitForInput name="RequestUserIntervention" use_service="true" service_name="/user_intervention"/> <!-- RequestUserIntervention -->
                             <PlanObstacleFreePath result="{obstacle_free_path}" failure_case_bool="{not_needed}"/>
                         </Sequence>
                     </Fallback>
@@ -37,16 +37,16 @@
                 <ReactiveFallback>
 
                     <!-- Push Door Open -->
-                    <Sequence>
+                    <ReactiveSequence>
                         <HandleTurned condition_bool="{handle_turned}"/> <!-- Condition Node -->
                         <PushDoorOpen result="{door_open}" failure_case_bool="{not_needed}"/>
-                    </Sequence>
+                    </ReactiveSequence>
                     
                     <!-- Turn Handle -->
-                    <Sequence>
+                    <ReactiveSequence>
                         <HandleGrasped condition_bool="{handle_grasped}"/> <!-- Condition Node-->
                         <TurnHandle result="{handle_turned}" failure_case_bool="{door_unlocked}"/>
-                    </Sequence>
+                    </ReactiveSequence>
 
                     <!-- Grasp Handle -->
                     <Sequence>
@@ -66,6 +66,10 @@
                     <!-- Unlock door if TurnHandle failed due to door being locked -->
                     <Fallback>
                         <UnlockDoor result="{door_unlocked}" condition_undone="{handle_grasped}" failure_case_bool="{door_unlocked}"/>
+
+                        <Sequence>
+                            <WaitForInput name="RequestUserIntervention" use_service="true" service_name="/user_intervention"/> <!-- RequestUserIntervention -->
+                        </Sequence>
                     </Fallback>
 
                 </ReactiveFallback>
@@ -87,7 +91,7 @@
 
                     <!-- Request user intervention if no obstacle free trajectory is not found -->
                     <Sequence>
-                        <!-- RequestUserIntervention -->
+                        <WaitForInput name="RequestUserIntervention" use_service="true" service_name="/user_intervention"/> <!-- RequestUserIntervention -->
                         <PlanObstacleFreePath result="{obstacle_free_path}" failure_case_bool="{failure_case_bool}"/>
                     </Sequence>
                 </Fallback>
