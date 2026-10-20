@@ -8,23 +8,31 @@
             <ReactiveSequence>
                 <DoorOpen condition_bool="{door_open}"/> <!-- Condition Node -->
                 
-                <ReactiveFallback>    
-                    <!-- WalkInRoom -->
+                <ReactiveFallback>
                     <ReactiveSequence>
-                        <ObstacleFreePath condition_bool="{obstacle_free_path}"/> <!-- Condition Node -->
-                        <WalkInRoom result="{in_room}" failure_case_bool="{obstacle_free_path}"/>
+                        <GripperStowed condition_bool="{gripper_stowed}"/>
+
+                        <ReactiveFallback>    
+                            <!-- WalkInRoom -->
+                            <ReactiveSequence>
+                                <ObstacleFreePath condition_bool="{obstacle_free_path}"/> <!-- Condition Node -->
+                                <WalkInRoom result="{in_room}" failure_case_bool="{obstacle_free_path}"/>
+                            </ReactiveSequence>
+
+                            <!-- Replan trajectory if obstacle present -->
+                            <Fallback>
+                                <PlanObstacleFreePath result="{obstacle_free_path}" failure_case_bool="{not_needed}"/>
+
+                                <!-- Request user intervention if no obstacle free trajectory is not found -->
+                                <Sequence>
+                                    <RequestUserIntervention service_name="/user_intervention"/>
+                                    <PlanObstacleFreePath result="{obstacle_free_path}" failure_case_bool="{not_needed}"/>
+                                </Sequence>
+                            </Fallback>
+                        </ReactiveFallback>
                     </ReactiveSequence>
 
-                    <!-- Replan trajectory if obstacle present -->
-                    <Fallback>
-                        <PlanObstacleFreePath result="{obstacle_free_path}" failure_case_bool="{not_needed}"/>
-
-                        <!-- Request user intervention if no obstacle free trajectory is not found -->
-                        <Sequence>
-                            <RequestUserIntervention service_name="/user_intervention"/>
-                            <PlanObstacleFreePath result="{obstacle_free_path}" failure_case_bool="{not_needed}"/>
-                        </Sequence>
-                    </Fallback>
+                    <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{not_needed}" failure_case_bool="{not_needed}"/>
                 </ReactiveFallback>
 
             </ReactiveSequence>
@@ -39,13 +47,13 @@
                     <!-- Push Door Open -->
                     <ReactiveSequence>
                         <HandleTurned condition_bool="{handle_turned}"/> <!-- Condition Node -->
-                        <PushDoorOpen result="{door_open}" failure_case_bool="{not_needed}"/>
+                        <PushDoorOpen result="{door_open}" condition_undone="{gripper_stowed}" failure_case_bool="{not_needed}"/>
                     </ReactiveSequence>
                     
                     <!-- Turn Handle -->
                     <ReactiveSequence>
                         <HandleGrasped condition_bool="{handle_grasped}"/> <!-- Condition Node-->
-                        <TurnHandle result="{handle_turned}" failure_case_bool="{door_unlocked}"/>
+                        <TurnHandle result="{handle_turned}" condition_undone="{gripper_stowed}" failure_case_bool="{door_unlocked}"/>
                     </ReactiveSequence>
 
                     <!-- Grasp Handle -->
@@ -53,21 +61,25 @@
                         <DoorUnlocked condition_bool="{door_unlocked}"/> <!-- Condition Node -->
 
                         <Fallback>
-                            <GraspHandle result="{handle_grasped}" failure_case_bool="{handle_grasped}"/>
+                            <GraspHandle result="{handle_grasped}" condition_undone="{gripper_stowed}" failure_case_bool="{handle_grasped}"/>
 
                             <!-- Realign gripper and regrasp handle if previoud handle grasp failed -->
                             <Sequence>
                                 <RealignGripper result="{not_needed}" failure_case_bool="{not_needed}"/>
-                                <GraspHandle result="{handle_grasped}" failure_case_bool="{handle_grasped}"/>
+                                <GraspHandle result="{handle_grasped}" condition_undone="{gripper_stowed}" failure_case_bool="{handle_grasped}"/>
                             </Sequence>
                         </Fallback>
                     </Sequence>
 
                     <!-- Unlock door if TurnHandle failed due to door being locked -->
                     <Fallback>
-                        <UnlockDoor result="{door_unlocked}" condition_undone="{handle_grasped}" failure_case_bool="{door_unlocked}"/>
+                        <Sequence>
+                            <ReleaseAndStowGripper result="{not_needed}" condition_undone="{handle_grasped}" failure_case_bool="{not_needed}"/>
+                            <UnlockDoor result="{door_unlocked}" condition_undone="{handle_grasped}" failure_case_bool="{door_unlocked}"/>
+                        </Sequence>
 
                         <Sequence>
+                            <ReleaseAndStowGripper result="{not_needed}" condition_undone="{handle_grasped}" failure_case_bool="{not_needed}"/>
                             <RequestUserIntervention service_name="/user_intervention" condition_resolved="{door_unlocked}"/>
                         </Sequence>
                     </Fallback>
@@ -75,28 +87,31 @@
                 </ReactiveFallback>
 
             </ReactiveSequence>
-
+            
             <!-- Walk up to the door -->
-            <ReactiveFallback>
+            <ReactiveSequence>
+            
+                <GripperStowed condition_bool="{gripper_stowed}"/>
                 
-                <!-- WalkToDoor -->
-                <ReactiveSequence>
-                    <ObstacleFreePath condition_bool="{obstacle_free_path}"/> <!-- Condition Node -->
-                    <WalkToDoor result="{near_door}" failure_case_bool="{failure_case_bool}"/>
-                </ReactiveSequence>
+                <ReactiveFallback>
+                    <ReactiveSequence>
+                        <ObstacleFreePath condition_bool="{obstacle_free_path}"/> <!-- Condition Node -->
+                        <WalkToDoor result="{near_door}" failure_case_bool="{failure_case_bool}"/>
+                    </ReactiveSequence>
 
-                <!-- Replan trajectory if obstacle present -->
-                <Fallback>
-                    <PlanObstacleFreePath result="{obstacle_free_path}" failure_case_bool="{failure_case_bool}"/>
-
-                    <!-- Request user intervention if no obstacle free trajectory is not found -->
-                    <Sequence>
-                        <RequestUserIntervention service_name="/user_intervention"/>
+                    <Fallback>
                         <PlanObstacleFreePath result="{obstacle_free_path}" failure_case_bool="{failure_case_bool}"/>
-                    </Sequence>
-                </Fallback>
 
-            </ReactiveFallback>
+                        <!-- Request user intervention if no obstacle free trajectory is not found -->
+                        <Sequence>
+                            <RequestUserIntervention service_name="/user_intervention"/>
+                            <PlanObstacleFreePath result="{obstacle_free_path}" failure_case_bool="{failure_case_bool}"/>
+                        </Sequence>
+                    </Fallback>
+                </ReactiveFallback>
+
+            </ReactiveSequence>
+            <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{not_needed}" failure_case_bool="{not_needed}"/>
 
         </ReactiveFallback>        
     </BehaviorTree>

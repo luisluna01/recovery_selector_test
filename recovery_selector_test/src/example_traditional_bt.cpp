@@ -57,18 +57,14 @@ int main(int argc, char* argv[])
     "HandleGrasped", ros_node);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyCondition>(
     "DoorUnlocked", ros_node);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyCondition>(
+    "GripperStowed", ros_node);
   
   // Register recovery_selector_test::behaviors::SimpleDummyTask nodes
   factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
     "WalkInRoom", ros_node, "/walk_in_room_failure", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
     "PlanObstacleFreePath", ros_node, "/plan_obstacle_free_path_failure", 10.0, true);
-  factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
-    "PushDoorOpen", ros_node, "/push_door_open_failure", 10.0, true);
-  factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
-    "TurnHandle", ros_node, "/turn_handle_failure", 10.0, true);
-  factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
-    "GraspHandle", ros_node, "/grasp_handle_failure", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
     "RealignGripper", ros_node, "/realign_gripper_failure", 10.0, false);
   factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
@@ -77,6 +73,14 @@ int main(int argc, char* argv[])
   // Register recovery_selector_test::behaviors::DummyTaskUndo nodes
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTaskWithUndo>(
     "UnlockDoor", ros_node, "/unlock_door_failure", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTaskWithUndo>(
+    "PushDoorOpen", ros_node, "/push_door_open_failure", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTaskWithUndo>(
+    "TurnHandle", ros_node, "/turn_handle_failure", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTaskWithUndo>(
+    "GraspHandle", ros_node, "/grasp_handle_failure", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTaskWithUndo>(
+    "ReleaseAndStowGripper", ros_node, "/release_and_stow_gripper_failure", 5.0, true);
 
   // Register recovery_selector_test::behaviors::RequestUserIntervention
   factory.registerNodeType<recovery_selector_test::behaviors::RequestUserIntervention>(
@@ -113,6 +117,7 @@ int main(int argc, char* argv[])
   tree.rootBlackboard()->set<bool>("handle_grasped", false);
   tree.rootBlackboard()->set<bool>("handle_turned", false);
   tree.rootBlackboard()->set<bool>("door_unlocked", true);
+  tree.rootBlackboard()->set<bool>("gripper_stowed", true);
 
   try
   {
