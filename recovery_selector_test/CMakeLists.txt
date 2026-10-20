@@ -54,6 +54,7 @@ set_target_properties(recovery_selector_test_behaviors PROPERTIES
 # Create behavior tree node executables
 add_executable(recovery_selector_test_bt src/recovery_selector_test_bt.cpp)
 add_executable(example_traditional_bt src/example_traditional_bt.cpp)
+add_executable(example_recovery_selector_bt src/example_recovery_selector_bt.cpp)
 
 # Create dummy_failure_publisher node
 add_executable(dummy_failure_publisher src/dummy_failure_publisher.cpp)
@@ -74,6 +75,9 @@ target_link_libraries(recovery_selector_test_bt PRIVATE
 target_link_libraries(example_traditional_bt PRIVATE
   recovery_selector_test_behaviors
 )
+target_link_libraries(example_recovery_selector_bt PRIVATE
+  recovery_selector_test_behaviors
+)
 
 # Link dependencies specific to each behavior tree executable
 ament_target_dependencies(recovery_selector_test_bt PUBLIC
@@ -82,6 +86,11 @@ ament_target_dependencies(recovery_selector_test_bt PUBLIC
   nrg_behaviors
 )
 ament_target_dependencies(example_traditional_bt PUBLIC
+  ament_index_cpp
+  recovery_selector
+  nrg_behaviors
+)
+ament_target_dependencies(example_recovery_selector_bt PUBLIC
   ament_index_cpp
   recovery_selector
   nrg_behaviors
@@ -103,7 +112,8 @@ ament_target_dependencies(simple_dummy_failure_publisher
 )
 
 # Install executables
-install(TARGETS recovery_selector_test_bt example_traditional_bt dummy_failure_publisher
+install(TARGETS recovery_selector_test_bt example_traditional_bt example_recovery_selector_bt
+  dummy_failure_publisher
   simple_dummy_failure_publisher
   DESTINATION lib/${PROJECT_NAME}
 )

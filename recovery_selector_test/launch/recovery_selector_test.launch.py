@@ -11,7 +11,7 @@ def generate_launch_description():
     node_arg = DeclareLaunchArgument(
         'bt_executer',
         default_value='recovery_selector_test_bt',
-        choices=['recovery_selector_test_bt', 'example_traditional_bt'],
+        choices=['recovery_selector_test_bt', 'example_traditional_bt', 'example_recovery_selector_bt'],
         description='Behavior tree executer node to launch'
     )
 
@@ -38,5 +38,15 @@ def generate_launch_description():
             emulate_tty=True,
             condition=IfCondition(
                 PythonExpression(["'", node, "' == 'example_traditional_bt'"]))
+        ),
+
+        # Launch example_recovery_selector_bt behavior tree executer node
+        Node(
+            package='recovery_selector_test',
+            executable='example_recovery_selector_bt',
+            output='screen',
+            emulate_tty=True,
+            condition=IfCondition(
+                PythonExpression(["'", node, "' == 'example_recovery_selector_bt'"]))
         )
     ])
