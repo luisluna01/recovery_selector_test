@@ -17,7 +17,7 @@ enum class FailureCase
   MOTOR_FAILURE,
   FAILED_GRASP,
   COLLISION,
-  OBSTACLE_PRESENT,
+  OBSTACLE_IN_PATH,
   DOOR_LOCKED,
   UNDEFINED_FAILURE // Keep last
 };
@@ -35,8 +35,8 @@ inline std::string failureCaseToString(FailureCase failure_case)
       return "FAILED_GRASP";
     case FailureCase::COLLISION:
       return "COLLISION";
-    case FailureCase::OBSTACLE_PRESENT:
-      return "OBSTACLE_PRESENT";
+    case FailureCase::OBSTACLE_IN_PATH:
+      return "OBSTACLE_IN_PATH";
     case FailureCase::DOOR_LOCKED:
       return "DOOR_LOCKED";
     case FailureCase::UNDEFINED_FAILURE:

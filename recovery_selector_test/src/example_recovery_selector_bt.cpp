@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
     "WalkInRoom", ros_node, "/failure_source", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyRecoveryStrategy>(
-    "PlanObstacleFreePath", ros_node, FailureCase::OBSTACLE_PRESENT, 10.0);
+    "PlanObstacleFreePath", ros_node, FailureCase::OBSTACLE_IN_PATH, "/failure_source", 10.0);
   factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
     "RealignGripper", ros_node, "/realign_gripper_failure", 10.0, false);
   factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
