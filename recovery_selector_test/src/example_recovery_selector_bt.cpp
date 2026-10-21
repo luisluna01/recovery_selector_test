@@ -17,6 +17,7 @@
 // recovery_selector_test behaviors
 #include "recovery_selector_test/behaviors/dummy_task.hpp"
 #include "recovery_selector_test/behaviors/simple_dummy_task.hpp"
+#include "recovery_selector_test/behaviors/dummy_recovery_strategy.hpp"
 #include "recovery_selector_test/behaviors/dummy_condition.hpp"
 #include "recovery_selector_test/behaviors/request_user_intervention.hpp"
 
@@ -39,7 +40,7 @@ int main(int argc, char* argv[])
   
   // ---------- Register recovery_selector_test behaviors ---------- //
   // Register RecoverySelector to read 3 failure cases from the FailureCase type
-  factory.registerNodeType<recovery_selector::RecoverySelector<FailureCase, 3>>("RecoverySelector");
+  factory.registerNodeType<recovery_selector::RecoverySelector<FailureCase, 1>>("RecoverySelector");
 
   // Register recovery_selector_test::behaviors condition nodes
   factory.registerNodeType<recovery_selector_test::behaviors::DummyCondition>(
@@ -56,10 +57,10 @@ int main(int argc, char* argv[])
     "GripperStowed", ros_node);
   
   // Register recovery_selector_test::behaviors::SimpleDummyTask nodes
-  factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
-    "WalkInRoom", ros_node, "/walk_in_room_failure", 10.0, true);
-  factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
-    "PlanObstacleFreePath", ros_node, "/plan_obstacle_free_path_failure", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
+    "WalkInRoom", ros_node, "/failure_source", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyRecoveryStrategy>(
+    "PlanObstacleFreePath", ros_node, FailureCase::OBSTACLE_PRESENT, 10.0);
   factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
     "RealignGripper", ros_node, "/realign_gripper_failure", 10.0, false);
   factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
@@ -97,7 +98,7 @@ int main(int argc, char* argv[])
   recovery_selector_test::writeTreeNodesModel(
     tree, bt_xml_name, CONFIG_DIR, ros_node->get_logger());
   
-  // BT::Groot2Publisher publisher(tree); // Connect to Groot2Publisher
+  BT::Groot2Publisher publisher(tree); // Connect to Groot2Publisher
 
   // BT::StdCoutLogger logger(tree); // Log status of tree during each tick
 
@@ -108,7 +109,7 @@ int main(int argc, char* argv[])
   tree.rootBlackboard()->set<bool>("near_door", false);
   tree.rootBlackboard()->set<bool>("handle_grasped", false);
   tree.rootBlackboard()->set<bool>("handle_turned", false);
-  tree.rootBlackboard()->set<bool>("gripper_stowed", true);
+  tree.rootBlackboard()->set<bool>("gripper_stowed", false);
 
   try
   {

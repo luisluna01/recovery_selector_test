@@ -16,10 +16,9 @@ enum class FailureCase
   LOW_BATTERY,
   MOTOR_FAILURE,
   FAILED_GRASP,
-  NAVIGATION_COLLISION,
-  MANIPULATION_COLLISION,
-  NAVIGATION_OBSTACLE_AVOIDANCE_BLOCK,
-  MANIPULATION_OBSTACLE_AVOIDANCE_BLOCK,
+  COLLISION,
+  OBSTACLE_PRESENT,
+  DOOR_LOCKED,
   UNDEFINED_FAILURE // Keep last
 };
 
@@ -34,14 +33,12 @@ inline std::string failureCaseToString(FailureCase failure_case)
       return "MOTOR_FAILURE";
     case FailureCase::FAILED_GRASP:
       return "FAILED_GRASP";
-    case FailureCase::NAVIGATION_COLLISION:
-      return "NAVIGATION_COLLISION";
-    case FailureCase::MANIPULATION_COLLISION:
-      return "MANIPULATION_COLLISION";
-    case FailureCase::NAVIGATION_OBSTACLE_AVOIDANCE_BLOCK:
-      return "NAVIGATION_OBSTACLE_AVOIDANCE_BLOCK";
-    case FailureCase::MANIPULATION_OBSTACLE_AVOIDANCE_BLOCK:
-      return "MANIPULATION_OBSTACLE_AVOIDANCE_BLOCK";
+    case FailureCase::COLLISION:
+      return "COLLISION";
+    case FailureCase::OBSTACLE_PRESENT:
+      return "OBSTACLE_PRESENT";
+    case FailureCase::DOOR_LOCKED:
+      return "DOOR_LOCKED";
     case FailureCase::UNDEFINED_FAILURE:
       return "UNDEFINED_FAILURE";
   }
