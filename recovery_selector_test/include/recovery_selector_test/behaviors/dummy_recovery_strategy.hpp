@@ -5,6 +5,7 @@
 
 // Import the FAILURE_CASE type
 #include "recovery_selector_test/failure_case_type.hpp"
+#include "recovery_selector_test_msgs/msg/failure_case.hpp" // FailureCase message
 
 
 namespace recovery_selector_test::behaviors
@@ -14,6 +15,8 @@ namespace recovery_selector_test::behaviors
 // from a failure. The failure case will be removed from the current failure state (what stores all
 // failure cases) recorded by the Behavior Tree. The failure case it will recover from is listed in
 // the constructor during registration of this behavior
+// If a FailureCase message is received on the subscribed topic while running, the failure case is
+// added to the failure state and the behavior returns FAILURE
 class DummyRecoveryStrategy : public BT::StatefulActionNode
 {
 public:
@@ -22,6 +25,7 @@ public:
     const BT::NodeConfig& config,
     const rclcpp::Node::SharedPtr& node,
     FailureCase failure_case,
+    const std::string& topic = "/failure_source",
     double completion_time = 10.0
   );
 
@@ -35,12 +39,25 @@ public:
 
 
 private:
+  // Creates subscriber. Meant to be called on the first tick only, so a halt/re-tick cycle does not
+  // create duplicate subscriber
+  void createSubscriber();
+
+  // Subscriber callback which reads and copies the FailureCase message
+  void listenerCallback(const recovery_selector_test_msgs::msg::FailureCase& msg);
+
   rclcpp::Node::SharedPtr node_;
+  rclcpp::CallbackGroup::SharedPtr callback_group_;
+  rclcpp::executors::SingleThreadedExecutor executor_;
+  rclcpp::Subscription<recovery_selector_test_msgs::msg::FailureCase>::SharedPtr subscriber_;
 
   rclcpp::Time completion_time_ros_;
   rclcpp::Time last_print_time_;
   rclcpp::Duration print_period_ = rclcpp::Duration::from_seconds(1.0);
 
+  std::vector<FailureCase> failure_case_vec_; // Failure cases received by subscriber
+
+  std::string topic_; // Topic name used for the subscriber
   FailureCase failure_case_; // Failure case dedicated to behavior instance
   double completion_time_; // Time for this behavior to run in seconds, set in constructor
 
