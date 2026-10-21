@@ -26,7 +26,9 @@ BT::PortsList DummyTask::providedPorts()
     /* Implemented for condition nodes */
     BT::OutputPort<bool>("result", "Whether or not the task completed successfully"),
     BT::BidirectionalPort<std::vector<FailureCase>>("failure_state",
-      "failure cases present in the blackboard")
+      "failure cases present in the blackboard"),
+    BT::OutputPort<bool>("condition_undone",
+      "(Optional) Set to false on task start to mark the condition as undone")
   };
 }
 
@@ -65,6 +67,13 @@ BT::NodeStatus DummyTask::onStart()
     setOutput("result", false);
   }
 
+  // Mark the condition as undone if the optional port is used
+  if(setOutput("condition_undone", false))
+  {
+    RCLCPP_DEBUG(
+      node_->get_logger(), "[%s] set [condition_undone] port to false", this->name().c_str());
+  }
+
   return BT::NodeStatus::RUNNING;
 }
 
@@ -81,7 +90,7 @@ BT::NodeStatus DummyTask::onRunning()
     return BT::NodeStatus::SUCCESS;
   }
 
-  // Outpur result to 'true' if completion time reached
+  // Output result to 'true' if completion time reached
   if(node_->now() >= completion_time_ros_)
   {
     if(use_result_flag_)
