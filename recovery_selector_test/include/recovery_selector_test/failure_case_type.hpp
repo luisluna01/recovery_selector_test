@@ -13,12 +13,12 @@ namespace recovery_selector_test
 // This enum creates a type to represent possible failure cases written and used by [BT::TreeNode]s
 enum class FailureCase
 {
+  OBSTACLE_IN_PATH,
+  FAILED_GRASP,
+  DOOR_LOCKED,
   LOW_BATTERY,
   MOTOR_FAILURE,
-  FAILED_GRASP,
   COLLISION,
-  OBSTACLE_IN_PATH,
-  DOOR_LOCKED,
   UNDEFINED_FAILURE // Keep last
 };
 
@@ -27,18 +27,18 @@ inline std::string failureCaseToString(FailureCase failure_case)
 {
   switch (failure_case)
   {
+    case FailureCase::OBSTACLE_IN_PATH:
+      return "OBSTACLE_IN_PATH";
+    case FailureCase::FAILED_GRASP:
+      return "FAILED_GRASP";
+    case FailureCase::DOOR_LOCKED:
+      return "DOOR_LOCKED";
     case FailureCase::LOW_BATTERY:
       return "LOW_BATTERY";
     case FailureCase::MOTOR_FAILURE:
       return "MOTOR_FAILURE";
-    case FailureCase::FAILED_GRASP:
-      return "FAILED_GRASP";
     case FailureCase::COLLISION:
       return "COLLISION";
-    case FailureCase::OBSTACLE_IN_PATH:
-      return "OBSTACLE_IN_PATH";
-    case FailureCase::DOOR_LOCKED:
-      return "DOOR_LOCKED";
     case FailureCase::UNDEFINED_FAILURE:
       return "UNDEFINED_FAILURE";
   }
