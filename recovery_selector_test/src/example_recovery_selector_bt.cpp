@@ -105,11 +105,11 @@ int main(int argc, char* argv[])
   // Initialize blackboard keys read before any node has written them
   tree.rootBlackboard()->set<std::vector<FailureCase>>("failure_state", std::vector<FailureCase>());
   tree.rootBlackboard()->set<bool>("in_room", false);
-  tree.rootBlackboard()->set<bool>("door_open", false);
+  tree.rootBlackboard()->set<bool>("door_open", true);
   tree.rootBlackboard()->set<bool>("near_door", false);
   tree.rootBlackboard()->set<bool>("handle_grasped", false);
   tree.rootBlackboard()->set<bool>("handle_turned", false);
-  tree.rootBlackboard()->set<bool>("gripper_stowed", false);
+  tree.rootBlackboard()->set<bool>("gripper_stowed", true);
 
   try
   {
@@ -118,16 +118,16 @@ int main(int argc, char* argv[])
 
     while (rclcpp::ok() && status == BT::NodeStatus::RUNNING)
     {
-      // // Print failure cases in failure state blackboard key
-      // auto failure_state = tree.rootBlackboard()->get<std::vector<FailureCase>>("failure_state");
-      // RCLCPP_INFO(ros_node->get_logger(), "failure_state: ");
-      // for (const FailureCase& failure_case : failure_state)
-      // {
-      //   RCLCPP_INFO(
-      //     ros_node->get_logger(),
-      //     "  - %s",
-      //     recovery_selector_test::failureCaseToString(failure_case).c_str());
-      // }
+      // Print failure cases in failure state blackboard key
+      auto failure_state = tree.rootBlackboard()->get<std::vector<FailureCase>>("failure_state");
+      RCLCPP_INFO(ros_node->get_logger(), "failure_state: ");
+      for (const FailureCase& failure_case : failure_state)
+      {
+        RCLCPP_INFO(
+          ros_node->get_logger(),
+          "  - %s",
+          recovery_selector_test::failureCaseToString(failure_case).c_str());
+      }
 
       RCLCPP_INFO(ros_node->get_logger(), "ticking----");
 
