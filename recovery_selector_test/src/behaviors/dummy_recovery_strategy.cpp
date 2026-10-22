@@ -23,7 +23,9 @@ DummyRecoveryStrategy::DummyRecoveryStrategy(
 BT::PortsList DummyRecoveryStrategy::providedPorts()
 {
   return {
-    BT::BidirectionalPort<std::vector<FailureCase>>("failure_state", "vector of failure cases present in failure state")
+    BT::BidirectionalPort<std::vector<FailureCase>>("failure_state", "vector of failure cases present in failure state"),
+    BT::OutputPort<bool>("condition_undone",
+      "(Optional) Set to false on task start to mark the condition as undone")
   };
 }
 
@@ -60,6 +62,13 @@ BT::NodeStatus DummyRecoveryStrategy::onStart()
   RCLCPP_INFO(
     node_->get_logger(),
     "[%s] recovering from failure: %s", this->name().c_str(), failure_case_string_.c_str());
+
+  // Mark the condition as undone if the optional port is used
+  if(setOutput("condition_undone", false))
+  {
+    RCLCPP_DEBUG(
+      node_->get_logger(), "[%s] set [condition_undone] port to false", this->name().c_str());
+  }
 
   return BT::NodeStatus::RUNNING;
 }
