@@ -19,7 +19,7 @@
 #include "recovery_selector_test/behaviors/simple_dummy_task.hpp"
 #include "recovery_selector_test/behaviors/dummy_recovery_strategy.hpp"
 #include "recovery_selector_test/behaviors/dummy_condition.hpp"
-#include "recovery_selector_test/behaviors/request_user_intervention.hpp"
+#include "recovery_selector_test/behaviors/simple_request_user_intervention.hpp"
 
 // nrg_behaviors
 #include "nrg_behaviors/nrg_behaviors.hpp"
@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
   
   // ---------- Register recovery_selector_test behaviors ---------- //
   // Register RecoverySelector to read 3 failure cases from the FailureCase type
-  factory.registerNodeType<recovery_selector::RecoverySelector<FailureCase, 1>>("RecoverySelector");
+  factory.registerNodeType<recovery_selector::RecoverySelector<FailureCase, 3>>("RecoverySelector");
 
   // Register recovery_selector_test::behaviors condition nodes
   factory.registerNodeType<recovery_selector_test::behaviors::DummyCondition>(
@@ -61,24 +61,24 @@ int main(int argc, char* argv[])
     "WalkInRoom", ros_node, "/failure_source", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyRecoveryStrategy>(
     "PlanObstacleFreePath", ros_node, FailureCase::OBSTACLE_IN_PATH, "/failure_source", 10.0);
-  factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
-    "RealignGripper", ros_node, "/realign_gripper_failure", 10.0, false);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyRecoveryStrategy>(
+    "RealignGripper", ros_node, FailureCase::FAILED_GRASP, "/failure_source", 10.0);
   factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
     "WalkToDoor", ros_node, "/walk_to_door_failure", 10.0, true);
-  factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
-    "UnlockDoor", ros_node, "/unlock_door_failure", 10.0, true);
-  factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
-    "PushDoorOpen", ros_node, "/push_door_open_failure", 10.0, true);
-  factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
-    "TurnHandle", ros_node, "/turn_handle_failure", 10.0, true);
-  factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
-    "GraspHandle", ros_node, "/grasp_handle_failure", 10.0, true);
-  factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
-    "ReleaseAndStowGripper", ros_node, "/release_and_stow_gripper_failure", 5.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyRecoveryStrategy>(
+    "UnlockDoor", ros_node, FailureCase::DOOR_LOCKED, "/failure_source", 10.0);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
+    "PushDoorOpen", ros_node, "/failure_source", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
+    "TurnHandle", ros_node, "/failure_source", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
+    "GraspHandle", ros_node, "/failure_source", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
+    "ReleaseAndStowGripper", ros_node, "/failure_source", 5.0, true);
 
-  // Register recovery_selector_test::behaviors::RequestUserIntervention
-  factory.registerNodeType<recovery_selector_test::behaviors::RequestUserIntervention>(
-    "RequestUserIntervention", ros_node);
+  // Register recovery_selector_test::behaviors::SimpleRequestUserIntervention
+  factory.registerNodeType<recovery_selector_test::behaviors::SimpleRequestUserIntervention>(
+    "SimpleRequestUserIntervention", ros_node);
   // ---------- Register recovery_selector_test behaviors ---------- //
   
   // Register nrg_utility_behaviors
@@ -105,8 +105,8 @@ int main(int argc, char* argv[])
   // Initialize blackboard keys read before any node has written them
   tree.rootBlackboard()->set<std::vector<FailureCase>>("failure_state", std::vector<FailureCase>());
   tree.rootBlackboard()->set<bool>("in_room", false);
-  tree.rootBlackboard()->set<bool>("door_open", true);
-  tree.rootBlackboard()->set<bool>("near_door", false);
+  tree.rootBlackboard()->set<bool>("door_open", false);
+  tree.rootBlackboard()->set<bool>("near_door", true);
   tree.rootBlackboard()->set<bool>("handle_grasped", false);
   tree.rootBlackboard()->set<bool>("handle_turned", false);
   tree.rootBlackboard()->set<bool>("gripper_stowed", true);

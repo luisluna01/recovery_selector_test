@@ -1,10 +1,10 @@
-#include "recovery_selector_test/behaviors/request_user_intervention.hpp"
+#include "recovery_selector_test/behaviors/simple_request_user_intervention.hpp"
 
 
 namespace recovery_selector_test::behaviors
 {
 
-RequestUserIntervention::RequestUserIntervention(
+SimpleRequestUserIntervention::SimpleRequestUserIntervention(
   const std::string& name,
   const BT::NodeConfig& config,
   const rclcpp::Node::SharedPtr& node
@@ -14,7 +14,7 @@ RequestUserIntervention::RequestUserIntervention(
 {}
 
 
-BT::PortsList RequestUserIntervention::providedPorts()
+BT::PortsList SimpleRequestUserIntervention::providedPorts()
 {
   return{
     BT::InputPort<std::string>("service_name", "/user_intervention",
@@ -25,7 +25,7 @@ BT::PortsList RequestUserIntervention::providedPorts()
 }
 
 
-BT::NodeStatus RequestUserIntervention::onStart()
+BT::NodeStatus SimpleRequestUserIntervention::onStart()
 {
   signal_received_ = false;
   condition_resolved_ = false;
@@ -51,7 +51,7 @@ BT::NodeStatus RequestUserIntervention::onStart()
   service_ = node_->create_service<std_srvs::srv::Trigger>(
     service_name_,
     std::bind(
-      &RequestUserIntervention::triggerCallback, this, std::placeholders::_1, std::placeholders::_2),
+      &SimpleRequestUserIntervention::triggerCallback, this, std::placeholders::_1, std::placeholders::_2),
     rmw_qos_profile_services_default,
     callback_group_
   );
@@ -65,7 +65,7 @@ BT::NodeStatus RequestUserIntervention::onStart()
 }
 
 
-BT::NodeStatus RequestUserIntervention::onRunning()
+BT::NodeStatus SimpleRequestUserIntervention::onRunning()
 {
   // Return SUCCESS if the user has intervened
   // Note:  Placed before setting [condition_resolved] to 'true' to make behavior return SUCCESS
@@ -103,7 +103,7 @@ BT::NodeStatus RequestUserIntervention::onRunning()
 }
 
 
-void RequestUserIntervention::onHalted()
+void SimpleRequestUserIntervention::onHalted()
 {
   service_.reset();
 
@@ -114,7 +114,7 @@ void RequestUserIntervention::onHalted()
 // Helper Member Functions
 // ------------------------------------------------------------
 
-void RequestUserIntervention::triggerCallback(
+void SimpleRequestUserIntervention::triggerCallback(
   const std::shared_ptr<std_srvs::srv::Trigger::Request> /*request*/,
   std::shared_ptr<std_srvs::srv::Trigger::Response> response)
 {

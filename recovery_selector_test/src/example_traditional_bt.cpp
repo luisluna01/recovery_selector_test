@@ -18,7 +18,7 @@
 #include "recovery_selector_test/behaviors/dummy_task.hpp"
 #include "recovery_selector_test/behaviors/simple_dummy_task.hpp"
 #include "recovery_selector_test/behaviors/dummy_condition.hpp"
-#include "recovery_selector_test/behaviors/request_user_intervention.hpp"
+#include "recovery_selector_test/behaviors/simple_request_user_intervention.hpp"
 
 // nrg_behaviors
 #include "nrg_behaviors/nrg_behaviors.hpp"
@@ -79,9 +79,9 @@ int main(int argc, char* argv[])
   factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
     "ReleaseAndStowGripper", ros_node, "/release_and_stow_gripper_failure", 5.0, true);
 
-  // Register recovery_selector_test::behaviors::RequestUserIntervention
-  factory.registerNodeType<recovery_selector_test::behaviors::RequestUserIntervention>(
-    "RequestUserIntervention", ros_node);
+  // Register recovery_selector_test::behaviors::SimpleRequestUserIntervention
+  factory.registerNodeType<recovery_selector_test::behaviors::SimpleRequestUserIntervention>(
+    "SimpleRequestUserIntervention", ros_node);
   // ---------- Register recovery_selector_test behaviors ---------- //
   
   // Register nrg_utility_behaviors

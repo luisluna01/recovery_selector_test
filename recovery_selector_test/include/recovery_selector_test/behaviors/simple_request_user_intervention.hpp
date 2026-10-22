@@ -15,10 +15,10 @@ namespace recovery_selector_test::behaviors
 // [condition_resolved] port and returns SUCCESS on the following tick, so a condition node checked
 // before this behavior is prioritized
 // Note: Prints message every second
-class RequestUserIntervention : public BT::StatefulActionNode
+class SimpleRequestUserIntervention : public BT::StatefulActionNode
 {
 public:
-  RequestUserIntervention(
+  SimpleRequestUserIntervention(
     const std::string& name,
     const BT::NodeConfig& config,
     const rclcpp::Node::SharedPtr& node
