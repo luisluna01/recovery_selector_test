@@ -16,13 +16,12 @@
 namespace recovery_selector_test::behaviors
 {
 
-// This behavior waits for a human to solve the failure case a RecoveryStrategy behavior failed to
-// solve. It is meant to be the undefined_failure child of the RecoverySelector. It creates a
-// std_srvs/srv/Trigger service and returns RUNNING until the service is called. Once called, it
-// removes the first occurrence of the highest priority unregistered failure case from the
-// [failure_state] port, as well as the first failure case that is not an unregistered failure case
-// (the one left unsolved), and returns SUCCESS. The unregistered failure cases are listed in order
-// of priority in the constructor during registration of this behavior
+// This behavior pretends to request help from a user for failure cases not registered by the
+// [case_n] input ports of the RecoverySelector. It creates a std_srvs/srv/Trigger service and
+// returns RUNNING until the service is called. Once called, it removes the first occurrence of the
+// highest priority unregistered failure case from the [failure_state] port and returns SUCCESS. The
+// unregistered failure cases are listed in order of priority in the constructor during registration
+// of this behavior
 // Note: Prints message every second
 class RequestUserIntervention : public BT::StatefulActionNode
 {
@@ -51,12 +50,6 @@ private:
 
   // Returns the highest priority unregistered failure case present in the failure state
   std::optional<FailureCase> findTargetCase(const std::vector<FailureCase>& failure_state) const;
-
-  // Returns the first failure case in the failure state that is not an unregistered failure case
-  std::optional<FailureCase> findRegisteredCase(const std::vector<FailureCase>& failure_state) const;
-
-  // Describes the failure cases this behavior will resolve, for logging
-  std::string describeFailures(const std::vector<FailureCase>& failure_state) const;
 
   rclcpp::Node::SharedPtr node_;
   rclcpp::CallbackGroup::SharedPtr callback_group_;

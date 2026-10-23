@@ -84,8 +84,7 @@ BT::NodeStatus RequestUserIntervention::onStart()
   last_print_time_ = node_->now();
   RCLCPP_INFO(
     node_->get_logger(), "[%s] waiting for user intervention on service \"%s\" to resolve %s...",
-    this->name().c_str(), service_name_.c_str(),
-    describeFailures(maybe_failure_state.value()).c_str());
+    this->name().c_str(), service_name_.c_str(), failureCaseToString(*target_case).c_str());
 
   return BT::NodeStatus::RUNNING;
 }
@@ -102,39 +101,26 @@ BT::NodeStatus RequestUserIntervention::onRunning()
     service_.reset();
 
     std::optional<FailureCase> resolved_case;
-    std::optional<FailureCase> resolved_registered_case;
-    std::string resolved_string;
 
-    // Remove first occurrence of the unregistered target case and of the first registered case
-    // from [failure_state] port
+    // Remove first occurrence of target case from [failure_state] port
     // Note: Read and write failure_state value directly while ensuring thread safety
     if(auto failure_state_locked = getLockedPortContent("failure_state"))
     {
       auto* failure_state_ptr = failure_state_locked->castPtr<std::vector<FailureCase>>();
 
-      resolved_string = describeFailures(*failure_state_ptr); // Describe before removing
       resolved_case = findTargetCase(*failure_state_ptr);
       if(resolved_case)
       {
         failure_state_ptr->erase(
           std::find(failure_state_ptr->begin(), failure_state_ptr->end(), *resolved_case));
       }
-
-      // Search again since the erase above invalidated iterators
-      resolved_registered_case = findRegisteredCase(*failure_state_ptr);
-      if(resolved_registered_case)
-      {
-        failure_state_ptr->erase(
-          std::find(
-            failure_state_ptr->begin(), failure_state_ptr->end(), *resolved_registered_case));
-      }
     }
 
-    if(resolved_case || resolved_registered_case)
+    if(resolved_case)
     {
       RCLCPP_INFO(
         node_->get_logger(), "[%s] user intervention resolved %s!",
-        this->name().c_str(), resolved_string.c_str());
+        this->name().c_str(), failureCaseToString(*resolved_case).c_str());
     }
     else
     {
@@ -150,11 +136,14 @@ BT::NodeStatus RequestUserIntervention::onRunning()
   {
     last_print_time_ = node_->now();
 
-    std::string target_case_string = "failure";
+    std::string target_case_string = "unregistered failure";
     auto maybe_failure_state = getInput<std::vector<FailureCase>>("failure_state");
     if(maybe_failure_state)
     {
-      target_case_string = describeFailures(maybe_failure_state.value());
+      if(std::optional<FailureCase> target_case = findTargetCase(maybe_failure_state.value()))
+      {
+        target_case_string = failureCaseToString(*target_case);
+      }
     }
 
     RCLCPP_INFO(
@@ -202,46 +191,6 @@ std::optional<FailureCase> RequestUserIntervention::findTargetCase(
   }
 
   return std::nullopt;
-}
-
-
-std::optional<FailureCase> RequestUserIntervention::findRegisteredCase(
-  const std::vector<FailureCase>& failure_state) const
-{
-  // Return the first failure case in the failure state that is not an unregistered failure case
-  for(const FailureCase& failure_case : failure_state)
-  {
-    if(std::find(unregistered_cases_.begin(), unregistered_cases_.end(), failure_case) ==
-       unregistered_cases_.end())
-    {
-      return failure_case;
-    }
-  }
-
-  return std::nullopt;
-}
-
-
-std::string RequestUserIntervention::describeFailures(
-  const std::vector<FailureCase>& failure_state) const
-{
-  // Describe the registered case left unsolved along with the unregistered case, for logging
-  std::optional<FailureCase> registered_case = findRegisteredCase(failure_state);
-  std::optional<FailureCase> target_case = findTargetCase(failure_state);
-
-  std::string description;
-  if(registered_case)
-  {
-    description = failureCaseToString(*registered_case);
-  }
-  if(target_case)
-  {
-    description += description.empty() ? "" : " (";
-    description += failureCaseToString(*target_case);
-    description += registered_case ? ")" : "";
-  }
-
-  return description.empty() ? "failure" : description;
 }
 
 } // namespace recovery_selector_test::behaviors
