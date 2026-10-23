@@ -20,6 +20,7 @@
 #include "recovery_selector_test/behaviors/dummy_recovery_strategy.hpp"
 #include "recovery_selector_test/behaviors/dummy_condition.hpp"
 #include "recovery_selector_test/behaviors/simple_request_user_intervention.hpp"
+#include "recovery_selector_test/behaviors/request_user_intervention.hpp"
 
 // nrg_behaviors
 #include "nrg_behaviors/nrg_behaviors.hpp"
@@ -79,6 +80,17 @@ int main(int argc, char* argv[])
   // Register recovery_selector_test::behaviors::SimpleRequestUserIntervention
   factory.registerNodeType<recovery_selector_test::behaviors::SimpleRequestUserIntervention>(
     "SimpleRequestUserIntervention", ros_node);
+
+  // FailureCases unregistered by input ports in RecoverySelector
+  std::vector<FailureCase> unregistered_cases = {
+    FailureCase::UNDEFINED_FAILURE,
+    FailureCase::LOW_BATTERY,
+    FailureCase::MOTOR_FAILURE,
+    FailureCase::COLLISION
+  };
+  // Register recovery_selector_test::behaviors::RequestUserIntervention
+  factory.registerNodeType<recovery_selector_test::behaviors::RequestUserIntervention>(
+    "RequestUserIntervention", ros_node, unregistered_cases);
   // ---------- Register recovery_selector_test behaviors ---------- //
   
   // Register nrg_utility_behaviors
