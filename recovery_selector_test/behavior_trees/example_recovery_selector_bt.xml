@@ -17,7 +17,10 @@
                     <GraspHandle result="{handle_grasped}" condition_undone="{gripper_stowed}" failure_state="{failure_state}"/>
                 </Sequence>
 
-                <SimpleRequestUserIntervention service_name="/user_intervention" condition_resolved="{door_unlocked}"/>
+                <Sequence>
+                    <ReleaseAndStowGripper result="{not_needed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/>
+                    <RequestUserIntervention service_name="/user_intervention" failure_state="{failure_state}"/>
+                </Sequence>
             </RecoverySelector>
             
             <!-- Main Branch -->
