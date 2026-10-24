@@ -27,7 +27,7 @@ BT::PortsList DummyRecoveryStrategy::providedPorts()
     BT::OutputPort<bool>("result",
       "(Optional) Set to true when the recovery strategy completes successfully"),
     BT::OutputPort<bool>("condition_undone",
-      "(Optional) Set to false on task start to mark the condition as undone")
+      "(Optional) Set to false on the first onRunning() call to mark the condition as undone")
   };
 }
 
@@ -65,12 +65,7 @@ BT::NodeStatus DummyRecoveryStrategy::onStart()
     node_->get_logger(),
     "[%s] recovering from failure: %s", this->name().c_str(), failure_case_string_.c_str());
 
-  // Mark the condition as undone if the optional port is used
-  if(setOutput("condition_undone", false))
-  {
-    RCLCPP_DEBUG(
-      node_->get_logger(), "[%s] set [condition_undone] port to false", this->name().c_str());
-  }
+  first_run_ = true;
 
   return BT::NodeStatus::RUNNING;
 }
@@ -78,6 +73,20 @@ BT::NodeStatus DummyRecoveryStrategy::onStart()
 
 BT::NodeStatus DummyRecoveryStrategy::onRunning()
 {
+  // Mark the condition as undone on the first run only if the optional port is used
+  // Note:  Not done in onStart() so a behavior halted right after starting leaves the blackboard
+  //        unchanged
+  if(first_run_)
+  {
+    first_run_ = false;
+
+    if(setOutput("condition_undone", false))
+    {
+      RCLCPP_DEBUG(
+        node_->get_logger(), "[%s] set [condition_undone] port to false", this->name().c_str());
+    }
+  }
+
   // Subscribe all messages from the queue
   executor_.spin_some(std::chrono::milliseconds(0));
 

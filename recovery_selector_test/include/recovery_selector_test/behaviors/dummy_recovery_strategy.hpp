@@ -60,6 +60,7 @@ private:
   std::string topic_; // Topic name used for the subscriber
   FailureCase failure_case_; // Failure case dedicated to behavior instance
   double completion_time_; // Time for this behavior to run in seconds, set in constructor
+  bool first_run_; // Whether onRunning() has not yet run since the last onStart()
 
   std::string failure_case_string_;
 };

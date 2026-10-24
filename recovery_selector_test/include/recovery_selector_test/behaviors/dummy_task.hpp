@@ -60,6 +60,7 @@ private:
   std::string topic_; // Topic name used for the subscriber
   double completion_time_; // Time for this behavior to run in seconds
   bool task_complete_; // Whether task has completed
+  bool first_run_; // Whether onRunning() has not yet run since the last onStart()
   bool use_result_flag_; // Whether or not result port will be used
 };
 

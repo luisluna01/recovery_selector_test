@@ -28,7 +28,7 @@ BT::PortsList DummyTask::providedPorts()
     BT::BidirectionalPort<std::vector<FailureCase>>("failure_state",
       "failure cases present in the blackboard"),
     BT::OutputPort<bool>("condition_undone",
-      "(Optional) Set to false on task start to mark the condition as undone")
+      "(Optional) Set to false on the first onRunning() call to mark the condition as undone")
   };
 }
 
@@ -45,6 +45,7 @@ BT::NodeStatus DummyTask::onStart()
   failure_state_ = maybe_failure_state.value();
 
   task_complete_ = false;
+  first_run_ = true;
 
   // Record time behavior should complete using ROS time
   completion_time_ros_ = node_->now() + rclcpp::Duration::from_seconds(completion_time_);
@@ -67,19 +68,26 @@ BT::NodeStatus DummyTask::onStart()
   //   setOutput("result", false);
   // }
 
-  // Mark the condition as undone if the optional port is used
-  if(setOutput("condition_undone", false))
-  {
-    RCLCPP_DEBUG(
-      node_->get_logger(), "[%s] set [condition_undone] port to false", this->name().c_str());
-  }
-
   return BT::NodeStatus::RUNNING;
 }
 
 
 BT::NodeStatus DummyTask::onRunning()
 {
+  // Mark the condition as undone on the first run only if the optional port is used
+  // Note:  Not done in onStart() so a behavior halted right after starting leaves the blackboard
+  //        unchanged
+  if(first_run_)
+  {
+    first_run_ = false;
+
+    if(setOutput("condition_undone", false))
+    {
+      RCLCPP_DEBUG(
+        node_->get_logger(), "[%s] set [condition_undone] port to false", this->name().c_str());
+    }
+  }
+
   // Return SUCCESS if completion time reached
   // Note:  Placed before setting [result] to 'true' to make behavior return SUCCESS after one
   //        more tick

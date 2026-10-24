@@ -14,7 +14,8 @@ namespace recovery_selector_test::behaviors
 // completion. It reads a std_msgs/msg/Bool topic. If a false Bool message is received, the behavior
 // returns FAILURE and outputs false on the [failure_case_bool] port. The port is never written
 // otherwise, and true messages are ignored
-// On start, it optionally outputs false on the [condition_undone] port to mark a condition as undone
+// On the first onRunning() call, it optionally outputs false on the [condition_undone] port to mark
+// a condition as undone
 // Note: Prints message every second
 class SimpleDummyTask : public BT::StatefulActionNode
 {
@@ -61,6 +62,7 @@ private:
   std::string topic_; // Topic name used for the subscriber
   double completion_time_; // Time for this behavior to run in seconds
   bool task_complete_; // Whether task has completed
+  bool first_run_; // Whether onRunning() has not yet run since the last onStart()
   bool use_result_flag_; // Whether or not result port will be used
 };
 
