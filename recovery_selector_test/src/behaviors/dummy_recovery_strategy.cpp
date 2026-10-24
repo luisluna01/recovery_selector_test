@@ -51,8 +51,8 @@ BT::NodeStatus DummyRecoveryStrategy::onStart()
     createSubscriber();
   }
 
-  // Drain the messages from the queue and clear failure_case_vec_
-  executor_.spin_some(std::chrono::milliseconds(0));
+  // Drain all messages queued while idle
+  executor_.spin_all(std::chrono::milliseconds(0));
   failure_case_vec_.clear(); // Clear any messages received after spin_some()
 
   // Record time behavior should complete using ROS time

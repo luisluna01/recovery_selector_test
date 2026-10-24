@@ -55,17 +55,17 @@ BT::NodeStatus DummyTask::onStart()
     createSubscriber();
   }
 
-  // Drain the messages from the queue and clear last_message_
-  executor_.spin_some(std::chrono::milliseconds(0));
+  // Drain all messages queued while idle
+  executor_.spin_all(std::chrono::milliseconds(0));
   failure_case_vec_.clear(); // Clear any messages received after spin_some()
 
   last_print_time_ = node_->now();
   RCLCPP_INFO(node_->get_logger(), "[%s] performing task...", this->name().c_str());
 
-  if(use_result_flag_)
-  {
-    setOutput("result", false);
-  }
+  // if(use_result_flag_)
+  // {
+  //   setOutput("result", false);
+  // }
 
   // Mark the condition as undone if the optional port is used
   if(setOutput("condition_undone", false))
@@ -116,7 +116,7 @@ BT::NodeStatus DummyTask::onRunning()
 
     // Log what failure case was added for debugging
     std::string failure_case_str = failureCaseToString(failure_case_vec_.front());
-    RCLCPP_DEBUG(
+    RCLCPP_WARN(
       node_->get_logger(),
       "[%s] added %s to [failure_state] port",
       this->name().c_str(), failure_case_str.c_str());
