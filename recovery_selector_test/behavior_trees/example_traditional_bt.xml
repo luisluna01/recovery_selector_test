@@ -1,6 +1,6 @@
 <root BTCPP_format="4">
     <BehaviorTree ID="ExampleTraditionalBT">
-        <ReactiveFallback>
+        <ReactiveFallback name="6">
             
             <InRoom condition_bool="{in_room}"/>
             
@@ -38,11 +38,11 @@
             </ReactiveSequence>
 
             <!-- Open the door -->
-            <ReactiveSequence>
+            <ReactiveSequence name="5">
 
                 <NearDoor condition_bool="{near_door}"/> <!-- Condition Node -->
                 
-                <ReactiveFallback>
+                <ReactiveFallback  name="4">
 
                     <!-- Push Door Open -->
                     <ReactiveSequence>
@@ -57,17 +57,18 @@
                     </ReactiveSequence>
 
                     <!-- Grasp Handle -->
-                    <Sequence>
+                    <Sequence  name="3">
                         <DoorUnlocked condition_bool="{door_unlocked}"/> <!-- Condition Node -->
 
-                        <Fallback>
+                        <Fallback  name="2">
                             <GraspHandle result="{handle_grasped}" condition_undone="{gripper_stowed}" failure_case_bool="{handle_grasped}"/>
 
                             <!-- Realign gripper and regrasp handle if previoud handle grasp failed -->
-                            <Sequence>
+                            <Sequence name="1">
                                 <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{handle_grasped}" failure_case_bool="{not_needed}"/>
-                                <RealignGripper result="{not_needed}" failure_case_bool="{not_needed}"/>
-                                <GraspHandle result="{handle_grasped}" condition_undone="{gripper_stowed}" failure_case_bool="{handle_grasped}"/>
+                                <SlowlyRegraspHandle result="{handle_grasped}" condition_undone="{gripper_stowed}" failure_case_bool="{not_needed}"/>
+                                <!-- <RealignGripper result="{not_needed}" failure_case_bool="{not_needed}"/> -->
+                                <!-- <GraspHandle result="{handle_grasped}" condition_undone="{gripper_stowed}" failure_case_bool="{handle_grasped}"/> -->
                             </Sequence>
                         </Fallback>
                     </Sequence>

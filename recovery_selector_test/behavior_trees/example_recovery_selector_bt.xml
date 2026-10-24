@@ -14,8 +14,7 @@
                 
                 <Sequence>
                     <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/>
-                    <RealignGripper failure_state="{failure_state}"/>
-                    <GraspHandle result="{handle_grasped}" condition_undone="{gripper_stowed}" failure_state="{failure_state}"/>
+                    <SlowlyRegraspHandle result="{handle_grasped}" failure_state="{failure_state}"/>
                 </Sequence>
 
                 <!-- <Sequence> -->

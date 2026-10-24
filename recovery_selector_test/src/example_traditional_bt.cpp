@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
   factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
     "PlanObstacleFreePath", ros_node, "/plan_obstacle_free_path_failure", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
-    "RealignGripper", ros_node, "/realign_gripper_failure", 10.0, false);
+    "SlowlyRegraspHandle", ros_node, "/realign_gripper_failure", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
     "WalkToDoor", ros_node, "/walk_to_door_failure", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(

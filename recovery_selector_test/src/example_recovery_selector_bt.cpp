@@ -62,8 +62,6 @@ int main(int argc, char* argv[])
     "WalkInRoom", ros_node, "/failure_source", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyRecoveryStrategy>(
     "PlanObstacleFreePath", ros_node, FailureCase::OBSTACLE_IN_PATH, "/failure_source", 10.0);
-  factory.registerNodeType<recovery_selector_test::behaviors::DummyRecoveryStrategy>(
-    "RealignGripper", ros_node, FailureCase::FAILED_GRASP, "/failure_source", 10.0);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
     "WalkToDoor", ros_node, "/failure_source", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyRecoveryStrategy>(
@@ -76,7 +74,9 @@ int main(int argc, char* argv[])
     "GraspHandle", ros_node, "/failure_source", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
     "ReleaseAndStowGripper", ros_node, "/failure_source", 5.0, true);
-
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyRecoveryStrategy>(
+    "SlowlyRegraspHandle", ros_node, FailureCase::FAILED_GRASP, "/failure_source", 10.0);
+  
   // Register recovery_selector_test::behaviors::SimpleRequestUserIntervention
   factory.registerNodeType<recovery_selector_test::behaviors::SimpleRequestUserIntervention>(
     "SimpleRequestUserIntervention", ros_node);
