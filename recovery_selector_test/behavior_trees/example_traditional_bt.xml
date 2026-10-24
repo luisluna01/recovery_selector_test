@@ -60,6 +60,12 @@
                     <Sequence  name="3">
                         <DoorUnlocked condition_bool="{door_unlocked}"/> <!-- Condition Node -->
 
+                        <!-- Stow gripper if it is not already stowed -->
+                        <Fallback>
+                            <GripperStowed condition_bool="{gripper_stowed}"/>
+                            <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{handle_grasped}" failure_case_bool="{not_needed}"/>
+                        </Fallback>
+
                         <Fallback  name="2">
                             <GraspHandle result="{handle_grasped}" condition_undone="{gripper_stowed}" failure_case_bool="{handle_grasped}"/>
 
@@ -74,17 +80,12 @@
                     </Sequence>
 
                     <!-- Unlock door if TurnHandle failed due to door being locked -->
-                    <Fallback>
-                        <Sequence>
-                            <ReleaseAndStowGripper result="{not_needed}" condition_undone="{handle_grasped}" failure_case_bool="{not_needed}"/>
-                            <UnlockDoor result="{door_unlocked}" condition_undone="{handle_grasped}" failure_case_bool="{door_unlocked}"/>
-                        </Sequence>
-
-                        <Sequence>
-                            <ReleaseAndStowGripper result="{not_needed}" condition_undone="{handle_grasped}" failure_case_bool="{not_needed}"/>
-                            <SimpleRequestUserIntervention service_name="/user_intervention" condition_resolved="{door_unlocked}"/>
-                        </Sequence>
-                    </Fallback>
+                    <!-- <Fallback> -->
+                    <Sequence>
+                        <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{handle_grasped}" failure_case_bool="{not_needed}"/>
+                        <UnlockDoor result="{door_unlocked}" condition_undone="{gripper_stowed}" failure_case_bool="{door_unlocked}"/>
+                    </Sequence>
+                    <!-- </Fallback> -->
 
                 </ReactiveFallback>
 

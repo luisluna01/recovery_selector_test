@@ -8,8 +8,8 @@
                 
                 <Sequence>
                     <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/>
-                    <UnlockDoor condition_undone="{handle_grasped}" failure_state="{failure_state}"/>
-                    <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/>
+                    <UnlockDoor condition_undone="{gripper_stowed}" failure_state="{failure_state}"/>
+                    <!-- <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/> -->
                 </Sequence>
                 
                 <Sequence>
