@@ -64,8 +64,8 @@ int main(int argc, char* argv[])
     "PlanObstacleFreePath", ros_node, FailureCase::OBSTACLE_IN_PATH, "/failure_source", 10.0);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyRecoveryStrategy>(
     "RealignGripper", ros_node, FailureCase::FAILED_GRASP, "/failure_source", 10.0);
-  factory.registerNodeType<recovery_selector_test::behaviors::SimpleDummyTask>(
-    "WalkToDoor", ros_node, "/walk_to_door_failure", 10.0, true);
+  factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
+    "WalkToDoor", ros_node, "/failure_source", 10.0, true);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyRecoveryStrategy>(
     "UnlockDoor", ros_node, FailureCase::DOOR_LOCKED, "/failure_source", 10.0);
   factory.registerNodeType<recovery_selector_test::behaviors::DummyTask>(
@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
   tree.rootBlackboard()->set<std::vector<FailureCase>>("failure_state", std::vector<FailureCase>());
   tree.rootBlackboard()->set<bool>("in_room", false);
   tree.rootBlackboard()->set<bool>("door_open", false);
-  tree.rootBlackboard()->set<bool>("near_door", true);
+  tree.rootBlackboard()->set<bool>("near_door", false);
   tree.rootBlackboard()->set<bool>("handle_grasped", false);
   tree.rootBlackboard()->set<bool>("handle_turned", false);
   tree.rootBlackboard()->set<bool>("gripper_stowed", true);

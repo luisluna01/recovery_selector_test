@@ -7,20 +7,22 @@
                 <PlanObstacleFreePath failure_state="{failure_state}"/>
                 
                 <Sequence>
-                    <ReleaseAndStowGripper result="{not_needed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/>
+                    <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/>
                     <UnlockDoor condition_undone="{handle_grasped}" failure_state="{failure_state}"/>
+                    <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/>
                 </Sequence>
                 
                 <Sequence>
-                    <ReleaseAndStowGripper result="{not_needed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/>
+                    <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/>
                     <RealignGripper failure_state="{failure_state}"/>
                     <GraspHandle result="{handle_grasped}" condition_undone="{gripper_stowed}" failure_state="{failure_state}"/>
                 </Sequence>
 
-                <Sequence>
-                    <ReleaseAndStowGripper result="{not_needed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/>
+                <!-- <Sequence> -->
+                    <!-- <ReleaseAndStowGripper result="{not_needed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/> -->
                     <RequestUserIntervention service_name="/user_intervention" failure_state="{failure_state}"/>
-                </Sequence>
+                    <!-- <ReleaseAndStowGripper result="{not_needed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/> -->
+                <!-- </Sequence> -->
             </RecoverySelector>
             
             <!-- Main Branch -->
@@ -57,17 +59,20 @@
                                         <TurnHandle result="{handle_turned}" condition_undone="{gripper_stowed}" failure_state="{failure_state}"/>
                                     </ReactiveSequence>
 
-                                    <GraspHandle result="{handle_grasped}" condition_undone="{gripper_stowed}" failure_state="{failure_state}"/>
+                                    <Sequence>
+                                        <GripperStowed condition_bool="{gripper_stowed}"/>
+                                        <GraspHandle result="{handle_grasped}" condition_undone="{gripper_stowed}" failure_state="{failure_state}"/>
+                                    </Sequence>
                                 </ReactiveFallback>
                             </ReactiveSequence>
                             
                             <!-- Walk to Door -->
-                            <!-- <ReactiveSequence>
+                            <ReactiveSequence>
                                 <GripperStowed condition_bool="{gripper_stowed}"/>
-                                <WalkToDoor result="{near_door}" failure_case_bool="{failure_case_bool}"/>
+                                <WalkToDoor result="{near_door}" failure_state="{failure_state}"/>
                             </ReactiveSequence>
-                            <ReleaseAndStowGripper result="{not_needed}" condition_undone="{handle_grasped}" failure_case_bool="{not_needed}"/> -->
-                        
+                            <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/>
+
                         </ReactiveFallback>
                     </Inverter>
                 </KeepRunningUntilFailure>
