@@ -28,7 +28,9 @@ BT::PortsList DummyTask::providedPorts()
     BT::BidirectionalPort<std::vector<FailureCase>>("failure_state",
       "failure cases present in the blackboard"),
     BT::OutputPort<bool>("condition_undone",
-      "(Optional) Set to false on the first onRunning() call to mark the condition as undone")
+      "(Optional) Set to false on the first onRunning() call to mark the condition as undone"),
+    BT::OutputPort<bool>("condition_undone_2",
+      "(Optional) Set to false on the first onRunning() call to mark a second condition as undone")
   };
 }
 
@@ -85,6 +87,12 @@ BT::NodeStatus DummyTask::onRunning()
     {
       RCLCPP_DEBUG(
         node_->get_logger(), "[%s] set [condition_undone] port to false", this->name().c_str());
+    }
+
+    if(setOutput("condition_undone_2", false))
+    {
+      RCLCPP_DEBUG(
+        node_->get_logger(), "[%s] set [condition_undone_2] port to false", this->name().c_str());
     }
   }
 
