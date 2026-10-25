@@ -53,6 +53,7 @@
                     <!-- Turn Handle -->
                     <ReactiveSequence>
                         <HandleGrasped condition_bool="{handle_grasped}"/> <!-- Condition Node-->
+                        <DoorUnlocked condition_bool="{door_unlocked}"/> <!-- Condition Node -->
                         <TurnHandle result="{handle_turned}" condition_undone="{gripper_stowed}" failure_case_bool="{door_unlocked}"/>
                     </ReactiveSequence>
 
@@ -73,19 +74,15 @@
                             <Sequence name="1">
                                 <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{handle_grasped}" failure_case_bool="{not_needed}"/>
                                 <SlowlyRegraspHandle result="{handle_grasped}" condition_undone="{gripper_stowed}" failure_case_bool="{not_needed}"/>
-                                <!-- <RealignGripper result="{not_needed}" failure_case_bool="{not_needed}"/> -->
-                                <!-- <GraspHandle result="{handle_grasped}" condition_undone="{gripper_stowed}" failure_case_bool="{handle_grasped}"/> -->
                             </Sequence>
                         </Fallback>
                     </Sequence>
 
                     <!-- Unlock door if TurnHandle failed due to door being locked -->
-                    <!-- <Fallback> -->
                     <Sequence>
                         <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{handle_grasped}" failure_case_bool="{not_needed}"/>
                         <UnlockDoor result="{door_unlocked}" condition_undone="{gripper_stowed}" failure_case_bool="{door_unlocked}"/>
                     </Sequence>
-                    <!-- </Fallback> -->
 
                 </ReactiveFallback>
 
