@@ -9,7 +9,6 @@
                 <Sequence>
                     <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/>
                     <UnlockDoor condition_undone="{gripper_stowed}" failure_state="{failure_state}"/>
-                    <!-- <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/> -->
                 </Sequence>
                 
                 <Sequence>
@@ -17,11 +16,7 @@
                     <SlowlyRegraspHandle result="{handle_grasped}" failure_state="{failure_state}"/>
                 </Sequence>
 
-                <!-- <Sequence> -->
-                    <!-- <ReleaseAndStowGripper result="{not_needed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/> -->
                     <RequestUserIntervention service_name="/user_intervention" failure_state="{failure_state}"/>
-                    <!-- <ReleaseAndStowGripper result="{not_needed}" condition_undone="{handle_grasped}" failure_state="{failure_state}"/> -->
-                <!-- </Sequence> -->
             </RecoverySelector>
             
             <!-- Main Branch -->
@@ -37,7 +32,7 @@
 
                                 <ReactiveFallback>
                                     <GripperStowed condition_bool="{gripper_stowed}"/>
-                                    <ReleaseAndStowGripper result="{gripper_stowed}" failure_state="{failure_state}"/>
+                                    <ReleaseAndStowGripper result="{gripper_stowed}" condition_undone="{handle_turned}" condition_undone_2="{handle_grasped}" failure_state="{failure_state}"/>
                                 </ReactiveFallback>
 
                                 <WalkInRoom result="{in_room}" failure_state="{failure_state}"/>
